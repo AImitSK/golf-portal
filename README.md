@@ -33,6 +33,13 @@ src/
 │   └── analytics.ts     # Analytics Setup
 ├── sanity/              # Sanity Konfiguration
 │   ├── schemaTypes/     # Content Modelle
+│   │   ├── golfclub.ts  # Hauptschema für Golfclubs
+│   │   ├── administrator.ts # Administratoren-Schema
+│   │   ├── vertragsmodell.ts # Vertragsmodell-Schema
+│   │   ├── feature.ts   # Features für Vertragsmodelle
+│   │   ├── land.ts      # Länder-Schema
+│   │   ├── kooperation.ts # Kooperationen-Schema
+│   │   └── index.ts     # Schema-Exports
 │   ├── env.ts          # Sanity Environment
 │   └── structure.ts    # Sanity Structure
 └── utils/              # Hilfsfunktionen
@@ -40,6 +47,28 @@ src/
     ├── auth.ts         # Auth Utilities
     └── helpers.ts      # Allgemeine Utilities
 ```
+
+## Content Modelle
+
+Das Portal verwendet folgende Hauptschemas:
+
+### Golfclub
+- Basis-Informationen (Name, Kontakt, SEO)
+- Bilder (Logo, Titelbild, Galerie)
+- Platz-Details (Löcher, Par, Rating, etc.)
+- Einrichtungen (Übungsanlagen, Services)
+- Club-Informationen (Mitgliedschaft, Turniere)
+
+### Vertragsmodell & Features
+- Verschiedene Mitgliedschaftsmodelle (Free/Premium)
+- Definierbare Features pro Modell
+- Preisgestaltung und Zahlungsintervalle
+
+### Kooperationen
+- Verbundmitgliedschaften
+- Greenfee-Ermäßigungen
+- Partnerschaftsprogramme
+
 
 ## Tech Stack
 

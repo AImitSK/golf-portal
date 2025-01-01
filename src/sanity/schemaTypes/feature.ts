@@ -15,12 +15,6 @@ export default {
             name: 'beschreibung',
             title: 'Beschreibung',
             type: 'text'
-        },
-        {
-            name: 'technischerName',
-            title: 'Technischer Name',
-            type: 'string',
-            validation: (Rule: ValidationRule) => Rule.required().unique()
         }
     ]
 }
