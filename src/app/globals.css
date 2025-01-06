@@ -5,6 +5,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Figma-Farben */
+  --color-dark-green: #006633;
+  --color-dark-green-25: #bfd8cc;
+  --color-dark-green-10: #e6f0eb;
+  --color-dark: #333333;
+  --color-white: #ffffff;
+  --color-dark-20: #d6d6d6;
+  --color-dark-6: #f3f3f3;
+  --color-cta-green: #2cdb48;
+  --color-aktion-red: #e6332a;
+  --color-aktion-red-over: #c0332c;
+  --color-cta-green-15: #e0fae4;
 }
 
 @media (prefers-color-scheme: dark) {

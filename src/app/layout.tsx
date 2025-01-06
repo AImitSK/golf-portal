@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import 'typeface-roboto';
 import "./globals.css";
 
 const geistSans = Geist({

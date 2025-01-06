@@ -31,7 +31,8 @@
     "sanity": "^3.68.3",
     "shadcn-ui": "^0.9.4",
     "styled-components": "^6.1.13",
-    "twilio": "^5.4.0"
+    "twilio": "^5.4.0",
+    "typeface-roboto": "^1.1.13"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
