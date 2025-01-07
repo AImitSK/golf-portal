@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import { Heading } from '@/components/frontend-ui/Heading';
 import GridNavi from '@/components/frontend-ui/GridNavi';
 
@@ -230,15 +231,38 @@ const ClubGrid = ({ clubs }: { clubs: GolfClub[] }) => {
         return { club, showImage };
     });
 
+    // State für die Anzahl der angezeigten Clubs
+    const [visibleClubs, setVisibleClubs] = useState(10); // Starten mit 10 Clubs
+
+    // Funktion um weitere Clubs zu laden
+    const handleLoadMore = () => {
+        setVisibleClubs(prev => prev + 10); // Zeige 10 weitere Clubs an
+    };
+
     return (
-        <div className="grid grid-cols-1 gap-8 max-w-screen-xl mx-auto px-4 lg:px-8">
-            {clubsWithImageFlag.map(({club, showImage}, idx) => (
-                <ClubCard
-                    key={idx}
-                    club={club}
-                    showImage={showImage}
-                />
-            ))}
+        <div>
+            {/* Club-Karten */}
+            <div className="grid grid-cols-1 gap-8 max-w-screen-xl mx-auto px-4 lg:px-8">
+                {clubsWithImageFlag.slice(0, visibleClubs).map(({ club, showImage }, idx) => (
+                    <ClubCard
+                        key={idx}
+                        club={club}
+                        showImage={showImage}
+                    />
+                ))}
+            </div>
+
+            {/* "Mehr Laden"-Button */}
+            {visibleClubs < clubsWithImageFlag.length && ( // Nur anzeigen, wenn es noch weitere Clubs gibt
+                <div className="text-center mt-6">
+                    <button
+                        onClick={handleLoadMore}
+                        className="bg-cta-green text-white px-4 py-2 rounded hover:bg-cta-green-dark transition-colors"
+                    >
+                        Mehr Laden
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
