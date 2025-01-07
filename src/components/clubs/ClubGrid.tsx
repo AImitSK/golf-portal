@@ -53,8 +53,6 @@ const sortClubs = (clubs: GolfClub[]) => {
 };
 
 const ClubCard = ({ club, showImage }: { club: GolfClub; showImage: boolean }) => {
-
-
     return (
         <div className="bg-white">
             {showImage && (
@@ -109,55 +107,111 @@ const ClubCard = ({ club, showImage }: { club: GolfClub; showImage: boolean }) =
                     </span>
                 </div>
 
-                {/* Erste Reihe Tags */}
-                <div className="flex flex-wrap gap-2 mb-2">
-                    {club.anzahlLoecher && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                            {club.anzahlLoecher} Loch
-                        </span>
-                    )}
-                    {club.parGesamt && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                            Par {club.parGesamt}
-                        </span>
-                    )}
-                    {club.laengeMeter && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                            {club.laengeMeter}m
-                        </span>
-                    )}
-                    {club.handicapBeschraenkung && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                            HCP {club.handicapBeschraenkung}
-                        </span>
-                    )}
-                    {club.courseRating && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                            CR {club.courseRating}
-                        </span>
-                    )}
-                    {club.slope && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                            Slope {club.slope}
-                        </span>
-                    )}
+                {/* Container für alle Tags */}
+                <div className="mb-4">
+                    {/* Mobile: Eine Reihe */}
+                    <div className="flex flex-wrap gap-2 lg:hidden">
+                        {/* Helle Tags */}
+                        {club.anzahlLoecher && (
+                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                {club.anzahlLoecher} Loch
+                            </span>
+                        )}
+                        {club.parGesamt && (
+                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                Par {club.parGesamt}
+                            </span>
+                        )}
+                        {club.laengeMeter && (
+                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                {club.laengeMeter}m
+                            </span>
+                        )}
+                        {club.handicapBeschraenkung && (
+                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                HCP {club.handicapBeschraenkung}
+                            </span>
+                        )}
+                        {club.courseRating && (
+                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                CR {club.courseRating}
+                            </span>
+                        )}
+                        {club.slope && (
+                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                Slope {club.slope}
+                            </span>
+                        )}
+
+                        {/* Grüne Tags direkt dahinter */}
+                        {club.platztyp && (
+                            <span className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
+                                {club.platztyp}
+                            </span>
+                        )}
+                        {club.besonderheiten?.map((besonderheit, index) => (
+                            <span
+                                key={index}
+                                className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
+                                {besonderheit}
+                            </span>
+                        ))}
+                    </div>
+
+                    {/* Desktop: Zwei Reihen */}
+                    <div className="hidden lg:block space-y-2">
+                        {/* Helle Tags */}
+                        <div className="flex flex-wrap gap-2">
+                            {club.anzahlLoecher && (
+                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                    {club.anzahlLoecher} Loch
+                                </span>
+                            )}
+                            {club.parGesamt && (
+                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                    Par {club.parGesamt}
+                                </span>
+                            )}
+                            {club.laengeMeter && (
+                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                    {club.laengeMeter}m
+                                </span>
+                            )}
+                            {club.handicapBeschraenkung && (
+                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                    HCP {club.handicapBeschraenkung}
+                                </span>
+                            )}
+                            {club.courseRating && (
+                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                    CR {club.courseRating}
+                                </span>
+                            )}
+                            {club.slope && (
+                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
+                                    Slope {club.slope}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Grüne Tags */}
+                        <div className="flex flex-wrap gap-2">
+                            {club.platztyp && (
+                                <span className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
+                                    {club.platztyp}
+                                </span>
+                            )}
+                            {club.besonderheiten?.map((besonderheit, index) => (
+                                <span
+                                    key={index}
+                                    className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
+                                    {besonderheit}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
-                {/* Zweite Reihe Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {club.platztyp && (
-                        <span className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
-                            {club.platztyp}
-                        </span>
-                    )}
-                    {club.besonderheiten?.map((besonderheit, index) => (
-                        <span
-                            key={index}
-                            className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
-                            {besonderheit}
-                        </span>
-                    ))}
-                </div>
             </div>
         </div>
     );
