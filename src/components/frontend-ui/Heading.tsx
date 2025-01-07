@@ -6,7 +6,7 @@ type HeadingProps = {
 
 const headingStyles: Record<1 | 2 | 3 | 4, string> = {
     1: 'text-4xl font-bold text-dark-green',
-    2: 'font-roboto text-dark-green text-[1.5rem] font-semibold leading-[1rem] tracking-[0.01125rem]', // Angepasstes Styling für H2
+    2: 'font-roboto text-dark-green text-[1.5rem] font-semibold leading-[1.4rem] tracking-[0.01125rem]', // Angepasstes Styling für H2
     3: 'text-xl font-medium text-dark-20',
     4: 'text-lg font-normal text-dark-6',
 };

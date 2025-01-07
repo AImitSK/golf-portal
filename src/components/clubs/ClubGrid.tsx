@@ -29,7 +29,7 @@ const ClubCard = ({ club }: { club: GolfClub }) => {
                     <img
                         src={club.image}
                         alt={club.title}
-                        className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover rounded-2xl transform transition-transform duration-300"
                     />
                 </a>
 
@@ -40,15 +40,15 @@ const ClubCard = ({ club }: { club: GolfClub }) => {
                 </div>
 
                 {/* Aktions-Buttons (unten rechts) */}
-                <div className="absolute bottom-3 right-3 flex gap-2">
-                    <button className="p-2 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
-                        <img src="/icons/iconShareWithe.svg" alt="Teilen" className="w-5 h-5" />
+                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
+                        <img src="/icons/iconShareWithe.svg" alt="Teilen" className="h-5 w-5" />
                     </button>
-                    <button className="p-2 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
-                        <img src="/icons/iconLoveWithe.svg" alt="Favorit" className="w-5 h-5" />
+                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
+                        <img src="/icons/iconLoveWithe.svg" alt="Favorit" className="h-5 w-5" />
                     </button>
                     {/* GridNavi: overflow sichtbar machen */}
-                    <div className="relative z-50 overflow-visible">
+                    <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible">
                         <GridNavi />
                     </div>
                 </div>
@@ -67,7 +67,7 @@ const ClubCard = ({ club }: { club: GolfClub }) => {
                     <a href="#" className="block">
                         <Heading
                             level={2}
-                            className="text-dark-green font-semibold hover:text-dark-green/80 transition-colors pb-4">
+                            className="text-dark-green font-semibold hover:text-cta-green transition-colors">
                             {club.title}
                         </Heading>
                     </a>
