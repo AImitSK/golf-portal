@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "typeface-roboto";
 import "./globals.css";
-import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
-
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -27,13 +25,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        {/* Navigation einfügen */}
-        <NavigationFrontend />
-
-
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* Hauptinhalt der Seite */}
         {children}
         </body>
