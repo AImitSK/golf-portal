@@ -177,8 +177,8 @@ const ClubGrid = ({ clubs }: { clubs: GolfClub[] }) => {
     });
 
     return (
-        <div className="grid grid-cols-1 gap-8 max-w-[1440px] mx-auto px-4 lg:px-8">
-            {clubsWithImageFlag.map(({ club, showImage }, idx) => (
+        <div className="grid grid-cols-1 gap-8 max-w-screen-xl mx-auto px-4 lg:px-8">
+            {clubsWithImageFlag.map(({club, showImage}, idx) => (
                 <ClubCard
                     key={idx}
                     club={club}
