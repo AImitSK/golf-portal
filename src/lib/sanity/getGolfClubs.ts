@@ -9,6 +9,12 @@ export async function getGolfClubs() {
         clubTelefon,
         clubWebsite,
         "city": adresse.ort,
+        // Vertragsmodell
+        "aktuellesModell": aktuellesModell->{
+            name,
+            isTopPosition,
+            topPositionRank
+        },
         // Helle Tags
         anzahlLoecher,
         parGesamt,

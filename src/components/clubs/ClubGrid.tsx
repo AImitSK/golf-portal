@@ -17,53 +17,86 @@ type GolfClub = {
     slope?: number;
     platztyp?: string;
     besonderheiten?: string[];
+    aktuellesModell?: {
+        name: string;
+        isTopPosition?: boolean;
+        topPositionRank?: number;
+    };
 };
 
-const ClubCard = ({ club }: { club: GolfClub }) => {
+const sortClubs = (clubs: GolfClub[]) => {
+    return clubs.sort((a, b) => {
+        // Clubs ohne Vertragsmodell ans Ende
+        if (!a.aktuellesModell && b.aktuellesModell) return 1;
+        if (a.aktuellesModell && !b.aktuellesModell) return -1;
+        if (!a.aktuellesModell || !b.aktuellesModell) return 0;
+
+        // TOP Position Vergleich (jetzt wissen wir, dass beide aktuellesModell haben)
+        const aIsTop = !!a.aktuellesModell?.isTopPosition;
+        const bIsTop = !!b.aktuellesModell?.isTopPosition;
+        if (aIsTop && !bIsTop) return -1;
+        if (!aIsTop && bIsTop) return 1;
+
+        // Wenn beide TOP Position haben, nach Rank sortieren
+        if (aIsTop && bIsTop) {
+            return (a.aktuellesModell.topPositionRank || 0) - (b.aktuellesModell.topPositionRank || 0);
+        }
+
+        // Free vs. Paid Vergleich
+        const aIsFree = a.aktuellesModell.name?.toLowerCase() === 'free';
+        const bIsFree = b.aktuellesModell.name?.toLowerCase() === 'free';
+        if (!aIsFree && bIsFree) return -1;
+        if (aIsFree && !bIsFree) return 1;
+
+        return 0;
+    });
+};
+
+const ClubCard = ({ club, showImage }: { club: GolfClub; showImage: boolean }) => {
+
+
     return (
         <div className="bg-white">
-            {/* Bild-Container mit Hover-Effekten */}
-            <div
-                className="relative rounded-2xl overflow-visible hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200 group">
-                <a href="#" className="block relative w-full aspect-video overflow-hidden">
-                    <img
-                        src={club.image}
-                        alt={club.title}
-                        className="w-full h-full object-cover rounded-2xl transform transition-transform duration-300"
-                    />
-                </a>
+            {showImage && (
+                <div className="relative rounded-2xl overflow-visible group hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200">
+                    <a href="#" className="block relative w-full aspect-[16/9] lg:aspect-[32/9] overflow-hidden rounded-2xl">
+                        <img
+                            src={club.image}
+                            alt={club.title}
+                            className="w-full h-full object-cover"
+                        />
+                    </a>
 
-                {/* Location Tag (oben rechts) */}
-                <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5">
-                    <img src="/icons/iconLocationDarkGreen.svg" alt="Standort" className="w-4 h-4" />
-                    <span className="text-sm font-medium text-dark-green">{club.city}</span>
-                </div>
+                    {/* Standort-Tag (oben rechts) */}
+                    <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5">
+                        <img src="/icons/iconLocationDarkGreen.svg" alt="Standort" className="w-4 h-4" />
+                        <span className="text-sm font-medium text-dark-green">{club.city}</span>
+                    </div>
 
-                {/* Aktions-Buttons (unten rechts) */}
-                <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
-                        <img src="/icons/iconShareWithe.svg" alt="Teilen" className="h-5 w-5" />
-                    </button>
-                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
-                        <img src="/icons/iconLoveWithe.svg" alt="Favorit" className="h-5 w-5" />
-                    </button>
-                    {/* GridNavi: overflow sichtbar machen */}
-                    <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible">
-                        <GridNavi />
+                    {/* Aktionsbuttons (unten rechts) */}
+                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                        <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
+                            <img src="/icons/iconShareWithe.svg" alt="Teilen" className="h-5 w-5" />
+                        </button>
+                        <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
+                            <img src="/icons/iconLoveWithe.svg" alt="Favorit" className="h-5 w-5" />
+                        </button>
+                        <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
+                            <GridNavi />
+                        </div>
+                    </div>
+
+                    {/* Likes-Zähler (unten links) */}
+                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5">
+                        <img src="/icons/iconLikeDarkGreen.svg" alt="Likes" className="w-4 h-4" />
+                        <span className="text-sm font-medium text-dark-green">1.021</span>
                     </div>
                 </div>
+            )}
 
-                {/* Likes Counter (unten links) */}
-                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5">
-                    <img src="/icons/iconLikeDarkGreen.svg" alt="Likes" className="w-4 h-4" />
-                    <span className="text-sm font-medium text-dark-green">1.021</span>
-                </div>
-            </div>
-
-            {/* Inhalt unterhalb des Bildes */}
-            <div className="pt-4 pb-4">
-                {/* Titel und Sponsored Tag */}
-                <div className="flex justify-between items-start">
+            {/* Content unterhalb des Bildes */}
+            <div className={showImage ? "pt-4" : "pt-0"}>
+                <div className="flex justify-between items-start mb-4">
                     <a href="#" className="block">
                         <Heading
                             level={2}
@@ -71,50 +104,56 @@ const ClubCard = ({ club }: { club: GolfClub }) => {
                             {club.title}
                         </Heading>
                     </a>
-                    <span className="text-xs uppercase tracking-wider text-dark-20">Sponsored</span>
+                    <span className="text-xs uppercase tracking-wider text-dark-20">
+                        {club.aktuellesModell?.name || 'FREE'}
+                    </span>
                 </div>
 
-                {/* Tags-Container */}
-                <div className="mt-4 flex flex-wrap gap-2">
+                {/* Erste Reihe Tags */}
+                <div className="flex flex-wrap gap-2 mb-2">
                     {club.anzahlLoecher && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green hover:bg-dark-green hover:text-white transition-colors cursor-pointer">
+                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
                             {club.anzahlLoecher} Loch
                         </span>
                     )}
                     {club.parGesamt && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green hover:bg-dark-green hover:text-white transition-colors cursor-pointer">
+                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
                             Par {club.parGesamt}
                         </span>
                     )}
                     {club.laengeMeter && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green hover:bg-dark-green hover:text-white transition-colors cursor-pointer">
+                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
                             {club.laengeMeter}m
                         </span>
                     )}
                     {club.handicapBeschraenkung && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green hover:bg-dark-green hover:text-white transition-colors cursor-pointer">
+                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
                             HCP {club.handicapBeschraenkung}
                         </span>
                     )}
                     {club.courseRating && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green hover:bg-dark-green hover:text-white transition-colors cursor-pointer">
+                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
                             CR {club.courseRating}
                         </span>
                     )}
                     {club.slope && (
-                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green hover:bg-dark-green hover:text-white transition-colors cursor-pointer">
+                        <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
                             Slope {club.slope}
                         </span>
                     )}
+                </div>
+
+                {/* Zweite Reihe Tags */}
+                <div className="flex flex-wrap gap-2 mb-4">
                     {club.platztyp && (
-                        <span className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium hover:bg-dark-green transition-colors cursor-pointer">
+                        <span className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
                             {club.platztyp}
                         </span>
                     )}
                     {club.besonderheiten?.map((besonderheit, index) => (
                         <span
                             key={index}
-                            className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium hover:bg-dark-green transition-colors cursor-pointer">
+                            className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
                             {besonderheit}
                         </span>
                     ))}
@@ -124,12 +163,30 @@ const ClubCard = ({ club }: { club: GolfClub }) => {
     );
 };
 
-const ClubGrid = ({ clubs }: { clubs: GolfClub[] }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {clubs.map((club, idx) => (
-            <ClubCard key={idx} club={club} />
-        ))}
-    </div>
-);
+const ClubGrid = ({ clubs }: { clubs: GolfClub[] }) => {
+    // Sortiere die Clubs
+    const sortedClubs = sortClubs([...clubs]);
+
+    // Bestimme für jeden Club, ob ein Bild angezeigt werden soll
+    const clubsWithImageFlag = sortedClubs.map((club, index) => {
+        const isFreeContract = club.aktuellesModell?.name?.toLowerCase() === 'free';
+        const isTop5 = index < 5;
+        const showImage = !isFreeContract || isTop5;
+
+        return { club, showImage };
+    });
+
+    return (
+        <div className="grid grid-cols-1 gap-8 max-w-[1440px] mx-auto px-4 lg:px-8">
+            {clubsWithImageFlag.map(({ club, showImage }, idx) => (
+                <ClubCard
+                    key={idx}
+                    club={club}
+                    showImage={showImage}
+                />
+            ))}
+        </div>
+    );
+};
 
 export default ClubGrid;

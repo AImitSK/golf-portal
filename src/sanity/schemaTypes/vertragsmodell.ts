@@ -32,6 +32,19 @@ export default {
                 })
         },
         {
+            name: 'isTopPosition',
+            title: 'TOP Position',
+            type: 'boolean',
+            description: 'Aktivieren für bevorzugte Positionierung'
+        },
+        {
+            name: 'topPositionRank',
+            title: 'TOP Position Rang',
+            type: 'number',
+            description: 'Wird automatisch basierend auf anderen TOP Positionen gesetzt',
+            readOnly: true
+        },
+        {
             name: 'features',
             title: 'Features',
             type: 'array',
