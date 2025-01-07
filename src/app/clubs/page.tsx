@@ -10,6 +10,7 @@ const ClubsPage = async () => {
     return (
         // Container mit responsiven Abstände
         <div className="container mx-auto px-0 py-6 lg:px-6 xl:px-8">
+
             <ClubGrid clubs={clubs} />
         </div>
     );
