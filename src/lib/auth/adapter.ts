@@ -1,165 +1,262 @@
-import type { SanityClient } from '@sanity/client';
+import { client } from '@/lib/sanity/client';
 import { uuid } from '@sanity/uuid';
-import type { Adapter, AdapterUser, AdapterAccount, VerificationToken } from "next-auth/adapters"
+
+import type {
+  Adapter,
+  AdapterSession,
+  AdapterUser,
+} from 'next-auth/adapters';
+import { User, UserRole } from '@/types/auth';
 
 export function SanityAdapter(
-  client: SanityClient,
   options = {
     schemas: {
+      administrator: 'administrator',
       account: 'account',
       verificationToken: 'verificationToken',
-      user: 'administrator',
       session: 'session'
     }
   }
 ): Adapter {
   return {
     async createUser(user) {
-      const newUser = {
-        _type: options.schemas.user,
-        _id: `user-${uuid()}`,
-        name: user.name,
-        email: user.email,
-        image: user.image,
-        emailVerified: user.emailVerified?.toISOString(),
-        role: 'admin', // Default Rolle
-        aktiv: true,
-        permissions: [] // Leere Berechtigungen standardmäßig
-      }
-      
-      const result = await client.create(newUser)
-      return normalizeUser(result)
-    },
+      try {
+        const existingUser_qry = `*[_type == "administrator" && email == "${user.email}"][0]`;
+        const existingUser = await client.fetch(existingUser_qry);
 
-    async getUser(id) {
-      const user = await client.fetch(
-        `*[_type == $userType && _id == $id][0]`,
-        { userType: options.schemas.user, id }
-      )
-      if (!user) return null
-      return normalizeUser(user)
-    },
+        if (existingUser) return existingUser;
 
-    async getUserByEmail(email) {
-      const user = await client.fetch(
-        `*[_type == $userType && email == $email && aktiv == true][0]`,
-        { userType: options.schemas.user, email }
-      )
-      if (!user) return null
-      return normalizeUser(user)
-    },
-
-    async getUserByAccount({ providerAccountId, provider }) {
-      const account = await client.fetch(
-        `*[_type == $accountType && provider == $provider && providerAccountId == $providerAccountId][0]{
-          "user": *[_type == $userType && _id == ^.userId && aktiv == true][0]
-        }`,
-        {
-          accountType: options.schemas.account,
-          userType: options.schemas.user,
-          provider,
-          providerAccountId
-        }
-      )
-      if (!account?.user) return null
-      return normalizeUser(account.user)
-    },
-
-    async updateUser(user) {
-      const updated = await client.patch(user.id.startsWith('user-') ? user.id : `user-${user.id}`)
-        .set({
+        const createdUser = await client.create({
+          _type: options.schemas.administrator,
+          _id: `user.${uuid()}`,
+          role: UserRole.ADMIN,
           name: user.name,
           email: user.email,
           image: user.image,
-          emailVerified: user.emailVerified?.toISOString(),
-        })
-        .commit()
-      return normalizeUser(updated)
+          emailVerified: user.emailVerified,
+          aktiv: true
+        });
+
+        return {
+          id: createdUser._id,
+          ...createdUser
+        };
+      } catch (error) {
+        throw new Error('Failed to Create user');
+      }
+    },
+
+    async getUser(id) {
+      try {
+        const user_qry = `*[_type == "administrator" && _id == "${id}"][0]`;
+        const user = await client.fetch(user_qry);
+
+        return user;
+      } catch (error) {
+        throw new Error('Couldnt get the user');
+      }
+    },
+
+    async getUserByEmail(email) {
+      try {
+        const user_qry = `*[_type == "administrator" && email == "${email}" && aktiv == true][0]`;
+        const user = await client.fetch(user_qry);
+
+        return user;
+      } catch (error) {
+        throw new Error('Couldnt get the user');
+      }
+    },
+
+    async getUserByAccount({ providerAccountId, provider }) {
+      try {
+        const account_qry = `*[_type == "account" && provider == "${provider}" && providerAccountId == "${providerAccountId}"][0]`;
+        const account = await client.fetch(account_qry);
+
+        if (!account) return null;
+
+        const user_qry = `*[_type == "administrator" && _id == "${account.userId}"][0]`;
+        const user = await client.fetch(user_qry);
+
+        return {
+          id: user._id,
+          role: user.role,
+          ...user
+        };
+      } catch (error) {
+        throw new Error('Couldnt get the user');
+      }
+    },
+
+    async updateUser(updatedUser) {
+      try {
+        const existingUser_qry = `*[_type == "administrator" && _id == "${updatedUser?.id}"][0]`;
+        const existingUser = await client.fetch(existingUser_qry);
+
+        if (!existingUser) {
+          throw new Error(`Could not update user: ${updatedUser.id}; unable to find user`);
+        }
+
+        const patchedUser = await client.patch(existingUser._id)
+          .set({
+            emailVerified: updatedUser.emailVerified === null ? undefined : updatedUser.emailVerified,
+            ...existingUser
+          })
+          .commit();
+
+        return patchedUser;
+      } catch (error) {
+        throw new Error('Couldnt update the user');
+      }
+    },
+
+    async deleteUser(userId) {
+      try {
+        return await client.delete(userId);
+      } catch (error) {
+        throw new Error('Could not delete user');
+      }
     },
 
     async linkAccount(account) {
-      const newAccount = {
-        _type: options.schemas.account,
-        _id: `account-${uuid()}`,
-        userId: account.userId.startsWith('user-') ? account.userId : `user-${account.userId}`,
-        provider: account.provider,
-        providerAccountId: account.providerAccountId,
-        type: account.type,
-        refreshToken: account.refresh_token,
-        accessToken: account.access_token,
-        expiresAt: account.expires_at,
-        tokenType: account.token_type,
-        scope: account.scope,
-        idToken: account.id_token,
-        user: {
-          _type: 'reference',
-          _ref: account.userId.startsWith('user-') ? account.userId : `user-${account.userId}`
-        }
+      try {
+        const createdAccount = await client.create({
+          _type: options.schemas.account,
+          userId: account.userId,
+          type: account.type,
+          provider: account.provider,
+          providerAccountId: account.providerAccountId,
+          refreshToken: account.refresh_token,
+          accessToken: account.access_token,
+          expiresAt: account.expires_at,
+          tokenType: account.token_type,
+          scope: account.scope,
+          idToken: account.id_token,
+          user: {
+            _type: 'reference',
+            _ref: account.userId
+          }
+        });
+
+        const userToUpdate = await client.getDocument(account.userId);
+
+        // @ts-ignore
+        await client.createOrReplace({
+          ...userToUpdate,
+          emailVerified: new Date().toISOString(),
+          accounts: {
+            _type: 'reference',
+            _key: uuid(),
+            _ref: createdAccount._id
+          }
+        });
+
+        return account;
+      } catch (error) {
+        throw new Error('Error linking account');
       }
-      await client.create(newAccount)
-      return account
+    },
+
+    async unlinkAccount({ providerAccountId, provider }) {
+      try {
+        const account_qry = `*[_type == "account" && provider == "${provider}" && providerAccountId == "${providerAccountId}"][0]`;
+        const account = await client.fetch(account_qry);
+
+        if (!account) return;
+
+        const accountUser = await client.getDocument(account.userId);
+
+        const updatedUserAccounts = (accountUser?.accounts || []).filter(
+          ac => ac._ref !== account._id
+        );
+
+        // @ts-ignore
+        await client.createOrReplace({
+          ...accountUser,
+          accounts: updatedUserAccounts
+        });
+
+        await client.delete(account._id);
+      } catch (error) {
+        throw new Error('Could not Unlink account');
+      }
     },
 
     async createSession(session) {
-      const newSession = {
-        _type: options.schemas.session,
-        _id: `session-${uuid()}`,
-        userId: session.userId.startsWith('user-') ? session.userId : `user-${session.userId}`,
-        sessionToken: session.sessionToken,
-        expires: session.expires.toISOString(),
-        user: {
-          _type: 'reference',
-          _ref: session.userId.startsWith('user-') ? session.userId : `user-${session.userId}`
-        }
+      try {
+        await client.create({
+          _type: options.schemas.session,
+          user: {
+            _type: 'reference',
+            _ref: session.userId
+          },
+          ...session
+        });
+
+        return session;
+      } catch (error) {
+        throw new Error('Error Creating Session');
       }
-      await client.create(newSession)
-      return session
     },
 
     async getSessionAndUser(sessionToken) {
-      const result = await client.fetch(
-        `*[_type == $sessionType && sessionToken == $sessionToken][0]{
-          ...,
-          "user": *[_type == $userType && _id == ^.userId && aktiv == true][0]
-        }`,
-        {
-          sessionType: options.schemas.session,
-          userType: options.schemas.user,
-          sessionToken,
-        }
-      )
-      if (!result?.user) return null
-      return {
-        session: normalizeSession(result),
-        user: normalizeUser(result.user),
+      try {
+        const session_qry = `*[_type == "session" && sessionToken == "${sessionToken}"][0]`;
+        const session = await client.fetch(session_qry);
+
+        if (!session) return null;
+
+        const user_qry = `*[_type == "administrator" && _id == "${session.userId}"][0]`;
+        const user = await client.fetch(user_qry);
+
+        return {
+          session,
+          user
+        };
+      } catch (error) {
+        throw new Error('Operation Failed');
       }
     },
 
-    async updateSession(session) {
-      const sessionId = session.sessionToken.startsWith('session-') ? session.sessionToken : `session-${session.sessionToken}`
-      const updated = await client.patch(sessionId)
-        .set({
-          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 Tage als Standard
-        })
-        .commit()
-      return normalizeSession(updated)
+    async updateSession({ sessionToken }) {
+      try {
+        const session_qry = `*[_type == "session" && sessionToken == "${sessionToken}"][0]`;
+        const session = await client.fetch(session_qry);
+
+        if (!session) return null;
+
+        await client.patch(session._id)
+          .set({
+            ...session
+          })
+          .commit();
+      } catch (error) {
+        throw new Error('Operation Failed');
+      }
     },
 
     async deleteSession(sessionToken) {
-      const sessionId = sessionToken.startsWith('session-') ? sessionToken : `session-${sessionToken}`
-      await client.delete(sessionId)
+      try {
+        const session_qry = `*[_type == "session" && sessionToken == "${sessionToken}"][0]`;
+        const session = await client.fetch(session_qry);
+
+        if (!session) return null;
+
+        await client.delete(session._id);
+      } catch (error) {
+        throw new Error('Operation Failed');
+      }
     },
 
-    async createVerificationToken(token) {
-      const newToken = {
+    async createVerificationToken({ identifier, expires, token }) {
+      const verificationToken = await client.create({
         _type: options.schemas.verificationToken,
-        _id: `token-${uuid()}`,
-        identifier: token.identifier,
-        token: token.token,
-        expires: token.expires.toISOString(),
-      }
-      const result = await client.create(newToken)
-      return normalizeVerificationToken(result)
+        identifier,
+        token,
+        expires
+      });
+
+      return verificationToken;
     },
 
     async useVerificationToken({ identifier, token }) {
@@ -174,40 +271,6 @@ export function SanityAdapter(
         id: verToken._id,
         ...verToken
       };
-    },
-  }
-}
-
-function normalizeUser(user: any): AdapterUser {
-  return {
-    id: user._id.replace('user-', ''),
-    _type: user._type,
-    _id: user._id,
-    _rev: user._rev,
-    _createdAt: user._createdAt,
-    _updatedAt: user._updatedAt,
-    email: user.email,
-    emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
-    name: user.name,
-    image: user.image,
-    role: user.role,
-    permissions: user.permissions,
-    aktiv: user.aktiv
-  }
-}
-
-function normalizeSession(session: any) {
-  return {
-    sessionToken: session.sessionToken,
-    userId: session.userId.replace('user-', ''),
-    expires: new Date(session.expires),
-  }
-}
-
-function normalizeVerificationToken(token: any): VerificationToken {
-  return {
-    identifier: token.identifier,
-    token: token.token,
-    expires: new Date(token.expires),
-  }
+    }
+  };
 }
