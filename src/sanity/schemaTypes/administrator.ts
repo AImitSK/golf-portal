@@ -25,6 +25,27 @@ export default {
             // Kein required hier, da wir das später programmatisch setzen
         },
         {
+            name: 'emailVerified',
+            title: 'Email Verifiziert',
+            type: 'datetime',
+            hidden: true
+        },
+        {
+            name: 'image',
+            title: 'Profilbild',
+            type: 'string'
+        },
+        {
+            name: 'accounts',
+            title: 'Verbundene Konten',
+            type: 'array',
+            hidden: true,
+            of: [{
+                type: 'reference',
+                to: [{ type: 'account' }]
+            }]
+        },
+        {
             name: 'telefon',
             title: 'Telefon',
             type: 'string',
@@ -59,8 +80,7 @@ export default {
             title: 'Letzter Login',
             type: 'datetime',
             readOnly: true,
-            // Entfernt required validation
-            hidden: true // Verstecken im Studio
+            hidden: true
         },
         {
             name: 'passwordResetToken',
@@ -87,7 +107,7 @@ export default {
                     {title: 'Statistiken einsehen', value: 'view_statistics'}
                 ]
             },
-            initialValue: [] // Leeres Array als Initialwert
+            initialValue: []
         }
     ],
     preview: {
