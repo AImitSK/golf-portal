@@ -20,9 +20,9 @@ const ClubsPage = async () => {
                 <FilterableClubGrid
                     initialClubs={clubs}
                     filterCriteria={{
-                        title: "Stefan Test",
+                        title: "Golf-Club Widukind-Land e.V.",
                         anzahlLoecher: 18,
-                        "hatRestaurant": true, // Statt "services.restaurant"
+                        "services.restaurant": true, // Korrekte Zuordnung zu Subfeld unter "services"
                         platztyp: "Mountain Course",
                     }}
                 />
