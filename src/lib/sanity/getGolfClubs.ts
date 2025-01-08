@@ -4,26 +4,32 @@ import { client } from './client';
 export async function getGolfClubs() {
     return await client.fetch(`*[_type == "golfclub"]{
         title,
-        "image": titelbild.asset->url,
-        clubEmail,
-        clubTelefon,
-        clubWebsite,
-        "city": adresse.ort,
+        "image": titelbild.asset->url, // Bild des Clubs
+        clubEmail,                    // Kontakt E-Mail
+        clubTelefon,                  // Telefonnummer
+        clubWebsite,                  // Webseite
+        "city": adresse.ort,          // Standort/Adresse des Clubs
+        
         // Vertragsmodell
         "aktuellesModell": aktuellesModell->{
-            name,
-            isTopPosition,
-            topPositionRank
+            name,                     // Modellname (z.B. "premium")
+            isTopPosition,            // Ist auf Top-Position
+            topPositionRank           // Rang der Top-Position
         },
-        // Helle Tags
-        anzahlLoecher,
-        parGesamt,
-        laengeMeter,
-        handicapBeschraenkung,
-        courseRating,
-        slope,
-        // Grüne Tags
-        platztyp,
-        besonderheiten
+        
+        // Weitere Attribute
+        anzahlLoecher,                // Anzahl der Löcher
+        parGesamt,                    // Gesamtes Par
+        laengeMeter,                  // Gesamtlänge in Meter
+        handicapBeschraenkung,        // Einschränkendes Handicap
+        courseRating,                 // Course Rating
+        slope,                        // Slope-Wert
+        
+        // Tagging oder Klassifizierungen
+        platztyp,                     // Platztyp (z.B. "Mountain Course")
+        besonderheiten,               // Besondere Merkmale (z.B. Bunker, Seen, etc.)
+
+        // Beispiel für Restaurant (falls hinzugefügt)
+        hatRestaurant                 // Ob der Club ein Restaurant hat (expected boolean)
     }`);
 }

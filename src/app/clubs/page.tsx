@@ -3,7 +3,7 @@ import React from "react";
 import { getGolfClubs } from "@/lib/sanity/getGolfClubs";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
-import ClubGrid from "@/components/clubs/ClubGrid"; // Neuer Import
+import FilterableClubGrid from "@/components/clubs/FilterableClubGrid";
 
 const ClubsPage = async () => {
     // Daten aus Sanity CMS laden (auf Server-Seite)
@@ -14,9 +14,13 @@ const ClubsPage = async () => {
             {/* Navigation */}
             <NavigationFrontend />
 
-            {/* ClubGrid */}
+            {/* FilterableClubGrid */}
             <div className="container mx-auto px-0 py-6 lg:px-6 xl:px-8">
-                <ClubGrid clubs={clubs} />
+                {/* Übergabe der initialen Clubs-Daten mit Titel-Filtern */}
+                <FilterableClubGrid
+                    initialClubs={clubs}
+                    title=""
+                />
             </div>
 
             {/* Footer */}
