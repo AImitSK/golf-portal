@@ -1,3 +1,4 @@
+// types/sanity.ts
 import { Rule } from '@sanity/types'
 import { SanityDocument } from '@sanity/client'
 
