@@ -135,3 +135,32 @@ const golfclubsNearHannover = await client.fetch(query)
 
 // Sortiert nach Entfernung
 golfclubsNearHannover.sort((a, b) => a.distance - b.distance)
+
+## Grid Abfrage
+
+```
+const filters = {
+titleFilter: "Berlin Golf",        // Finde Golfplätze mit "Berlin Golf" im Titel
+anzahlLoecher: 18,                // 18-Loch-Platz
+platztypFilter: "Mountain Course", // Platztypen filtern
+hatRestaurant: true,              // Nur Clubs mit Restaurant
+hatGolfschule: true,              // Nur Clubs mit Golfschule
+maxSlope: 140,                    // Maximaler Schwierigkeitswert (Slope)
+minCourseRating: 72               // Mindestrating von 72
+};
+
+const filteredClubs = await client.fetch(query, filters);
+
+// Ausgabe der Ergebnisse
+console.log(filteredClubs);
+```
+
+### Dynamische Unterschiede
+
+Wenn Filter nicht gesetzt sind:
+- Die !defined(...)-Abfrage sorgt dafür, dass Kriterien wie $hatRestaurant ignoriert werden, wenn sie nicht definiert oder leer sind.
+- Dies macht die Abfrage flexibel für unterschiedlich umfassende Filter.
+
+Verschiedene Sub-Felder:
+- Sub-Felder wie services.restaurant (z. B. true oder false) können direkt in den Filtern abgefragt werden.
+- Default-Werte wie services.restaurant == $hatRestaurant || !defined($hatRestaurant) stellen sicher, dass keine unerwünschten Filterfehler auftreten.
