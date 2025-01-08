@@ -118,3 +118,20 @@ npm run dev
 - Analytics Dashboard
 - Email/SMS Benachrichtigungen
 - Authentifizierung via Sanity
+
+## Google Maps
+
+// Eine GROQ-Abfrage für Sanity, die alle Golfclubs in einem 50km Radius um Hannover findet
+```
+const query = `*[_type == "golfclub" && defined(adresse.location) && geo::distance(adresse.location, geo::latLon(52.3759, 9.7320)) < 50000] {
+  title,
+  "distance": geo::distance(adresse.location, geo::latLon(52.3759, 9.7320)),
+  adresse
+}`
+```
+
+// Verwendung mit dem Sanity Client
+const golfclubsNearHannover = await client.fetch(query)
+
+// Sortiert nach Entfernung
+golfclubsNearHannover.sort((a, b) => a.distance - b.distance)
