@@ -19,7 +19,12 @@ const ClubsPage = async () => {
                 {/* Übergabe der initialen Clubs-Daten mit Titel-Filtern */}
                 <FilterableClubGrid
                     initialClubs={clubs}
-                    title=""
+                    filterCriteria={{
+                        title: "Stefan Test",
+                        anzahlLoecher: 18,
+                        "hatRestaurant": true, // Statt "services.restaurant"
+                        platztyp: "Mountain Course",
+                    }}
                 />
             </div>
 
