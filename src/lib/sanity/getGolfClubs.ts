@@ -1,7 +1,8 @@
-import { client } from './client';
+//import { client } from './client';
+import sanityClient from '@/lib/sanityClient'
 
 export async function getGolfClubs() {
-    const clubs = await client.fetch(`*[_type == "golfclub"]{
+    const clubs = await sanityClient.fetch(`*[_type == "golfclub"]{
         title,
         "slug": slug.current,
         status,
