@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ClubGrid from "@/components/clubs/ClubGrid";
 import { ActiveFilters } from "./ActiveFilters";
 import { GolfClub, FilterValue, TagFilters } from "@/types/club-types";
+import { calculateDistance } from "@/utils/geo-utils"; // Import der Distanzberechnung
 
 // Hilfsfunktionen für URL-Handling
 const encodeFilters = (filters: TagFilters): string => {
@@ -85,6 +86,25 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
     // Filter die Clubs
     const filteredClubs = initialClubs.filter((club) => {
         return Object.entries(filterCriteria).every(([key, filterValue]) => {
+            // Distanzfilter
+            if (key === "distance" && typeof filterValue === "number") {
+                if (!club.geoCoords) return false; // Falls keine Geodaten vorhanden
+                const userLocation = { lat: 52.52, lon: 13.405 }; // Beispiel: User in Berlin
+                const distance = calculateDistance(
+                    userLocation.lat,
+                    userLocation.lon,
+                    club.geoCoords.lat,
+                    club.geoCoords.lon
+                );
+                return distance <= filterValue; // Nur Clubs innerhalb des Radius
+            }
+
+            // Neuer City-Filter
+            if (key === "geoLocation" && typeof filterValue === "string") {
+                return club.city === filterValue;
+            }
+
+            // Andere Filter verwenden die Hilfsfunktion
             const clubValue = getNestedValue(club as Record<string, unknown>, key);
 
             if (clubValue === undefined || clubValue === null) return false;
