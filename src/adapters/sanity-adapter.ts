@@ -137,7 +137,13 @@ export function SanityAdapter(
 
         const userToUpdate = await sanityClient.getDocument(account.userId);
 
+        if (!userToUpdate?._id) {
+          throw new Error('User not found');
+        }
+
         await sanityClient.createOrReplace({
+          _id: userToUpdate._id,
+          _type: userToUpdate._type,
           ...userToUpdate,
           accounts: [
             ...(userToUpdate?.accounts || []),
