@@ -1,8 +1,9 @@
 // src/lib/sanity/getGolfClubs.ts
-import { client } from './client';
+//import { client } from './client';
+import sanityClient from '@/lib/sanityClient'
 
 export async function getGolfClubs() {
-    return await client.fetch(`*[_type == "golfclub"]{
+    return await sanityClient.fetch(`*[_type == "golfclub"]{
         title,
         "image": titelbild.asset->url,
         clubEmail,

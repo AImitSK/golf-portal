@@ -1,9 +1,11 @@
 // src/app/layout.tsx
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { AuthProvider } from "@/providers/auth-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { ToastProvider } from "@/providers/toast-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "typeface-roboto";
 import "./globals.css";
 
 const geistSans = Geist({

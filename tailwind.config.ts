@@ -21,6 +21,11 @@ const config: Config = {
         "aktion-red": "var(--color-aktion-red)",
         "aktion-red-over": "var(--color-aktion-red-over)",
         "cta-green-15": "var(--color-cta-green-15)",
+        // Auth-Farben
+        brand: "var(--color-dark-green)",
+        "brand-dark": "var(--color-dark-green)",
+        "brand-accent": "var(--color-dark-green-25)",
+        "brand-lightgray": "var(--color-dark-20)",
       },
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'], // Lokale Schriftart "Roboto" integrieren
@@ -29,3 +34,5 @@ const config: Config = {
   },
   plugins: [],
 } satisfies Config;
+
+export default config;
