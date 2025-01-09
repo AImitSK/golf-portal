@@ -164,3 +164,112 @@ Wenn Filter nicht gesetzt sind:
 Verschiedene Sub-Felder:
 - Sub-Felder wie services.restaurant (z. B. true oder false) können direkt in den Filtern abgefragt werden.
 - Default-Werte wie services.restaurant == $hatRestaurant || !defined($hatRestaurant) stellen sicher, dass keine unerwünschten Filterfehler auftreten.
+
+
+# Datenstruktur und Variablen-Namen für das Golfclub-JSON-Objekt
+
+Hier findest du eine Übersicht aller Felder, die im Golfclub-Objekt verwendet werden, sowie die dazugehörigen Variablen, mit denen du auf die Werte zugreifen kannst:
+
+---
+
+## **Hauptfelder**
+| **Feldname**      | **Variable**              | **Beschreibung**                                                                                                        |
+|--------------------|---------------------------|------------------------------------------------------------------------------------------------------------------------|
+| `seo.title`       | `seo.title`              | Der SEO-Titel, z. B.: `"Golf-Club Widukind-Land e.V."`.                                                                |
+| `seo.description` | `seo.description`        | SEO-Beschreibung, z. B.: `"Hier erleben Sie die Exklusivität eines modernen Clubs mit über 30 Jahren Tradition..."`.   |
+| `seo.keywords`    | `seo.keywords`           | Liste an Keywords für die SEO-Optimierung.                                                                             |
+
+---
+
+## **Adresse**
+| **Feldname**       | **Variable**            | **Beschreibung**                                                                                                       |
+|---------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `adresse.strasse`   | `adresse.strasse`      | Die Straße des Golfclubs, z. B.: `"Auf dem Stickdorn"`.                                                                |
+| `adresse.plz`       | `adresse.plz`          | Die Postleitzahl, z. B.: `32584`.                                                                                      |
+| `adresse.ort`       | `adresse.ort`          | Der Ort des Golfclubs, z. B.: `"Löhne/Westf."`.                                                                        |
+| `adresse.land.name` | `adresse.land.name`    | Der Name des Landes, z. B.: `"Deutschland"`.                                                                           |
+| `adresse.land.code` | `adresse.land.code`    | Der Ländercode, z. B.: `"DE"`.                                                                                         |
+| `adresse.location.lat` | `adresse.location.lat` | Die geografische Breite des Golfclubs, z. B.: `52.16487`.                                                              |
+| `adresse.location.lng` | `adresse.location.lng` | Die geografische Länge des Golfclubs, z. B.: `8.76076`.                                                                |
+| `adresse.location.alt` | `adresse.location.alt` | Die Höhe über dem Meeresspiegel, z. B.: `0` (falls bekannt).                                                           |
+
+---
+
+## **Kontaktinformationen**
+| **Feldname**        | **Variable**           | **Beschreibung**                                                                                                       |
+|----------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `clubTelefon`        | `clubTelefon`         | Die Telefonnummer des Golfclubs, z. B.: `"052287050"`.                                                                |
+| `clubEmail`          | `clubEmail`           | Die E-Mail-Adresse, z. B.: `"info@gc-widukindland.de"`.                                                               |
+| `clubWebsite`        | `clubWebsite`         | Die Website-URL, z. B.: `"https://widukindland.de/"`.                                                                 |
+
+---
+
+## **Besonderheiten**
+| **Feldname**        | **Variable**           | **Beschreibung**                                                                                                       |
+|----------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `besonderheiten`     | `besonderheiten`      | Liste mit speziellen Eigenschaften des Golfplatzes, z. B.: `["Bunker", "Waldbereiche", "Doglegs"]`.                   |
+
+---
+
+## **Mitgliedschaft**
+| **Feldname**                     | **Variable**                     | **Beschreibung**                                                                                                       |
+|-----------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `mitgliedschaft.moeglich`         | `mitgliedschaft.moeglich`        | Gibt an, ob eine Mitgliedschaft möglich ist (`true`/`false`).                                                         |
+| `mitgliedschaft.schnuppermitgliedschaft` | `mitgliedschaft.schnuppermitgliedschaft` | Gibt an, ob eine Schnuppermitgliedschaft angeboten wird (`true`/`false`).                                            |
+
+---
+
+## **Bilder und Medien**
+| **Feldname**                     | **Variable**                     | **Beschreibung**                                                                                                       |
+|-----------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `image`                           | `image`                         | URL des Hauptbildes des Golfclubs, z. B.: `"https://cdn.sanity.io/.../bfe3ee5007ccd19da01a.jpg"`.                      |
+| `bildergalerie[n].asset.url`      | `bildergalerie[n].asset.url`     | URLs der Bilder in der Galerie.                                                                                       |
+| `bildergalerie[n].beschreibung`   | `bildergalerie[n].beschreibung`  | Beschreibung des jeweiligen Bildes (kann `null` sein).                                                                |
+| `bildergalerie[n].alt`            | `bildergalerie[n].alt`           | Alt-Text für das jeweilige Bild (kann `null` sein).                                                                   |
+
+---
+
+## **Allgemeine Informationen**
+| **Feldname**                     | **Variable**                     | **Beschreibung**                                                                                                       |
+|-----------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `status`                          | `status`                        | Veröffentlicht-Status, z. B.: `"published"`.                                                                           |
+| `title`                           | `title`                         | Clubtitel, z. B.: `"Golf-Club Widukind-Land e.V."`.                                                                    |
+| `slug`                            | `slug`                          | Slug des Clubs, z. B.: `"golf-club-widukind-land-e-v4"`.                                                               |
+
+---
+
+## **Dienste**
+| **Feldname**                     | **Variable**                     | **Beschreibung**                                                                                                       |
+|-----------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `services.restaurant`             | `services.restaurant`           | Gibt an, ob Restaurantdienste verfügbar sind (`true`/`false`).                                                        |
+| `services.umkleide`               | `services.umkleide`             | Gibt an, ob Umkleideräume verfügbar sind (`true`/`false`).                                                            |
+| `services.sanitaeranlagen`        | `services.sanitaeranlagen`      | Gibt an, ob Sanitäranlagen verfügbar sind (`true`/`false`).                                                           |
+| `services.leihausruestung`        | `services.leihausruestung`      | Gibt an, ob Leihausrüstungen verfügbar sind (`true`/`false`).                                                         |
+| `services.cartVermietung`         | `services.cartVermietung`       | Gibt an, ob Golf-Carts vermietet werden (`true`/`false`).                                                             |
+| `services.golfschule`             | `services.golfschule`           | Gibt an, ob eine Golfschule angeboten wird (`true`/`false`).                                                          |
+| `services.proShop`                | `services.proShop`              | Gibt an, ob ein Pro-Shop vorhanden ist (`true`/`false`).                                                              |
+
+---
+
+## **Zusätzliche Felder**
+| **Feldname**                     | **Variable**                     | **Beschreibung**                                                                                                       |
+|-----------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `vertragsBeginn`                  | `vertragsBeginn`                | Startdatum des Vertrags, z. B.: `"2025-01-01"`.                                                                        |
+| `vertragsEnde`                    | `vertragsEnde`                  | Enddatum des Vertrags, z. B.: `"2026-01-09"`.                                                                          |
+| `anzahlLoecher`                   | `anzahlLoecher`                 | Anzahl der Löcher, z. B.: `18`.                                                                                        |
+| `parGesamt`                       | `parGesamt`                     | Par-Wert des Golfplatzes, z. B.: `72`.                                                                                 |
+| `platztyp`                        | `platztyp`                      | Typ des Golfplatzes, z. B.: `"Mountain Course"`.                                                                       |
+| `turniere.club`                   | `turniere.club`                 | Gibt an, ob Clubturniere stattfinden (`true`/`false`).                                                                 |
+| `turniere.gaeste`                 | `turniere.gaeste`               | Gibt an, ob Gastturniere stattfinden (`true`/`false`).                                                                 |
+| `courseRating`                    | `courseRating`                  | Platzbewertung, z. B.: `815`.                                                                                         |
+| `slope`                           | `slope`                         | Slope-Wert, z. B.: `815`.                                                                                              |
+
+---
+
+### **Hinweise**
+- Felder wie `bildergalerie.beschreibung` und `bildergalerie.alt` können `null` sein, es empfiehlt sich daher eine Fallback-Lösung im Code.
+- Die Struktur und Variablen-Namen basieren auf den JSON-Daten aus der Eingabe.
+
+---
+
+Wenn du das ergänzt oder verfeinert haben möchtest, lass es mich wissen! 😊

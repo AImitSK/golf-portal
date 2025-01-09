@@ -4,32 +4,61 @@ import { client } from './client';
 export async function getGolfClubs() {
     const clubs = await client.fetch(`*[_type == "golfclub"]{
         title,
-        "image": titelbild.asset->url, // Bild des Clubs
-        clubEmail,                    // Kontakt E-Mail
-        clubTelefon,                  // Telefonnummer
-        clubWebsite,                  // Webseite
-        "city": adresse.ort,          // Standort/Adresse des Clubs
-
-        // Vertragsmodell
-        "aktuellesModell": aktuellesModell->{
-            name,                     // Modellname (z.B. "premium")
-            isTopPosition,            // Ist auf Top-Position
-            topPositionRank           // Rang der Top-Position
+        "slug": slug.current,
+        status,
+        "image": titelbild.asset->url,
+        logo,
+        bildergalerie[]{
+            asset->{
+                url
+            },
+            beschreibung,
+            alt
         },
-        
-        // Weitere Attribute
-        anzahlLoecher,                // Anzahl der Löcher
-        parGesamt,                    // Gesamtes Par
-        laengeMeter,                  // Gesamtlänge in Meter
-        handicapBeschraenkung,        // Einschränkendes Handicap
-        courseRating,                 // Course Rating
-        slope,                        // Slope-Wert
-        
-        // Tagging oder Klassifizierungen
-        platztyp,                     // Platztyp (z.B. "Mountain Course")
-        besonderheiten,               // Besondere Merkmale (z.B. Bunker, Seen, etc.)
-
-        // Services
+        seo {
+            title,
+            description,
+            keywords
+        },
+        adresse {
+            ort,
+            strasse,
+            plz,
+            land-> {
+                name,
+                code
+            },
+            location {
+                lat,
+                lng,
+                alt
+            }
+        },
+        "city": adresse.ort,
+        clubEmail,
+        clubTelefon,
+        clubWebsite,
+        "aktuellesModell": {
+            name,
+            isTopPosition,
+            topPositionRank
+        },
+        anzahlLoecher,
+        parGesamt,
+        laengeMeter,
+        handicapBeschraenkung,
+        courseRating,
+        slope,
+        platztyp,
+        besonderheiten,
+        mitgliedschaft {
+            moeglich,
+            schnuppermitgliedschaft
+        },
+        turniere {
+            club,
+            gaeste
+        },
         "services": {
             "golfschule": services.golfschule,
             "proShop": services.proShop,
@@ -38,11 +67,13 @@ export async function getGolfClubs() {
             "sanitaeranlagen": services.sanitaeranlagen,
             "leihausruestung": services.leihausruestung,
             "cartVermietung": services.cartVermietung
-        }
+        },
+        vertragsBeginn,
+        vertragsEnde,
+        zahlungsStatus
     }`);
 
-    // DEBUG: Prüfen Sie die geladenen Daten
-    console.log("Golfclubs-Daten aus Sanity:", clubs);
+    console.log("Golfclub-Daten aus Sanity:", clubs);
 
     return clubs;
 }
