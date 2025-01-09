@@ -1,3 +1,4 @@
+// sanity/schemaTypes/index.ts
 import { type SchemaTypeDefinition } from 'sanity'
 import golfclub from '@/sanity/schemaTypes/golfclub'
 import administrator from '@/sanity/schemaTypes/administrator'

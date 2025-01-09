@@ -48,7 +48,6 @@ export default {
                 }),
             group: 'basis'
         },
-
         // Basis-Kontakt
         {
             name: 'clubWebsite',
@@ -70,7 +69,6 @@ export default {
             validation: (Rule: ValidationRule) => Rule.required().regex(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/),
             group: 'basis'
         },
-
         // SEO
         {
             name: 'seo',
@@ -96,7 +94,6 @@ export default {
                 }
             ]
         },
-
         // Bilder
         {
             name: 'logo',
@@ -140,7 +137,6 @@ export default {
             }],
             group: 'bilder'
         },
-
         // Adresse
         {
             name: 'adresse',
@@ -176,10 +172,16 @@ export default {
                     name: 'land',
                     type: 'reference',
                     to: [{type: 'land'}]
+                },
+                {
+                    name: 'location',
+                    title: 'Koordinaten',
+                    type: 'geopoint',
+                    description: 'Koordinaten werden automatisch aus der Adresse ermittelt',
+                    validation: (Rule: ValidationRule) => Rule.required()
                 }
             ]
         },
-
         // Administration
         {
             name: 'hauptAdmin',
@@ -232,7 +234,6 @@ export default {
                 }),
             group: 'administration'
         },
-
         // Platz-Details
         {
             name: 'anzahlLoecher',
@@ -314,7 +315,6 @@ export default {
             }],
             group: 'platz'
         },
-
         // Einrichtungen
         {
             name: 'uebungsanlagen',
@@ -350,7 +350,6 @@ export default {
                 {name: 'cartVermietung', title: 'Cart-Vermietung', type: 'boolean'}
             ]
         },
-
         // Club-Informationen
         {
             name: 'mitgliedschaft',

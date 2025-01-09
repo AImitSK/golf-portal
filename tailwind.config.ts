@@ -9,21 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        'brand': {
-          DEFAULT: '#2B5835',    // Dunkelgrün
-          light: '#C5D1C8',      // Hellgrau-Grün
-          lighter: '#E1E6E2',    // Sehr helles Grau-Grün
-          accent: '#76B947',     // Helles Grün (Award)
-          error: '#D64933',      // Rot (User Tipp)
-          dark: '#333333',       // Dunkelgrau
-          gray: '#999999',       // Mittelgrau
-          lightgray: '#E5E5E5',  // Hellgrau
-        },
+        // Deine Figma-Farben
+        "dark-green": "var(--color-dark-green)",
+        "dark-green-25": "var(--color-dark-green-25)",
+        "dark-green-10": "var(--color-dark-green-10)",
+        dark: "var(--color-dark)",
+        white: "var(--color-white)",
+        "dark-20": "var(--color-dark-20)",
+        "dark-6": "var(--color-dark-6)",
+        "cta-green": "var(--color-cta-green)",
+        "aktion-red": "var(--color-aktion-red)",
+        "aktion-red-over": "var(--color-aktion-red-over)",
+        "cta-green-15": "var(--color-cta-green-15)",
+      },
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'], // Lokale Schriftart "Roboto" integrieren
       },
     },
   },
   plugins: [],
-}
-export default config;
+} satisfies Config;
