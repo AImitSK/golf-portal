@@ -1,14 +1,17 @@
+// src/components/clubs/ClubCard.tsx
 import React from "react";
 import { GolfClub } from "@/types/club-types";
 import { Heading } from "@/components/frontend-ui/Heading";
 import GridNavi from "@/components/frontend-ui/GridNavi";
+import { ClubTag, ClubTagArray } from "./ClubTag";
 
 type ClubCardProps = {
     club: GolfClub;
     showImage: boolean;
+    onTagClick: (fieldName: string, value: string | number) => void;
 };
 
-export const ClubCard = ({ club, showImage }: ClubCardProps) => {
+export const ClubCard = ({ club, showImage, onTagClick }: ClubCardProps) => {
     return (
         <div className="bg-white">
             {showImage && (
@@ -37,6 +40,7 @@ export const ClubCard = ({ club, showImage }: ClubCardProps) => {
                     </div>
                 </div>
             )}
+
             <div className={showImage ? "pt-4" : "pt-0"}>
                 <div className="flex justify-between items-start mb-4">
                     <a href="#" className="block">
@@ -52,107 +56,135 @@ export const ClubCard = ({ club, showImage }: ClubCardProps) => {
                     </span>
                 </div>
 
-                {/* Container für alle Tags */}
+                {/* Tags Container */}
                 <div className="mb-4">
                     {/* Mobile: Eine Reihe */}
                     <div className="flex flex-wrap gap-2 lg:hidden">
-                        {/* Helle Tags */}
-                        {club.anzahlLoecher && (
-                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                {club.anzahlLoecher} Loch
-                            </span>
-                        )}
-                        {club.parGesamt && (
-                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                Par {club.parGesamt}
-                            </span>
-                        )}
-                        {club.laengeMeter && (
-                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                {club.laengeMeter}m
-                            </span>
-                        )}
-                        {club.handicapBeschraenkung && (
-                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                HCP {club.handicapBeschraenkung}
-                            </span>
-                        )}
-                        {club.courseRating && (
-                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                CR {club.courseRating}
-                            </span>
-                        )}
-                        {club.slope && (
-                            <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                Slope {club.slope}
-                            </span>
-                        )}
+                        <ClubTag
+                            fieldName="anzahlLoecher"
+                            value={club.anzahlLoecher}
+                            colorScheme="dark-green"
+                            suffix=" Loch"
+                            onClick={onTagClick}
+                        />
+                        <ClubTag
+                            fieldName="parGesamt"
+                            value={club.parGesamt}
+                            colorScheme="dark-green"
+                            prefix="Par"
+                            onClick={onTagClick}
+                        />
+                        <ClubTag
+                            fieldName="laengeMeter"
+                            value={club.laengeMeter}
+                            colorScheme="dark-green"
+                            suffix="m"
+                            onClick={onTagClick}
+                        />
+                        <ClubTag
+                            fieldName="handicapBeschraenkung"
+                            value={club.handicapBeschraenkung}
+                            colorScheme="dark-green"
+                            prefix="HCP"
+                            onClick={onTagClick}
+                        />
+                        <ClubTag
+                            fieldName="courseRating"
+                            value={club.courseRating}
+                            colorScheme="dark-green"
+                            prefix="CR"
+                            onClick={onTagClick}
+                        />
+                        <ClubTag
+                            fieldName="slope"
+                            value={club.slope}
+                            colorScheme="dark-green"
+                            prefix="Slope"
+                            onClick={onTagClick}
+                        />
 
-                        {/* Grüne Tags direkt dahinter */}
-                        {club.platztyp && (
-                            <span className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
-                                {club.platztyp}
-                            </span>
+                        <ClubTag
+                            fieldName="platztyp"
+                            value={club.platztyp}
+                            colorScheme="cta-green"
+                            onClick={onTagClick}
+                        />
+
+                        {club.besonderheiten && (
+                            <ClubTagArray
+                                fieldName="besonderheiten"
+                                values={club.besonderheiten}
+                                colorScheme="cta-green"
+                                onClick={onTagClick}
+                            />
                         )}
-                        {club.besonderheiten?.map((besonderheit: string, index: number) => (
-                            <span
-                                key={index}
-                                className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
-                                {besonderheit}
-                            </span>
-                        ))}
                     </div>
 
                     {/* Desktop: Zwei Reihen */}
                     <div className="hidden lg:block space-y-2">
-                        {/* Helle Tags */}
+                        {/* Erste Reihe - Helle Tags */}
                         <div className="flex flex-wrap gap-2">
-                            {club.anzahlLoecher && (
-                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                    {club.anzahlLoecher} Loch
-                                </span>
-                            )}
-                            {club.parGesamt && (
-                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                    Par {club.parGesamt}
-                                </span>
-                            )}
-                            {club.laengeMeter && (
-                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                    {club.laengeMeter}m
-                                </span>
-                            )}
-                            {club.handicapBeschraenkung && (
-                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                    HCP {club.handicapBeschraenkung}
-                                </span>
-                            )}
-                            {club.courseRating && (
-                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                    CR {club.courseRating}
-                                </span>
-                            )}
-                            {club.slope && (
-                                <span className="px-3 py-1 bg-dark-green-10 rounded-full text-sm font-medium text-dark-green">
-                                    Slope {club.slope}
-                                </span>
-                            )}
+                            <ClubTag
+                                fieldName="anzahlLoecher"
+                                value={club.anzahlLoecher}
+                                colorScheme="dark-green"
+                                suffix=" Loch"
+                                onClick={onTagClick}
+                            />
+                            <ClubTag
+                                fieldName="parGesamt"
+                                value={club.parGesamt}
+                                colorScheme="dark-green"
+                                prefix="Par"
+                                onClick={onTagClick}
+                            />
+                            <ClubTag
+                                fieldName="laengeMeter"
+                                value={club.laengeMeter}
+                                colorScheme="dark-green"
+                                suffix="m"
+                                onClick={onTagClick}
+                            />
+                            <ClubTag
+                                fieldName="handicapBeschraenkung"
+                                value={club.handicapBeschraenkung}
+                                colorScheme="dark-green"
+                                prefix="HCP"
+                                onClick={onTagClick}
+                            />
+                            <ClubTag
+                                fieldName="courseRating"
+                                value={club.courseRating}
+                                colorScheme="dark-green"
+                                prefix="CR"
+                                onClick={onTagClick}
+                            />
+                            <ClubTag
+                                fieldName="slope"
+                                value={club.slope}
+                                colorScheme="dark-green"
+                                prefix="Slope"
+                                onClick={onTagClick}
+                            />
                         </div>
 
-                        {/* Grüne Tags */}
+                        {/* Zweite Reihe - Grüne Tags */}
                         <div className="flex flex-wrap gap-2">
-                            {club.platztyp && (
-                                <span className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
-                                    {club.platztyp}
-                                </span>
+                            <ClubTag
+                                fieldName="platztyp"
+                                value={club.platztyp}
+                                colorScheme="cta-green"
+                                onClick={onTagClick}
+                            />
+
+                            {club.besonderheiten && (
+                                <ClubTagArray
+                                    fieldName="besonderheiten"
+                                    values={club.besonderheiten}
+                                    colorScheme="cta-green"
+                                    onClick={onTagClick}
+                                />
                             )}
-                            {club.besonderheiten?.map((besonderheit: string, index: number) => (
-                                <span
-                                    key={index}
-                                    className="px-3 py-1 bg-cta-green text-white rounded-full text-sm font-medium">
-                                    {besonderheit}
-                                </span>
-                            ))}
                         </div>
                     </div>
                 </div>

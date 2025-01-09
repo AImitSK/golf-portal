@@ -16,15 +16,9 @@ const ClubsPage = async () => {
 
             {/* FilterableClubGrid */}
             <div className="container mx-auto px-0 py-6 lg:px-6 xl:px-8">
-                {/* Übergabe der initialen Clubs-Daten mit Titel-Filtern */}
+                {/* Übergabe der initialen Clubs-Daten ohne initiale Filter */}
                 <FilterableClubGrid
                     initialClubs={clubs}
-                    filterCriteria={{
-                        title: "Golf-Club Widukind-Land e.V.",
-                        anzahlLoecher: 18,
-                        "services.restaurant": true, // Korrekte Zuordnung zu Subfeld unter "services"
-                        platztyp: "Mountain Course",
-                    }}
                 />
             </div>
 

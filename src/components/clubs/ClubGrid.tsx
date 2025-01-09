@@ -5,22 +5,30 @@ import { sortClubs } from "./sortClubs";
 import { ClubCard } from "./ClubCard";
 import { GolfClub } from "@/types/club-types";
 
-const ClubGrid = ({ clubs }: { clubs: GolfClub[] }) => {
-    const sortedClubs = sortClubs([...clubs]); // Clubs sortieren
+interface ClubGridProps {
+    clubs: GolfClub[];
+    onTagClick: (fieldName: string, value: string | number) => void;
+}
+
+const ClubGrid: React.FC<ClubGridProps> = ({ clubs, onTagClick }) => {
+    const sortedClubs = sortClubs([...clubs]);
     const clubsWithImageFlag = sortedClubs.map((club, index) => {
         const isFreeContract = club.aktuellesModell?.name?.toLowerCase() === "free";
         const isTop5 = index < 5;
-        const showImage = !isFreeContract || isTop5; // Logik für das Bild
+        const showImage = !isFreeContract || isTop5;
         return { club, showImage };
     });
 
     return (
-        <div>
-            <div className="grid grid-cols-1 gap-8 max-w-screen-xl mx-auto px-4 lg:px-8">
-                {clubsWithImageFlag.map(({ club, showImage }, idx) => (
-                    <ClubCard key={idx} club={club} showImage={showImage} />
-                ))}
-            </div>
+        <div className="grid grid-cols-1 gap-8">
+            {clubsWithImageFlag.map(({ club, showImage }, idx) => (
+                <ClubCard
+                    key={idx}
+                    club={club}
+                    showImage={showImage}
+                    onTagClick={onTagClick}
+                />
+            ))}
         </div>
     );
 };
