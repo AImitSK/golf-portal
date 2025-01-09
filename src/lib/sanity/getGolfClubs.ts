@@ -1,4 +1,3 @@
-// src/lib/sanity/getGolfClubs.ts
 import { client } from './client';
 
 export async function getGolfClubs() {
@@ -38,7 +37,7 @@ export async function getGolfClubs() {
         clubEmail,
         clubTelefon,
         clubWebsite,
-        "aktuellesModell": {
+        "aktuellesModell": aktuellesModell->{
             name,
             isTopPosition,
             topPositionRank
