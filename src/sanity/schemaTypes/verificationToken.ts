@@ -15,6 +15,5 @@ export default {
             name: 'expires',
             type: 'datetime'
         }
-    ],
-    hidden: true
+    ]
 }

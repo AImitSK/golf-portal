@@ -48,6 +48,5 @@ export default {
             type: 'reference',
             to: [{ type: 'administrator' }]
         }
-    ],
-    hidden: true
+    ]
 }
