@@ -3,10 +3,15 @@
 import bcrypt from "bcryptjs";
 import sanityClient from "@/lib/sanityClient";
 
+export type NewPasswordResponse = {
+  error?: string;
+  success?: string;
+};
+
 export const newPassword = async (
   values: { password: string },
   token: string | null
-) => {
+): Promise<NewPasswordResponse> => {
   if (!token) {
     return { error: "Fehlender Token!" };
   }

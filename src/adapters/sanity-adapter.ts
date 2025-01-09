@@ -3,8 +3,18 @@ import { uuid } from '@sanity/uuid';
 import type {
   Adapter,
   AdapterSession,
-  AdapterUser,
+  AdapterUser as BaseAdapterUser,
 } from "@auth/core/adapters"
+
+// Erweitern des AdapterUser Typs
+interface AdapterUser extends BaseAdapterUser {
+  _type: string;
+  _id: string;
+  role: string;
+  aktiv: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export function SanityAdapter(
   sanityClient: SanityClient,
@@ -23,21 +33,49 @@ export function SanityAdapter(
         const existingUser_qry = `*[_type == "${options.schemas.administrator}" && email == "${user.email}"][0]`;
         const existingUser = await sanityClient.fetch(existingUser_qry);
 
-        if(existingUser) return existingUser;
+        if(existingUser) {
+          return {
+            id: existingUser._id,
+            _id: existingUser._id,
+            _type: existingUser._type,
+            name: existingUser.name,
+            email: existingUser.email,
+            image: existingUser.image,
+            emailVerified: existingUser.emailVerified ? new Date(existingUser.emailVerified) : null,
+            role: existingUser.role,
+            aktiv: existingUser.aktiv,
+            createdAt: existingUser.createdAt,
+            updatedAt: existingUser.updatedAt
+          } as AdapterUser;
+        }
 
+        const now = new Date().toISOString();
         const createdUser = await sanityClient.create({
           _type: options.schemas.administrator,
           _id: `administrator.${uuid()}`,
           name: user.name,
           email: user.email,
           image: user.image,
-          emailVerified: user.emailVerified
+          emailVerified: user.emailVerified?.toISOString(),
+          role: 'user',
+          aktiv: true,
+          createdAt: now,
+          updatedAt: now
         });
 
         return {
           id: createdUser._id,
-          ...createdUser
-        };
+          _id: createdUser._id,
+          _type: createdUser._type,
+          name: createdUser.name,
+          email: createdUser.email,
+          image: createdUser.image,
+          emailVerified: createdUser.emailVerified ? new Date(createdUser.emailVerified) : null,
+          role: createdUser.role,
+          aktiv: createdUser.aktiv,
+          createdAt: createdUser.createdAt,
+          updatedAt: createdUser.updatedAt
+        } as AdapterUser;
       } catch (error) {
         throw new Error('Failed to Create user')
       }
@@ -47,70 +85,132 @@ export function SanityAdapter(
       try {
         const user_qry = `*[_type == "${options.schemas.administrator}" && _id== "${id}"][0]`;
         const user = await sanityClient.fetch(user_qry);
-        return user;
+        if (!user) return null;
+        return {
+          id: user._id,
+          _id: user._id,
+          _type: user._type,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+          role: user.role,
+          aktiv: user.aktiv,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        } as AdapterUser;
       } catch (error) {
-        throw new Error('Couldnt get the user');
+        console.error("Error getting user:", error);
+        return null;
       }
     },
 
     async getUserByEmail(email) {
       try {
-        const user_qry = `*[_type == "${options.schemas.administrator}" && email== "${email}"][0]`;
+        const user_qry = `*[_type == "${options.schemas.administrator}" && email == "${email}"][0]`;
         const user = await sanityClient.fetch(user_qry);
-        return user;
+        if (!user) return null;
+        return {
+          id: user._id,
+          _id: user._id,
+          _type: user._type,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+          role: user.role,
+          aktiv: user.aktiv,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        } as AdapterUser;
       } catch (error) {
-        throw new Error('Couldnt get the user');
+        console.error("Error getting user by email:", error);
+        return null;
       }
     },
 
     async getUserByAccount({ providerAccountId, provider }) {
       try {
-        const account_qry = `*[_type == "${options.schemas.account}" && provider == "${provider}" && providerAccountId == "${providerAccountId}"][0]`;
+        const account_qry = `*[_type == "${options.schemas.account}" && providerId == "${provider}" && providerAccountId == "${providerAccountId}"][0]`;
         const account = await sanityClient.fetch(account_qry);
 
         if (!account) return null;
 
-        const user_qry = `*[_type == "${options.schemas.administrator}" && _id== "${account.userId}"][0]`;
+        const user_qry = `*[_type == "${options.schemas.administrator}" && _id == "${account.userId}"][0]`;
         const user = await sanityClient.fetch(user_qry);
-
-        return user ? {
+        if (!user) return null;
+        return {
           id: user._id,
-          ...user
-        } : null;
+          _id: user._id,
+          _type: user._type,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+          role: user.role,
+          aktiv: user.aktiv,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        } as AdapterUser;
       } catch (error) {
-        throw new Error('Couldnt get the user');
+        console.error("Error getting user by account:", error);
+        return null;
       }
     },
 
-    async updateUser(updatedUser) {
+    async updateUser(user) {
       try {
-        const existingUser_qry = `*[_type == "${options.schemas.administrator}" && _id == "${updatedUser?.id}"][0]`;
-        const existingUser = await sanityClient.fetch(existingUser_qry);
-
-        if(!existingUser) {
-          throw new Error(`Could not update user: ${updatedUser.id}; unable to find user`)
-        }
-
-        const patchedUser = await sanityClient.patch(existingUser._id)
+        const updatedUser = await sanityClient.patch(user.id)
           .set({
-            name: updatedUser.name,
-            email: updatedUser.email,
-            image: updatedUser.image,
-            emailVerified: updatedUser.emailVerified === null ? undefined : updatedUser.emailVerified,
+            ...user,
+            emailVerified: user.emailVerified?.toISOString(),
+            updatedAt: new Date().toISOString()
           })
           .commit();
 
-        return patchedUser;
+        return {
+          id: updatedUser._id,
+          _id: updatedUser._id,
+          _type: updatedUser._type,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          image: updatedUser.image,
+          emailVerified: updatedUser.emailVerified ? new Date(updatedUser.emailVerified) : null,
+          role: updatedUser.role,
+          aktiv: updatedUser.aktiv,
+          createdAt: updatedUser.createdAt,
+          updatedAt: updatedUser.updatedAt
+        } as AdapterUser;
       } catch (error) {
-        throw new Error('Couldnt update the user');
+        throw new Error('Failed to Update user')
       }
     },
 
     async deleteUser(userId) {
       try {
-        return await sanityClient.delete(userId);
+        const user_qry = `*[_type == "${options.schemas.administrator}" && _id == "${userId}"][0]`;
+        const user = await sanityClient.fetch(user_qry);
+
+        if (!user) return null;
+
+        await sanityClient.delete(userId);
+        
+        // Rückgabe des gelöschten Users mit allen erforderlichen Feldern
+        return {
+          id: user._id,
+          _id: user._id,
+          _type: user._type,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+          role: user.role,
+          aktiv: user.aktiv,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        } as AdapterUser;
       } catch (error) {
-        throw new Error('Could not delete user')
+        throw new Error('Failed to Delete user')
       }
     },
 
@@ -123,41 +223,18 @@ export function SanityAdapter(
           type: account.type,
           provider: account.provider,
           providerAccountId: account.providerAccountId,
-          refreshToken: account.refresh_token,
-          accessToken: account.access_token,
-          expiresAt: account.expires_at,
-          tokenType: account.token_type,
+          refresh_token: account.refresh_token,
+          access_token: account.access_token,
+          expires_at: account.expires_at,
+          token_type: account.token_type,
           scope: account.scope,
-          idToken: account.id_token,
-          user: {
-            _type: 'reference',
-            _ref: account.userId
-          }
+          id_token: account.id_token,
+          session_state: account.session_state,
         });
 
-        const userToUpdate = await sanityClient.getDocument(account.userId);
-
-        if (!userToUpdate?._id) {
-          throw new Error('User not found');
-        }
-
-        await sanityClient.createOrReplace({
-          _id: userToUpdate._id,
-          _type: userToUpdate._type,
-          ...userToUpdate,
-          accounts: [
-            ...(userToUpdate?.accounts || []),
-            {
-              _type: 'reference',
-              _key: uuid(),
-              _ref: createdAccount._id
-            }
-          ]
-        });
-
-        return account;
+        return createdAccount;
       } catch (error) {
-        throw new Error('Error linking account')
+        throw new Error('Failed to Link account')
       }
     },
 
@@ -168,43 +245,29 @@ export function SanityAdapter(
 
         if (!account) return;
 
-        const accountUser = await sanityClient.getDocument(account.userId);
-
-        const updatedUserAccounts = (accountUser?.accounts || []).filter(
-          ac => ac._ref !== account._id
-        );
-
-        await sanityClient.createOrReplace({
-          ...accountUser,
-          accounts: updatedUserAccounts,
-        });
-
         await sanityClient.delete(account._id);
       } catch (error) {
-        throw new Error('Could not Unlink account');
+        throw new Error('Failed to Unlink account')
       }
     },
 
-    async createSession(session) {
+    async createSession({ sessionToken, userId, expires }) {
       try {
         const createdSession = await sanityClient.create({
           _type: options.schemas.session,
           _id: `session.${uuid()}`,
-          userId: session.userId,
-          sessionToken: session.sessionToken,
-          expires: session.expires,
-          user: {
-            _type: 'reference',
-            _ref: session.userId
-          }
+          userId,
+          expires,
+          sessionToken,
         });
 
         return {
-          id: createdSession._id,
-          ...createdSession
-        };
+          sessionToken: createdSession.sessionToken,
+          userId: createdSession.userId,
+          expires: createdSession.expires
+        } as AdapterSession;
       } catch (error) {
-        throw new Error('Could not create session')
+        throw new Error('Failed to Create session')
       }
     },
 
@@ -222,35 +285,47 @@ export function SanityAdapter(
 
         return {
           session: {
-            id: session._id,
-            ...session
-          },
+            sessionToken: session.sessionToken,
+            userId: session.userId,
+            expires: session.expires
+          } as AdapterSession,
           user: {
             id: user._id,
-            ...user
-          }
+            _id: user._id,
+            _type: user._type,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+            role: user.role,
+            aktiv: user.aktiv,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+          } as AdapterUser
         };
       } catch (error) {
-        throw new Error('Could not get session and user')
+        return null;
       }
     },
 
-    async updateSession(session) {
+    async updateSession({ sessionToken, expires }) {
       try {
-        const session_qry = `*[_type == "${options.schemas.session}" && sessionToken == "${session.sessionToken}"][0]`;
-        const existingSession = await sanityClient.fetch(session_qry);
+        const session_qry = `*[_type == "${options.schemas.session}" && sessionToken == "${sessionToken}"][0]`;
+        const session = await sanityClient.fetch(session_qry);
 
-        if (!existingSession) return null;
+        if (!session) return null;
 
-        const updatedSession = await sanityClient.patch(existingSession._id)
-          .set({
-            expires: session.expires
-          })
+        const updatedSession = await sanityClient.patch(session._id)
+          .set({ expires })
           .commit();
 
-        return updatedSession;
+        return {
+          sessionToken: updatedSession.sessionToken,
+          userId: updatedSession.userId,
+          expires: updatedSession.expires
+        } as AdapterSession;
       } catch (error) {
-        throw new Error('Could not update session')
+        throw new Error('Failed to Update session')
       }
     },
 
@@ -259,12 +334,49 @@ export function SanityAdapter(
         const session_qry = `*[_type == "${options.schemas.session}" && sessionToken == "${sessionToken}"][0]`;
         const session = await sanityClient.fetch(session_qry);
 
-        if (session) {
-          await sanityClient.delete(session._id);
-        }
+        if (!session) return null;
+
+        await sanityClient.delete(session._id);
+        
+        return {
+          sessionToken: session.sessionToken,
+          userId: session.userId,
+          expires: session.expires
+        } as AdapterSession;
       } catch (error) {
-        throw new Error('Could not delete session')
+        throw new Error('Failed to Delete session')
       }
-    }
-  };
+    },
+
+    async createVerificationToken({ identifier, expires, token }) {
+      try {
+        const createdVerificationToken = await sanityClient.create({
+          _type: options.schemas.verificationToken,
+          _id: `verificationToken.${uuid()}`,
+          identifier,
+          token,
+          expires,
+        });
+
+        return createdVerificationToken;
+      } catch (error) {
+        throw new Error('Failed to Create verification token')
+      }
+    },
+
+    async useVerificationToken({ identifier, token }) {
+      try {
+        const verificationToken_qry = `*[_type == "${options.schemas.verificationToken}" && identifier == "${identifier}" && token == "${token}"][0]`;
+        const verificationToken = await sanityClient.fetch(verificationToken_qry);
+
+        if (!verificationToken) return null;
+
+        await sanityClient.delete(verificationToken._id);
+
+        return verificationToken;
+      } catch (error) {
+        throw new Error('Failed to Use verification token')
+      }
+    },
+  }
 }
