@@ -1,10 +1,8 @@
-// src/components/clubs/ClubTag.tsx
 import React from 'react';
+import { FilterValue } from '@/types/club-types';
 
-// Definiere mögliche Farbschemata
 type ColorScheme = 'dark-green' | 'cta-green' | 'light-green';
 
-// Farbkonfigurationen
 const colorConfigs: Record<ColorScheme, {
     background: string;
     text: string;
@@ -31,13 +29,16 @@ const colorConfigs: Record<ColorScheme, {
     }
 };
 
+// Spezifischer Typ für die Tag-Werte
+type TagValue = string | number;
+
 interface ClubTagProps {
-    fieldName: string;           // Name des Feldes im Filter (z.B. 'anzahlLoecher')
-    value: string | number;      // Anzuzeigender Wert
-    colorScheme: ColorScheme;    // Farbschema
-    prefix?: string;            // Optionaler Prefix (z.B. "Par" für "Par 72")
-    suffix?: string;            // Optionaler Suffix (z.B. "m" für "6000m")
-    onClick: (fieldName: string, value: string | number) => void;
+    fieldName: string;
+    value: TagValue;
+    colorScheme: ColorScheme;
+    prefix?: string;
+    suffix?: string;
+    onClick: (fieldName: string, value: FilterValue) => void;
 }
 
 export const ClubTag: React.FC<ClubTagProps> = ({
@@ -49,12 +50,16 @@ export const ClubTag: React.FC<ClubTagProps> = ({
                                                     onClick
                                                 }) => {
     const colors = colorConfigs[colorScheme];
-
     const displayValue = `${prefix ? `${prefix} ` : ''}${value}${suffix ? suffix : ''}`;
+
+    const handleClick = () => {
+        // Stelle sicher, dass der übergebene Wert als TagValue behandelt wird
+        onClick(fieldName, value as FilterValue);
+    };
 
     return (
         <button
-            onClick={() => onClick(fieldName, value)}
+            onClick={handleClick}
             className={`
                 px-3 
                 py-1 
@@ -73,9 +78,13 @@ export const ClubTag: React.FC<ClubTagProps> = ({
     );
 };
 
-// Array-Version der Tag-Komponente
-interface ClubTagArrayProps extends Omit<ClubTagProps, 'value'> {
+interface ClubTagArrayProps {
+    fieldName: string;
     values: string[];
+    colorScheme: ColorScheme;
+    prefix?: string;
+    suffix?: string;
+    onClick: (fieldName: string, value: FilterValue) => void;
 }
 
 export const ClubTagArray: React.FC<ClubTagArrayProps> = ({

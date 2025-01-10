@@ -1,4 +1,3 @@
-// src/components/clubs/ActiveFilters.tsx
 import React from 'react';
 import { X } from 'lucide-react';
 import { FilterValue, TagFilters, FilterDisplayNames } from '@/types/club-types';
@@ -9,7 +8,6 @@ interface ActiveFiltersProps {
     onResetAll: () => void;
 }
 
-// Mapping für benutzerfreundliche Anzeigenamen
 const displayNames: FilterDisplayNames = {
     anzahlLoecher: 'Löcher',
     parGesamt: 'Par',
@@ -19,13 +17,20 @@ const displayNames: FilterDisplayNames = {
     slope: 'Slope',
     platztyp: 'Platztyp',
     besonderheiten: 'Besonderheit',
+    geoFilter: 'Umkreis',
     'services.restaurant': 'Restaurant',
     'services.golfschule': 'Golfschule',
     'services.proShop': 'Pro Shop'
 };
 
-// Formatierung der Filterwerte für die Anzeige
 const formatFilterValue = (fieldName: string, value: FilterValue): string => {
+    // Spezielle Formatierung für den Geo-Filter
+    if (fieldName === 'geoFilter' && typeof value === 'object') {
+        const geoValue = value as { lat: number; lng: number; radius: number };
+        return `${geoValue.radius}km Umkreis`;
+    }
+
+    // Bestehende Formatierungen
     if (fieldName === 'laengeMeter') return `${value}m`;
     if (fieldName === 'handicapBeschraenkung') return `HCP ${value}`;
     if (fieldName === 'courseRating') return `CR ${value}`;
@@ -51,7 +56,9 @@ export const ActiveFilters: React.FC<ActiveFiltersProps> = ({
                         className="flex items-center gap-2 px-3 py-1.5 bg-dark-green text-white rounded-full
                                  text-sm font-medium hover:bg-dark-green-dark transition-colors group"
                     >
-                        <span>{displayNames[fieldName] || fieldName}: {formatFilterValue(fieldName, value)}</span>
+                        <span>
+                            {displayNames[fieldName] || fieldName}: {formatFilterValue(fieldName, value)}
+                        </span>
                         <X size={16} className="opacity-60 group-hover:opacity-100 transition-opacity" />
                     </button>
                 ))}

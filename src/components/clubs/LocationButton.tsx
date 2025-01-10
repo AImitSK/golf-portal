@@ -1,29 +1,47 @@
 import React from 'react';
-import { MapPinIcon } from '@heroicons/react/24/outline'; // Heroicon Icon
+import { MapPinIcon } from '@heroicons/react/24/outline';
+import { FilterValue } from '@/types/club-types';
 
 interface LocationButtonProps {
-    city: string;                      // Name der Stadt
-    colorScheme: 'dark-green';         // Aktuell nur ein Farbschema
-    onClick: (fieldName: string, value: string) => void; // Funktion beim Klick
+    city: string;
+    coordinates: {
+        lat: number;
+        lng: number;
+    };
+    colorScheme: 'dark-green';
+    onClick: (fieldName: string, value: FilterValue) => void;
 }
 
-const LocationButton: React.FC<LocationButtonProps> = ({ city, colorScheme, onClick }) => {
+const LocationButton: React.FC<LocationButtonProps> = ({
+                                                           city,
+                                                           coordinates,
+                                                           colorScheme,
+                                                           onClick
+                                                       }) => {
     const colorConfigs = {
         'dark-green': {
             background: 'bg-white',
             text: 'text-dark-green',
             hoverBackground: 'hover:bg-dark-green',
-            hoverText: 'hover:text-white', // Hover-Farbe für Text und Icon
+            hoverText: 'hover:text-white',
         }
     };
 
     const colors = colorConfigs[colorScheme];
 
+    const handleClick = () => {
+        onClick('geoFilter', {
+            lat: coordinates.lat,
+            lng: coordinates.lng,
+            radius: 50
+        });
+    };
+
     return (
         <button
-            onClick={() => onClick('geoLocation', city)}
+            onClick={handleClick}
             className={`
-                group // Definieren einer group für den Button
+                group
                 flex 
                 items-center 
                 gap-1.5 
@@ -38,17 +56,15 @@ const LocationButton: React.FC<LocationButtonProps> = ({ city, colorScheme, onCl
                 font-medium
             `}
         >
-            {/* Heroicon Standort-Icon */}
             <MapPinIcon
                 className={`
                     w-4 
                     h-4 
                     transition-colors 
-                    ${colors.text} // Icon hat Standardfarbe (dunkelgrün)
-                    group-hover:text-white // Icon wird beim Hover weiß
+                    ${colors.text}
+                    group-hover:text-white
                 `}
             />
-            {/* Stadtnamen */}
             <span className="transition-colors group-hover:text-white">{city}</span>
         </button>
     );

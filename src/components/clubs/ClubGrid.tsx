@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import { sortClubs } from "../../utils/sortClubs";
+import { sortClubs } from "@/utils/sortClubs";
 import { ClubCard } from "./ClubCard";
-import { GolfClub } from "@/types/club-types";
+import { GolfClub, FilterValue } from "@/types/club-types";
 
 interface ClubGridProps {
     clubs: GolfClub[];
-    onTagClick: (fieldName: string, value: string | number) => void;
+    onTagClick: (fieldName: string, value: FilterValue) => void;
 }
 
 const ClubGrid: React.FC<ClubGridProps> = ({ clubs, onTagClick }) => {

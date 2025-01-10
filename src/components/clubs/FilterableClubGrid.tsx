@@ -5,10 +5,22 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from "framer-motion";
 import ClubGrid from "@/components/clubs/ClubGrid";
 import { ActiveFilters } from "./ActiveFilters";
-import { GolfClub, FilterValue, TagFilters } from "@/types/club-types";
-import { calculateDistance } from "@/utils/geo-utils"; // Import der Distanzberechnung
+import { GolfClub, FilterValue, TagFilters, GeoFilterValue } from "@/types/club-types";
+import { calculateDistance } from "@/utils/geo-utils";
 
-// Hilfsfunktionen für URL-Handling
+// Hier kommt die neue getNestedValue Funktion hin:
+const getNestedValue = (obj: unknown, path: string): unknown => {
+    if (!obj || typeof obj !== 'object') return undefined;
+
+    return path.split('.').reduce((acc: unknown, key: string) => {
+        if (acc === null || acc === undefined || typeof acc !== 'object') {
+            return undefined;
+        }
+        return (acc as Record<string, unknown>)[key];
+    }, obj);
+};
+
+// URL-Handling-Funktionen
 const encodeFilters = (filters: TagFilters): string => {
     return encodeURIComponent(JSON.stringify(filters));
 };
@@ -16,10 +28,30 @@ const encodeFilters = (filters: TagFilters): string => {
 const decodeFilters = (encoded: string | null): TagFilters => {
     if (!encoded) return {};
     try {
-        return JSON.parse(decodeURIComponent(encoded));
+        const decoded = JSON.parse(decodeURIComponent(encoded)) as TagFilters;
+        if (decoded.geoFilter) {
+            const geoFilter = decoded.geoFilter;
+            if (isGeoFilterValue(geoFilter)) {
+                decoded.geoFilter = geoFilter;
+            } else {
+                delete decoded.geoFilter;
+            }
+        }
+        return decoded;
     } catch {
         return {};
     }
+};
+
+// Type Guard für GeoFilterValue
+const isGeoFilterValue = (value: unknown): value is GeoFilterValue => {
+    if (typeof value !== 'object' || value === null) return false;
+    const candidate = value as Record<string, unknown>;
+    return (
+        typeof candidate.lat === 'number' &&
+        typeof candidate.lng === 'number' &&
+        typeof candidate.radius === 'number'
+    );
 };
 
 interface FilterableClubGridProps {
@@ -34,13 +66,11 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Initialisiere Filter aus URL oder Props
     const [filterCriteria, setFilterCriteria] = useState<TagFilters>(() => {
         const urlFilters = decodeFilters(searchParams.get('filters'));
         return Object.keys(urlFilters).length > 0 ? urlFilters : initialFilterCriteria;
     });
 
-    // Synchronisiere Filter mit URL
     useEffect(() => {
         const newUrl = Object.keys(filterCriteria).length > 0
             ? `?filters=${encodeFilters(filterCriteria)}`
@@ -48,7 +78,6 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
         router.push(newUrl, { scroll: false });
     }, [filterCriteria, router]);
 
-    // Handler für Tag-Klicks
     const handleTagClick = (fieldName: string, value: FilterValue) => {
         setFilterCriteria(prev => ({
             ...prev,
@@ -56,7 +85,6 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
         }));
     };
 
-    // Handler zum Entfernen eines Filters
     const handleRemoveFilter = (fieldName: string) => {
         setFilterCriteria(prev => {
             const newFilters = { ...prev };
@@ -65,50 +93,37 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
         });
     };
 
-    // Handler zum Zurücksetzen aller Filter
     const handleResetAll = () => {
         setFilterCriteria({});
     };
 
-    // Hilfsfunktion für verschachtelte Objekte
-    const getNestedValue = (obj: Record<string, unknown>, path: string): unknown => {
-        let current: unknown = obj;
-        for (const key of path.split('.')) {
-            if (current && typeof current === 'object') {
-                current = (current as Record<string, unknown>)[key];
-            } else {
-                return undefined;
-            }
-        }
-        return current;
-    };
-
-    // Filter die Clubs
     const filteredClubs = initialClubs.filter((club) => {
         return Object.entries(filterCriteria).every(([key, filterValue]) => {
-            // Distanzfilter
-            if (key === "distance" && typeof filterValue === "number") {
-                if (!club.geoCoords) return false; // Falls keine Geodaten vorhanden
-                const userLocation = { lat: 52.52, lon: 13.405 }; // Beispiel: User in Berlin
+            // Geo-Filter Handling
+            if (key === 'geoFilter') {
+                if (!isGeoFilterValue(filterValue)) return false;
+
+                const { lat, lng, radius } = filterValue;
+                const clubLocation = club.adresse?.location;
+                if (!clubLocation?.lat || !clubLocation?.lng) return false;
+
                 const distance = calculateDistance(
-                    userLocation.lat,
-                    userLocation.lon,
-                    club.geoCoords.lat,
-                    club.geoCoords.lon
+                    lat,
+                    lng,
+                    clubLocation.lat,
+                    clubLocation.lng
                 );
-                return distance <= filterValue; // Nur Clubs innerhalb des Radius
+
+                return distance <= radius;
             }
 
-            // Neuer City-Filter
-            if (key === "geoLocation" && typeof filterValue === "string") {
-                return club.city === filterValue;
-            }
-
-            // Andere Filter verwenden die Hilfsfunktion
-            const clubValue = getNestedValue(club as Record<string, unknown>, key);
+            // Normale Filter
+            const clubValue = getNestedValue(club, key);
 
             if (clubValue === undefined || clubValue === null) return false;
-            if (Array.isArray(clubValue)) return clubValue.includes(filterValue);
+            if (Array.isArray(clubValue)) {
+                return typeof filterValue === 'string' && clubValue.includes(filterValue);
+            }
             if (typeof clubValue === "string" && typeof filterValue === "string") {
                 return clubValue.toLowerCase().includes(filterValue.toLowerCase());
             }
@@ -118,7 +133,6 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
 
     return (
         <div className="mx-auto max-w-[1280px] px-2 sm:px-4 lg:px-8 space-y-6">
-            {/* Active Filters */}
             {Object.keys(filterCriteria).length > 0 && (
                 <div className="w-full -mt-6">
                     <div className="border-b border-gray-200">
@@ -133,7 +147,6 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
                 </div>
             )}
 
-            {/* Club Grid */}
             <div>
                 <AnimatePresence mode="wait">
                     <motion.div
