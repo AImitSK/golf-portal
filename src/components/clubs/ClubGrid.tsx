@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { sortClubs } from "./sortClubs";
+import { sortClubs } from "../../utils/sortClubs";
 import { ClubCard } from "./ClubCard";
 import { GolfClub } from "@/types/club-types";
 

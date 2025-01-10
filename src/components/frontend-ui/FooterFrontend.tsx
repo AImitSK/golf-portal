@@ -5,7 +5,7 @@ import Image from 'next/image'; // Falls Sie Next.js verwenden
 
 const navigation = {
     solutions: [
-        { name: 'Marketing', href: '#' },
+        { name: 'Dashboard', href: '/dashboard/clubs' },
         { name: 'Analytics', href: '#' },
         { name: 'Automation', href: '#' },
         { name: 'Commerce', href: '#' },

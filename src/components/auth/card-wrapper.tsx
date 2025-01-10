@@ -35,7 +35,7 @@ export const CardWrapper = ({
       <div className="w-full flex flex-col gap-y-4 items-center justify-center mb-6">
         <div className="w-24 h-24 relative">
           <Image
-            src="/images/logo.svg"
+            src="/logo-c-list-green.svg"
             alt="Golf Course List Logo"
             fill
             className="object-contain"
