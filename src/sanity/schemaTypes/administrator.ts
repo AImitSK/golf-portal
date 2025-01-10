@@ -61,7 +61,7 @@ export default {
       name: 'password',
       title: 'Passwort',
       type: 'string',
-      hidden: true, // Versteckt im Sanity Studio
+      hidden: false, // Versteckt im Sanity Studio
       // Kein required hier, da wir das später programmatisch setzen
     },
     {
