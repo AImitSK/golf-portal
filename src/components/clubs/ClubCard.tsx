@@ -4,6 +4,7 @@ import { Heading } from "@/components/frontend-ui/Heading";
 import GridNavi from "@/components/frontend-ui/GridNavi";
 import { ClubTag, ClubTagArray } from "./ClubTag";
 import LocationButton from './LocationButton';
+import Link from 'next/link';
 
 type ClubCardProps = {
     club: GolfClub;
@@ -38,14 +39,17 @@ export const ClubCard = ({ club, showImage, onTagClick }: ClubCardProps) => {
         <div className="bg-white">
             {showImage && (
                 <div className="relative rounded-2xl overflow-visible hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200">
-                    {/* Bild-Container */}
-                    <a href="#" className="block relative w-full aspect-[16/9] lg:aspect-[32/9] overflow-hidden rounded-2xl">
+                    {/* Bild-Container mit Link */}
+                    <Link
+                        href={`/clubs/${club.slug}`}
+                        className="block relative w-full aspect-[16/9] lg:aspect-[32/9] overflow-hidden rounded-2xl"
+                    >
                         <img
                             src={club.image}
                             alt={club.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                         />
-                    </a>
+                    </Link>
 
                     {/* LocationButton mit Koordinaten */}
                     <div className="absolute top-3 right-3">
@@ -83,14 +87,14 @@ export const ClubCard = ({ club, showImage, onTagClick }: ClubCardProps) => {
 
             <div className={showImage ? "pt-4" : "pt-0"}>
                 <div className="flex justify-between items-start mb-4">
-                    <a href="#" className="block">
+                    <Link href={`/clubs/${club.slug}`} className="block">
                         <Heading
                             level={2}
                             className="text-dark-green font-semibold hover:text-cta-green transition-colors"
                         >
                             {club.title}
                         </Heading>
-                    </a>
+                    </Link>
                     <span className="text-xs uppercase tracking-wider text-dark-20">
                         {club.aktuellesModell?.name || "FREE"}
                     </span>
