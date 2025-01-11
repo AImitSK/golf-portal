@@ -1,31 +1,35 @@
+// src/app/clubs/[slug]/page.tsx
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { getGolfClubs } from "@/lib/sanity/getGolfClubs";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
-import {Heading} from "@/components/frontend-ui/Heading";
+import { Heading } from "@/components/frontend-ui/Heading";
+import { ClubDetailActions } from "@/components/clubs/ClubDetailActions";
+import { ClubDetailTags } from "@/components/clubs/ClubDetailTags";
+import ServiceTable from "@/components/clubs/ServiceTable";
+import { LikesCounter } from "@/components/clubs/LikesCounter";
+import MembershipTable from "@/components/clubs/MembershipTable";
+import TournamentTable from "@/components/clubs/TournamentTable";
+import type { GolfClub } from "@/types/club-types";
 
-// Typen für die Props
 interface ClubDetailPageProps {
     params: {
         slug: string;
     };
 }
 
-// Diese Funktion generiert die statischen Params für alle Clubs
 export async function generateStaticParams() {
     const clubs = await getGolfClubs();
-    return clubs.map((club) => ({
+    return clubs.map((club: GolfClub) => ({
         slug: club.slug,
     }));
 }
 
-// Die eigentliche Seitenkomponente
 async function ClubDetailPage({ params }: ClubDetailPageProps) {
     const clubs = await getGolfClubs();
-    const club = clubs.find((c) => c.slug === params.slug);
+    const club = clubs.find((c: GolfClub) => c.slug === params.slug);
 
-    // Wenn kein Club gefunden wurde, zeige 404
     if (!club) {
         notFound();
     }
@@ -34,92 +38,63 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
         <>
             <NavigationFrontend />
 
-            <main className="container mx-auto px-4 py-8">
-                <div className="max-w-4xl mx-auto">
-                    {/* Header Bereich */}
-                    <div className="mb-8">
-                        <Heading
-                            level={1}
-                            className=""
-                        >
-                            {club.title}
-                        </Heading>
+            <main>
+                {/* Hero Section mit Bild */}
+                <div className="relative w-full h-[280px] md:h-[400px] lg:h-[600px]">
+                    <img
+                        src={club.image}
+                        alt={club.title}
+                        className="w-full h-full object-cover"
+                    />
 
-                        {/* Hauptbild */}
-                        {club.image && (
-                            <div className="aspect-video rounded-2xl overflow-hidden mb-6">
-                                <img
-                                    src={club.image}
-                                    alt={club.title}
-                                    className="w-full h-full object-cover"
-                                />
+                    {/* Likes Counter */}
+                    <div className="absolute bottom-3 left-0 w-full">
+                        <div className="container mx-auto max-w-[1280px] px-4 lg:px-8">
+                            <LikesCounter count={1021} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Container */}
+                <div className="container mx-auto max-w-[1280px] px-4 lg:px-8">
+                    <div className="py-8">
+                        {/* Header mit Titel und Actions */}
+                        <div className="flex justify-between items-start mb-6">
+                            <Heading level={1}>
+                                {club.title}
+                            </Heading>
+                            <ClubDetailActions />
+                        </div>
+
+                        {/* Tags */}
+                        <div className="mb-8">
+                            <ClubDetailTags club={club} />
+                        </div>
+
+                        {/* Der Golfclub Section */}
+                        <div className="mb-12">
+                            <h2 className="text-2xl font-semibold text-dark-green mb-4">
+                                Der Golfclub
+                            </h2>
+                            <div className="prose prose-lg max-w-none text-dark-60">
+                                <p>
+                                    Der 2011 vom legendären Robert Trend Jones Jr. errichtete Platz bietet mehrere Höhenunterschiede, die die Spieler mit herrlichen Ausblicken auf das Meer erfreuen, sowie 2 Löcher entlang der historischen Navarino Bay. Der Platz ist etwas kürzer als der The Dunes Course und verläuft durch 3 verschiedene Naturlandschaften: Meer, Canyon und Hain. Daher bietet er den Golfern Kontraste, die einen dramatischen und unvergesslichen Platz schaffen. Die natürliche Schönheit der Bucht zeigt sich am 4. Loch, einem kurzen und strategischen Par 4 mit der Stadt Pylos und dem tiefblauen Meer im Hintergrund.
+                                </p>
                             </div>
-                        )}
+                        </div>
 
-                        {/* Kontaktinformationen */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-semibold text-dark-green">
-                                    Kontakt
-                                </h2>
-                                {club.clubWebsite && (
-                                    <p>
-                                        <strong>Website:</strong>{' '}
-                                        <a
-                                            href={club.clubWebsite}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-cta-green hover:underline"
-                                        >
-                                            {club.clubWebsite}
-                                        </a>
-                                    </p>
-                                )}
-                                {club.clubEmail && (
-                                    <p>
-                                        <strong>E-Mail:</strong>{' '}
-                                        <a
-                                            href={`mailto:${club.clubEmail}`}
-                                            className="text-cta-green hover:underline"
-                                        >
-                                            {club.clubEmail}
-                                        </a>
-                                    </p>
-                                )}
-                                {club.clubTelefon && (
-                                    <p>
-                                        <strong>Telefon:</strong>{' '}
-                                        <a
-                                            href={`tel:${club.clubTelefon}`}
-                                            className="text-cta-green hover:underline"
-                                        >
-                                            {club.clubTelefon}
-                                        </a>
-                                    </p>
-                                )}
-                            </div>
+                        {/* Tables Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Left Column: Services */}
+                            <ServiceTable services={club.services} />
 
-                            <div className="space-y-4">
-                                <h2 className="text-xl font-semibold text-dark-green">
-                                    Platz-Details
-                                </h2>
-                                {club.anzahlLoecher && (
-                                    <p><strong>Löcher:</strong> {club.anzahlLoecher}</p>
-                                )}
-                                {club.parGesamt && (
-                                    <p><strong>Par:</strong> {club.parGesamt}</p>
-                                )}
-                                {club.laengeMeter && (
-                                    <p><strong>Länge:</strong> {club.laengeMeter}m</p>
-                                )}
-                                {club.handicapBeschraenkung && (
-                                    <p><strong>HCP:</strong> {club.handicapBeschraenkung}</p>
-                                )}
+                            {/* Right Column: Membership and Tournament */}
+                            <div className="flex flex-col gap-8">
+                                <MembershipTable mitgliedschaft={club.mitgliedschaft} />
+                                <TournamentTable turniere={club.turniere} />
                             </div>
                         </div>
                     </div>
-
-                    {/* Weitere Sections können hier hinzugefügt werden */}
                 </div>
             </main>
 

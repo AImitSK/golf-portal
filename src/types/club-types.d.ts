@@ -65,5 +65,20 @@ export interface GolfClub {
         restaurant?: boolean;
         golfschule?: boolean;
         proShop?: boolean;
+        cartVermietung?: boolean;
+        leihausruestung?: boolean;
+        sanitaeranlagen?: boolean;
+        umkleide?: boolean;
+    };
+    mitgliedschaft?: {
+        moeglich?: boolean;
+        schnuppermitgliedschaft?: boolean;
+        aufnahmegebuehr?: boolean;
+        warteliste?: boolean;
+    };
+    turniere?: {
+        club?: boolean;
+        gaeste?: boolean;
+        rangliste?: boolean;
     };
 }
