@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getGolfClubs } from "@/lib/sanity/getGolfClubs";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
+import {Heading} from "@/components/frontend-ui/Heading";
 
 // Typen für die Props
 interface ClubDetailPageProps {
@@ -37,9 +38,12 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                 <div className="max-w-4xl mx-auto">
                     {/* Header Bereich */}
                     <div className="mb-8">
-                        <h1 className="text-4xl font-bold text-dark-green mb-4">
+                        <Heading
+                            level={1}
+                            className=""
+                        >
                             {club.title}
-                        </h1>
+                        </Heading>
 
                         {/* Hauptbild */}
                         {club.image && (
