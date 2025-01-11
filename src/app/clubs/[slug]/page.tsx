@@ -90,7 +90,7 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             <ClubContact club={club} />
                         </div>
 
-                        {/* Der Golfclub Section */}
+                        {/* Deer Golfclub Section */}
                         <div className="mb-12">
                             <Heading level={2} variant="section">
                                 Der Golfclub
