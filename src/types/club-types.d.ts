@@ -10,13 +10,6 @@ export interface GeoFilterValue {
 // Basistyp für Filterwerte
 export type FilterValue = string | number | boolean | GeoFilterValue;
 
-// SEO Type
-export interface SEO {
-    title?: string;
-    description?: string;
-    keywords?: string[];
-}
-
 // Spezifische Filter-Typen
 export type ClubFilters = {
     searchQuery?: string;
@@ -49,7 +42,6 @@ export interface GeoLocation {
 export interface Address {
     ort?: string;
     strasse?: string;
-    hausnummer?: string;
     plz?: string;
     land?: {
         name: string;
@@ -84,34 +76,17 @@ export interface Turniere {
     rangliste?: boolean;
 }
 
-// Bild Type
-export interface Bild {
-    asset?: {
-        url: string;
-    };
-    beschreibung?: string;
-    alt?: string;
-}
-
 // Golf Club Type
 export interface GolfClub {
     title: string;
     slug: string;
-    status?: 'draft' | 'published';
-    beschreibung?: string;
     image?: string;
     city: string;
-    seo?: SEO;
-    // Bilder
-    logo?: Bild;
-    titelbild?: Bild;
-    bildergalerie?: Bild[];
     // Kontaktdaten
     clubWebsite?: string;
     clubEmail?: string;
     clubTelefon?: string;
     adresse?: Address;
-    // Platz Details
     anzahlLoecher?: number;
     parGesamt?: number;
     laengeMeter?: number;
@@ -119,21 +94,21 @@ export interface GolfClub {
     courseRating?: number;
     slope?: number;
     platztyp?: string;
-    schwierigkeitsgrad?: 'Anfänger' | 'Fortgeschrittene' | 'Championship';
     besonderheiten?: string[];
-    // Einrichtungen
-    uebungsanlagen?: string[];
-    services?: Services;
-    // Club Info
-    mitgliedschaft?: Mitgliedschaft;
-    turniere?: Turniere;
-    // Administration
     aktuellesModell?: {
         name: string;
         isTopPosition?: boolean;
         topPositionRank?: number;
     };
-    vertragsBeginn?: string;
-    vertragsEnde?: string;
-    zahlungsStatus?: 'aktiv' | 'ausstehend' | 'gekündigt';
+    services?: Services;
+    mitgliedschaft?: Mitgliedschaft;
+    turniere?: Turniere;
+}
+
+// Map Component Props Types
+export interface MapInteractionProps {
+    onMarkerClick?: (location: GeoLocation) => void;
+    onKeyPress?: (event: React.KeyboardEvent) => void;
+    ariaLabel?: string;
+    tabIndex?: number;
 }

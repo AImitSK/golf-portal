@@ -1,7 +1,6 @@
 // src/app/clubs/[slug]/page.tsx
 import React from 'react';
 import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
 import { getGolfClubs } from "@/lib/sanity/getGolfClubs";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
@@ -13,28 +12,13 @@ import { LikesCounter } from "@/components/clubs/LikesCounter";
 import MembershipTable from "@/components/clubs/MembershipTable";
 import TournamentTable from "@/components/clubs/TournamentTable";
 import ClubMap from "@/components/clubs/ClubMap";
-import { generateMetadata as genMeta } from '@/components/frontend-ui/SEO';
+import ClubContact from "@/components/clubs/ClubContact";
 import type { GolfClub } from "@/types/club-types";
 
 interface ClubDetailPageProps {
     params: {
         slug: string;
     };
-}
-
-export async function generateMetadata({ params }: ClubDetailPageProps): Promise<Metadata> {
-    const clubs = await getGolfClubs();
-    const club = clubs.find((c: GolfClub) => c.slug === params.slug);
-
-    if (!club) return {};
-
-    return genMeta({
-        title: club.title,
-        description: club.seo?.description || club.beschreibung,
-        keywords: club.seo?.keywords,
-        image: club.image,
-        type: 'article'
-    });
 }
 
 export async function generateStaticParams() {
@@ -89,14 +73,41 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             <ClubDetailTags club={club} />
                         </div>
 
+                        {/* Logo and Contact Section */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                            {/* Club Logo */}
+                            {club.logo && (
+                                <div>
+                                    <img
+                                        src={club.logo}
+                                        alt={`${club.title} Logo`}
+                                        className="max-w-[250px] h-auto w-full rounded-xl border-2 border-dark-green/20"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Contact Info */}
+                            <ClubContact club={club} />
+                        </div>
+
                         {/* Der Golfclub Section */}
                         <div className="mb-12">
                             <Heading level={2} variant="section">
                                 Der Golfclub
                             </Heading>
                             <div className="prose prose-lg max-w-none text-dark-60">
-                                <p>{club.beschreibung || 'Keine Beschreibung verfügbar.'}</p>
+                                <p>
+                                    Der 2011 vom legendären Robert Trend Jones Jr. errichtete Platz bietet mehrere Höhenunterschiede, die die Spieler mit herrlichen Ausblicken auf das Meer erfreuen, sowie 2 Löcher entlang der historischen Navarino Bay. Der Platz ist etwas kürzer als der The Dunes Course und verläuft durch 3 verschiedene Naturlandschaften: Meer, Canyon und Hain. Daher bietet er den Golfern Kontraste, die einen dramatischen und unvergesslichen Platz schaffen. Die natürliche Schönheit der Bucht zeigt sich am 4. Loch, einem kurzen und strategischen Par 4 mit der Stadt Pylos und dem tiefblauen Meer im Hintergrund.
+                                </p>
                             </div>
+                        </div>
+
+                        {/* Maps Section */}
+                        <div className="mb-12">
+                            <Heading level={2} variant="section">
+                                Lage
+                            </Heading>
+                            <ClubMap club={club} />
                         </div>
 
                         {/* Tables Grid */}
@@ -109,14 +120,6 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                                 <MembershipTable mitgliedschaft={club.mitgliedschaft} />
                                 <TournamentTable turniere={club.turniere} />
                             </div>
-                        </div>
-
-                        {/* Maps Section */}
-                        <div className="mb-12">
-                            <Heading level={2} variant="section">
-                                Lage
-                            </Heading>
-                            <ClubMap club={club} />
                         </div>
                     </div>
                 </div>

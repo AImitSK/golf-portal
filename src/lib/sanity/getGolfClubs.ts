@@ -8,7 +8,7 @@ export async function getGolfClubs() {
         status,
         beschreibung,
         "image": titelbild.asset->url,
-        logo,
+        "logo": logo.asset->url,
         bildergalerie[]{
             asset->{
                 url
