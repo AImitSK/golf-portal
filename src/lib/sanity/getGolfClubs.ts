@@ -6,6 +6,7 @@ export async function getGolfClubs() {
         title,
         "slug": slug.current,
         status,
+        beschreibung,
         "image": titelbild.asset->url,
         logo,
         bildergalerie[]{
@@ -53,11 +54,14 @@ export async function getGolfClubs() {
         besonderheiten,
         mitgliedschaft {
             moeglich,
-            schnuppermitgliedschaft
+            schnuppermitgliedschaft,
+            aufnahmegebuehr,
+            warteliste
         },
         turniere {
             club,
-            gaeste
+            gaeste,
+            rangliste
         },
         "services": {
             "golfschule": services.golfschule,
@@ -73,7 +77,7 @@ export async function getGolfClubs() {
         zahlungsStatus
     }`);
 
-  //  console.log("Golfclub-Daten aus Sanity:", clubs);
+    //  console.log("Golfclub-Daten aus Sanity:", clubs);
 
     return clubs;
 }
