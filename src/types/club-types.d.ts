@@ -176,15 +176,19 @@ export interface GolfClub {
     uebungsanlagen?: Uebungsanlagen;
 }
 
-export interface Kooperation {
-    name: string; // Name der Kooperation
+export type Kooperation = {
+    _type: string;
+    beschreibung: string;
     logo?: {
-        _type: string; // Typ des Logos (z. B. "image")
+        _type: string;
         asset: {
-            _ref: string; // Referenz zum Bild-Asset
-            _type: string; // Typ des Assets (z. B. "reference")
+            _ref: string;
+            _type: string;
         };
-    }; // Logo der Kooperation
-    beschreibung?: string; // Beschreibung der Kooperation
-    typ?: string; // Typ der Kooperation (z. B. "Greenfee-Ermäßigung")
-}
+    };
+    name: string;
+    typ: string;
+    slug: {
+        current: string; // So wird der Slug korrekt typisiert
+    };
+};
