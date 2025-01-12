@@ -1,6 +1,8 @@
-// src/app/clubs/[slug]/page.tsx
+// src/components/clubs/[slug]/page.tsx
 import React from 'react';
 import { notFound } from 'next/navigation';
+import { Metadata } from "next";
+import type { ClubDetailPageProps, GolfClub } from "@/types/club-types";
 import { getGolfClubs } from "@/lib/sanity/getGolfClubs";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
@@ -13,10 +15,7 @@ import MembershipTable from "@/components/clubs/MembershipTable";
 import TournamentTable from "@/components/clubs/TournamentTable";
 import ClubMap from "@/components/clubs/ClubMap";
 import ClubContact from "@/components/clubs/ClubContact";
-import type { ClubDetailPageProps, GolfClub } from "@/types/club-types";
-import { Metadata } from "next";
-
-
+import { ClubGallery } from "@/components/clubs/ClubGallery";
 
 export async function generateMetadata({ params }: ClubDetailPageProps): Promise<Metadata> {
     const clubs = await getGolfClubs();
@@ -32,16 +31,6 @@ export async function generateMetadata({ params }: ClubDetailPageProps): Promise
         title: club.seo?.title || club.title,
         description: club.seo?.description || club.beschreibung,
         keywords: club.seo?.keywords?.join(', '),
-        openGraph: {
-            title: club.seo?.title || club.title,
-            description: club.seo?.description || club.beschreibung,
-            images: [{
-                url: club.image || '',
-                width: 1200,
-                height: 630,
-                alt: club.title
-            }]
-        }
     };
 }
 
@@ -52,7 +41,7 @@ export async function generateStaticParams() {
     }));
 }
 
-async function ClubDetailPage({ params }: ClubDetailPageProps) {
+export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
     const clubs = await getGolfClubs();
     const club = clubs.find((c: GolfClub) => c.slug === params.slug);
 
@@ -114,7 +103,7 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             <ClubContact club={club} />
                         </div>
 
-                        {/* Deer Golfclub Section */}
+                        {/* Der Golfclub Section */}
                         <div className="mb-12">
                             <Heading level={2} variant="section">
                                 Der Golfclub
@@ -126,10 +115,15 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             </div>
                         </div>
 
+                        {/* Bildergalerie */}
+                        {club.bildergalerie && club.bildergalerie.length > 0 && (
+                            <ClubGallery images={club.bildergalerie} />
+                        )}
+
                         {/* Maps Section */}
                         <div className="mb-12">
                             <Heading level={2} variant="section">
-                            Lage
+                                Lage
                             </Heading>
                             <ClubMap club={club} />
                         </div>
@@ -153,5 +147,3 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
         </>
     );
 }
-
-export default ClubDetailPage;

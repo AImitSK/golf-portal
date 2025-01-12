@@ -140,3 +140,19 @@ export interface ClubDetailPageProps {
         slug: string;
     };
 }
+
+// Erweitere club-types.d.ts um:
+
+// Galerie Bild Type
+export interface GalleryImage {
+    asset: {
+        url: string;
+    };
+    beschreibung?: string | null;
+    alt?: string | null;
+}
+
+// Props für die Galerie-Komponente
+export interface ClubGalleryProps {
+    images: GalleryImage[];
+}
