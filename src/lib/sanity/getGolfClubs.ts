@@ -38,6 +38,7 @@ export async function getGolfClubs() {
         "city": adresse.ort,
         clubEmail,
         clubTelefon,
+        uebungsanlagen,
         clubWebsite,
         "aktuellesModell": aktuellesModell->{
             name,

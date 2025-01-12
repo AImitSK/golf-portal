@@ -92,6 +92,7 @@ export interface GolfClub {
     clubWebsite?: string; // Club-Website URL
     clubEmail?: string; // E-Mail-Adresse des Clubs
     clubTelefon?: string; // Telefonnummer des Clubs
+    uebungsanlagen?: string[];
 
     // Adresse des Clubs
     adresse?: Address; // Adresse mit Ort, Straße, Land, PLZ und Geo-Information
@@ -155,4 +156,16 @@ export interface GalleryImage {
 // Props für die Galerie-Komponente
 export interface ClubGalleryProps {
     images: GalleryImage[];
+}
+
+export interface Uebungsanlagen {
+    // Definiere hier die Eigenschaften für Übungsanlagen
+}
+
+export interface Uebungsanlagen {
+    // Definiere hier die Eigenschaften für Übungsanlagen
+}
+
+export interface GolfClub {
+    uebungsanlagen?: Uebungsanlagen;
 }

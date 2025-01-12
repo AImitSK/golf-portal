@@ -78,12 +78,12 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             <Heading level={1}>
                                 {club.title}
                             </Heading>
-                            <ClubDetailActions />
+                            <ClubDetailActions/>
                         </div>
 
                         {/* Tags */}
                         <div className="mb-8">
-                            <ClubDetailTags club={club} />
+                            <ClubDetailTags club={club}/>
                         </div>
 
                         {/* Logo and Contact Section */}
@@ -100,7 +100,7 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             )}
 
                             {/* Contact Info */}
-                            <ClubContact club={club} />
+                            <ClubContact club={club}/>
                         </div>
 
                         {/* Der Golfclub Section */}
@@ -115,9 +115,42 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             </div>
                         </div>
 
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                            {/* Besonderheiten */}
+                            {club.besonderheiten && club.besonderheiten.length > 0 && (
+                                <div>
+                                    <Heading level={3} className="text-dark-green">Besonderheiten</Heading>
+                                    <div className="flex flex-wrap gap-2">
+                                        {club.besonderheiten.map((besonderheit: string, index: number) => (
+                                            <div key={index}
+                                                 className="px-3 py-1 rounded-full text-sm font-medium bg-cta-green-15 text-cta-green">
+                                                {besonderheit}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Übungsanlagen */}
+                            {club.uebungsanlagen && club.uebungsanlagen.length > 0 && (
+                                <div>
+                                    <Heading level={3} className="text-dark-green">Übungsanlagen</Heading>
+                                    <div className="flex flex-wrap gap-2">
+                                        {club.uebungsanlagen.map((uebungsanlage: string, index: number) => (
+                                            <div key={index}
+                                                 className="px-3 py-1 rounded-full text-sm font-medium bg-cta-green-15 text-cta-green">
+                                                {uebungsanlage}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+
                         {/* Bildergalerie */}
                         {club.bildergalerie && club.bildergalerie.length > 0 && (
-                            <ClubGallery images={club.bildergalerie} />
+                            <ClubGallery images={club.bildergalerie}/>
                         )}
 
                         {/* Maps Section */}
@@ -125,25 +158,30 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             <Heading level={2} variant="section">
                                 Lage
                             </Heading>
-                            <ClubMap club={club} />
+                            <ClubMap club={club}/>
                         </div>
 
                         {/* Tables Grid */}
+                        <div className="mb-12">
+                            <Heading level={2} variant="section">
+                                Sonstiges
+                            </Heading>
+                        </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {/* Left Column: Services */}
-                            <ServiceTable services={club.services} />
+                            <ServiceTable services={club.services}/>
 
                             {/* Right Column: Membership and Tournament */}
                             <div className="flex flex-col gap-8">
-                                <MembershipTable mitgliedschaft={club.mitgliedschaft} />
-                                <TournamentTable turniere={club.turniere} />
+                                <MembershipTable mitgliedschaft={club.mitgliedschaft}/>
+                                <TournamentTable turniere={club.turniere}/>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
 
-            <FooterFrontend />
+            <FooterFrontend/>
         </>
     );
 }
