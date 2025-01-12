@@ -64,7 +64,7 @@ export default {
       hidden: false, // Versteckt im Sanity Studio
       // Kein required hier, da wir das später programmatisch setzen
     },
-    {
+/*    {
       name: 'accounts',
       title: 'Verbundene Konten',
       type: 'array',
@@ -73,7 +73,7 @@ export default {
         type: 'reference',
         to: [{ type: 'account' }]
       }]
-    },
+    }, */
     {
       name: 'telefon',
       title: 'Telefon',
