@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from "next";
 import type { ClubDetailPageProps, GolfClub } from "@/types/club-types";
 import { getGolfClubs } from "@/lib/sanity/getGolfClubs";
+// Components
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import { Heading } from "@/components/frontend-ui/Heading";
@@ -16,6 +17,7 @@ import TournamentTable from "@/components/clubs/TournamentTable";
 import ClubMap from "@/components/clubs/ClubMap";
 import ClubContact from "@/components/clubs/ClubContact";
 import { ClubGallery } from "@/components/clubs/ClubGallery";
+import { Cooperations } from '@/components/clubs/Cooperations';
 
 export async function generateMetadata({ params }: ClubDetailPageProps): Promise<Metadata> {
     const clubs = await getGolfClubs();
@@ -81,9 +83,19 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             <ClubDetailActions/>
                         </div>
 
-                        {/* Tags */}
                         <div className="mb-8">
-                            <ClubDetailTags club={club}/>
+                            {/* Tags */}
+                            <div className="flex flex-wrap gap-2">
+                                <ClubDetailTags club={club}/>
+                            </div>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {club.schwierigkeitsgrad && (
+                                    <div
+                                        className="px-3 py-1 rounded-full text-sm font-medium bg-dark-green-10 text-dark-green">
+                                        Schwierigkeitsgrad: {club.schwierigkeitsgrad}
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Logo and Contact Section */}
@@ -114,6 +126,12 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                                 </p>
                             </div>
                         </div>
+
+                        {/* Bildergalerie */}
+                        {club.bildergalerie && club.bildergalerie.length > 0 && (
+                            <ClubGallery images={club.bildergalerie}/>
+                        )}
+
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                             {/* Besonderheiten */}
@@ -148,11 +166,6 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                         </div>
 
 
-                        {/* Bildergalerie */}
-                        {club.bildergalerie && club.bildergalerie.length > 0 && (
-                            <ClubGallery images={club.bildergalerie}/>
-                        )}
-
                         {/* Maps Section */}
                         <div className="mb-12">
                             <Heading level={2} variant="section">
@@ -177,6 +190,16 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                                 <TournamentTable turniere={club.turniere}/>
                             </div>
                         </div>
+
+                        {/* Tables Grid */}
+                        <div className="mb-12 mt-20">
+                            <Heading level={2} variant="section">
+                                Kooperationen
+                            </Heading>
+                            <Cooperations cooperations={club.kooperationen || []}/>
+                        </div>
+
+
                     </div>
                 </div>
             </main>

@@ -94,6 +94,11 @@ export interface GolfClub {
     clubTelefon?: string; // Telefonnummer des Clubs
     uebungsanlagen?: string[];
 
+
+    // Kooperation
+    kooperationen?: Kooperation[];
+
+
     // Adresse des Clubs
     adresse?: Address; // Adresse mit Ort, Straße, Land, PLZ und Geo-Information
 
@@ -106,6 +111,7 @@ export interface GolfClub {
     slope?: number; // Steigungsbewertung
     platztyp?: string; // Typ des Golfplatzes (z. B. Parkland, Links)
     besonderheiten?: string[]; // Besondere Eigenschaften des Platzes
+    schwierigkeitsgrad?: string;
 
     // Aktuelles Modell des Golfclubs
     aktuellesModell?: {
@@ -168,4 +174,9 @@ export interface Uebungsanlagen {
 
 export interface GolfClub {
     uebungsanlagen?: Uebungsanlagen;
+}
+
+export interface Kooperation {
+    name: string;
+    logo?: string;
 }

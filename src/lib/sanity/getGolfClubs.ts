@@ -46,6 +46,7 @@ export async function getGolfClubs() {
             topPositionRank
         },
         anzahlLoecher,
+        schwierigkeitsgrad,
         parGesamt,
         laengeMeter,
         handicapBeschraenkung,
@@ -75,7 +76,11 @@ export async function getGolfClubs() {
         },
         vertragsBeginn,
         vertragsEnde,
-        zahlungsStatus
+        zahlungsStatus,
+        kooperationen[]->{
+            name,
+            "logo": logo.asset->url
+        },
     }`);
 
       console.log("Golfclub-Daten aus Sanity:", clubs);
