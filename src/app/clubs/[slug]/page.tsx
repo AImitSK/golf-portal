@@ -120,7 +120,7 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             {club.besonderheiten && club.besonderheiten.length > 0 && (
                                 <div>
                                     <Heading level={3} className="text-dark-green">Besonderheiten</Heading>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-2 mt-4">
                                         {club.besonderheiten.map((besonderheit: string, index: number) => (
                                             <div key={index}
                                                  className="px-3 py-1 rounded-full text-sm font-medium bg-cta-green-15 text-cta-green">
@@ -135,7 +135,7 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             {club.uebungsanlagen && club.uebungsanlagen.length > 0 && (
                                 <div>
                                     <Heading level={3} className="text-dark-green">Übungsanlagen</Heading>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-2 mt-4">
                                         {club.uebungsanlagen.map((uebungsanlage: string, index: number) => (
                                             <div key={index}
                                                  className="px-3 py-1 rounded-full text-sm font-medium bg-cta-green-15 text-cta-green">
