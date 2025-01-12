@@ -4,6 +4,12 @@ import { getGolfClubs } from "@/lib/sanity/getGolfClubs";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import FilterableClubGrid from "@/components/clubs/FilterableClubGrid";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'Alle Golfclubs in Deutschland',
+    description: 'Durchsuche und finde die perfekten Golfclubs in deiner Nähe'
+};
 
 const ClubsPage = async () => {
     // Daten aus Sanity CMS laden (auf Server-Seite)

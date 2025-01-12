@@ -1,4 +1,10 @@
 import Image from "next/image";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'Willkommen bei Deutschen Golfclubs',
+  description: 'Entdecke die besten Golfplätze in Deutschland - von Anfängern bis Profis'
+};
 
 export default function Home() {
   return (

@@ -77,7 +77,7 @@ export async function getGolfClubs() {
         zahlungsStatus
     }`);
 
-    //  console.log("Golfclub-Daten aus Sanity:", clubs);
+      console.log("Golfclub-Daten aus Sanity:", clubs);
 
     return clubs;
 }

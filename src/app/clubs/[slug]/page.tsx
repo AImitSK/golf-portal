@@ -13,11 +13,35 @@ import MembershipTable from "@/components/clubs/MembershipTable";
 import TournamentTable from "@/components/clubs/TournamentTable";
 import ClubMap from "@/components/clubs/ClubMap";
 import ClubContact from "@/components/clubs/ClubContact";
-import type { GolfClub } from "@/types/club-types";
+import type { ClubDetailPageProps, GolfClub } from "@/types/club-types";
+import { Metadata } from "next";
 
-interface ClubDetailPageProps {
-    params: {
-        slug: string;
+
+
+export async function generateMetadata({ params }: ClubDetailPageProps): Promise<Metadata> {
+    const clubs = await getGolfClubs();
+    const club = clubs.find((c: GolfClub) => c.slug === params.slug);
+
+    if (!club) {
+        return {
+            title: 'Golfclub nicht gefunden'
+        };
+    }
+
+    return {
+        title: club.seo?.title || club.title,
+        description: club.seo?.description || club.beschreibung,
+        keywords: club.seo?.keywords?.join(', '),
+        openGraph: {
+            title: club.seo?.title || club.title,
+            description: club.seo?.description || club.beschreibung,
+            images: [{
+                url: club.image || '',
+                width: 1200,
+                height: 630,
+                alt: club.title
+            }]
+        }
     };
 }
 
@@ -97,7 +121,7 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             </Heading>
                             <div className="prose prose-lg max-w-none text-dark-60">
                                 <p>
-                                    Der 2011 vom legendären Robert Trend Jones Jr. errichtete Platz bietet mehrere Höhenunterschiede, die die Spieler mit herrlichen Ausblicken auf das Meer erfreuen, sowie 2 Löcher entlang der historischen Navarino Bay. Der Platz ist etwas kürzer als der The Dunes Course und verläuft durch 3 verschiedene Naturlandschaften: Meer, Canyon und Hain. Daher bietet er den Golfern Kontraste, die einen dramatischen und unvergesslichen Platz schaffen. Die natürliche Schönheit der Bucht zeigt sich am 4. Loch, einem kurzen und strategischen Par 4 mit der Stadt Pylos und dem tiefblauen Meer im Hintergrund.
+                                    {club.beschreibung ? club.beschreibung : "Keine Informationen über den Club vorhanden."}
                                 </p>
                             </div>
                         </div>
@@ -105,7 +129,7 @@ async function ClubDetailPage({ params }: ClubDetailPageProps) {
                         {/* Maps Section */}
                         <div className="mb-12">
                             <Heading level={2} variant="section">
-                                Lage
+                            Lage
                             </Heading>
                             <ClubMap club={club} />
                         </div>
