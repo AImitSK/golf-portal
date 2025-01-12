@@ -52,17 +52,17 @@ export default function NavigationWithHamburger() {
                                 <div className="py-1">
                                     <DisclosureButton
                                         as="a"
-                                        href="#"
+                                        href="/clubs"
                                         className="block px-4 py-2 text-sm text-dark-green hover:bg-gray-100"
                                     >
-                                        Dashboard
+                                        Golfclubs
                                     </DisclosureButton>
                                     <DisclosureButton
                                         as="a"
-                                        href="#"
+                                        href="/kooperationen"
                                         className="block px-4 py-2 text-sm text-dark-green hover:bg-gray-100"
                                     >
-                                        Team
+                                        Koopreration
                                     </DisclosureButton>
                                     <DisclosureButton
                                         as="a"

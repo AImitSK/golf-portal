@@ -177,6 +177,14 @@ export interface GolfClub {
 }
 
 export interface Kooperation {
-    name: string;
-    logo?: string;
+    name: string; // Name der Kooperation
+    logo?: {
+        _type: string; // Typ des Logos (z. B. "image")
+        asset: {
+            _ref: string; // Referenz zum Bild-Asset
+            _type: string; // Typ des Assets (z. B. "reference")
+        };
+    }; // Logo der Kooperation
+    beschreibung?: string; // Beschreibung der Kooperation
+    typ?: string; // Typ der Kooperation (z. B. "Greenfee-Ermäßigung")
 }
