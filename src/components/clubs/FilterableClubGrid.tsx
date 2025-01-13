@@ -8,7 +8,7 @@ import { ActiveFilters } from "./ActiveFilters";
 import { GolfClub, FilterValue, TagFilters, GeoFilterValue } from "@/types/club-types";
 import { calculateDistance } from "@/utils/geo-utils";
 
-// Hier kommt die neue getNestedValue Funktion hin:
+// Hilfsfunktion für verschachtelte Werte:
 const getNestedValue = (obj: unknown, path: string): unknown => {
     if (!obj || typeof obj !== 'object') return undefined;
 
@@ -134,14 +134,22 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
     return (
         <div className="mx-auto max-w-[1280px] px-2 sm:px-4 lg:px-8 space-y-6">
             {Object.keys(filterCriteria).length > 0 && (
-                <div className="w-full -mt-6">
-                    <div className="border-b border-gray-200">
-                        <div className="py-4">
-                            <ActiveFilters
-                                filters={filterCriteria}
-                                onRemoveFilter={handleRemoveFilter}
-                                onResetAll={handleResetAll}
-                            />
+                <div className="w-full mt-4">
+                    {/* Abstand von 16 Pixel */}
+                    <div className="">
+                        <div className="flex justify-between items-start py-2 gap-4">
+                            {/* Aktive Filter */}
+                            <div>
+                                <ActiveFilters
+                                    filters={filterCriteria}
+                                    onRemoveFilter={handleRemoveFilter}
+                                    onResetAll={handleResetAll}
+                                />
+                            </div>
+                            {/* Ergebnisse */}
+                            <div className="bg-cta-green text-white text-sm font-semibold py-1 px-5 rounded-full flex items-center">
+                                Ergebnisse: {filteredClubs.length}
+                            </div>
                         </div>
                     </div>
                 </div>
