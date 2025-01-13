@@ -1,5 +1,3 @@
-// src/types/club-types.d.ts
-
 // GeoFilter Typen
 export interface GeoFilterValue {
     lat: number;
@@ -82,22 +80,39 @@ export interface SEO {
     description?: string;
 }
 
+// Galerie Bild Type
+export interface GalleryImage {
+    asset: {
+        url: string;
+    };
+    beschreibung?: string | null;
+    alt?: string | null;
+}
+
+// Erweiterung der Kooperation-Schnittstelle
+export interface Kooperation {
+    _id: string; // ID der Kooperation
+    name: string; // Name der Kooperation
+    details: string; // Beschreibung der Kooperation
+    logo?: string; // Logo-URL der Kooperation (optional)
+    slug: string; // Slug für Verlinkungen zur Detailseite
+    beschreibung?: string; // Detaillierte Beschreibung (optional)
+    typ?: string; // Typ der Kooperation, falls erforderlich
+    website?: string; // Optionale Website
+    gueltigkeitszeitraum?: string; // Optional: Zeitraum der Gültigkeit
+    ansprechpartner?: string; // Optional: Ansprechpartner
+    kontaktEmail?: string; // Optional: Kontakt-Email-Adresse
+}
+
 // Golf Club Typ
 export interface GolfClub {
     title: string; // Titel des Golfclubs
     slug: string; // URL-Slug des Clubs
     image?: string; // Optional: Bild-URL des Clubs
     city: string; // Stadt des Clubs
-    // Kontaktdaten
-    clubWebsite?: string; // Club-Website URL
-    clubEmail?: string; // E-Mail-Adresse des Clubs
-    clubTelefon?: string; // Telefonnummer des Clubs
-    uebungsanlagen?: string[];
 
-
-    // Kooperation
-    kooperationen?: Kooperation[];
-
+    // Kooperationen
+    kooperationen?: Kooperation[]; // Liste der Kooperationen
 
     // Adresse des Clubs
     adresse?: Address; // Adresse mit Ort, Straße, Land, PLZ und Geo-Information
@@ -111,7 +126,7 @@ export interface GolfClub {
     slope?: number; // Steigungsbewertung
     platztyp?: string; // Typ des Golfplatzes (z. B. Parkland, Links)
     besonderheiten?: string[]; // Besondere Eigenschaften des Platzes
-    schwierigkeitsgrad?: string;
+    schwierigkeitsgrad?: string; // Schwierigkeitsgrad
 
     // Aktuelles Modell des Golfclubs
     aktuellesModell?: {
@@ -131,6 +146,9 @@ export interface GolfClub {
 
     // SEO-Daten
     seo?: SEO; // SEO-Metadaten wie Titel und Beschreibung
+
+    // Galerie-Bilder
+    galerie?: GalleryImage[]; // Optional: Bildergalerie des Golfclubs
 }
 
 // Map Component Props Types
@@ -141,57 +159,14 @@ export interface MapInteractionProps {
     tabIndex?: number;
 }
 
+// Props für die Galerie-Komponente
+export interface ClubGalleryProps {
+    images: GalleryImage[];
+}
+
 // Props für die Club-Detailseite
 export interface ClubDetailPageProps {
     params: {
         slug: string;
     };
 }
-
-// Erweitere club-types.d.ts um:
-
-// Galerie Bild Type
-export interface GalleryImage {
-    asset: {
-        url: string;
-    };
-    beschreibung?: string | null;
-    alt?: string | null;
-}
-
-// Props für die Galerie-Komponente
-export interface ClubGalleryProps {
-    images: GalleryImage[];
-}
-
-export interface Uebungsanlagen {
-    // Definiere hier die Eigenschaften für Übungsanlagen
-}
-
-export interface Uebungsanlagen {
-    // Definiere hier die Eigenschaften für Übungsanlagen
-}
-
-export interface GolfClub {
-    uebungsanlagen?: Uebungsanlagen;
-}
-
-export type Kooperation = {
-    _type: string;
-    beschreibung: string;
-    logo?: string; // Geändert: Vereinfacht zu string, da wir die URL direkt bekommen
-    name: string;
-    typ: string;
-    slug: string; // Geändert: Vereinfacht zu string statt { current: string }
-};
-
-// Wenn du die Detail Props auch anpassen möchtest:
-type KooperationDetailProps = {
-    kooperation: {
-        name: string;
-        beschreibung: string;
-        logo?: string; // Geändert: Vereinfacht zu string
-        typ: string;
-        slug: string;
-    } | null;
-};

@@ -78,6 +78,7 @@ const CLUB_PROJECTION = `{
     zahlungsStatus,
     kooperationen[]->{
         name,
+        "slug": slug.current, // Der slug ist hier eingefügt
         "logo": logo.asset->url
     }
 }`;
@@ -98,7 +99,6 @@ export async function getGolfClubBySlug(slug: string) {
 
 export async function searchGolfClubs(searchTerm: string) {
     try {
-        // Spezielle, reduzierte Projektion für Suchergebnisse
         const searchProjection = `{
             _id,
             title,

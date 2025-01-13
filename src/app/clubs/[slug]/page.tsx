@@ -19,6 +19,7 @@ import ClubContact from "@/components/clubs/ClubContact";
 import { ClubGallery } from "@/components/clubs/ClubGallery";
 import { Cooperations } from '@/components/clubs/Cooperations';
 
+
 export async function generateMetadata({ params }: ClubDetailPageProps): Promise<Metadata> {
     const clubs = await getGolfClubs();
     const club = clubs.find((c: GolfClub) => c.slug === params.slug);
@@ -132,7 +133,6 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             <ClubGallery images={club.bildergalerie}/>
                         )}
 
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
                             {/* Besonderheiten */}
                             {club.besonderheiten && club.besonderheiten.length > 0 && (
@@ -165,7 +165,6 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             )}
                         </div>
 
-
                         {/* Maps Section */}
                         <div className="mb-12">
                             <Heading level={2} variant="section">
@@ -191,14 +190,8 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                             </div>
                         </div>
 
-                        {/* Tables Grid */}
-                        <div className="mb-12 mt-20">
-                            <Heading level={2} variant="section">
-                                Kooperationen
-                            </Heading>
-                            <Cooperations cooperations={club.kooperationen || []}/>
-                        </div>
-
+                        {/* Kooperationen Section */}
+                        <Cooperations cooperations={club.kooperationen} />
 
                     </div>
                 </div>
