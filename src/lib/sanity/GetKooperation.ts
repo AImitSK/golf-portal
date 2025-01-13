@@ -29,6 +29,16 @@ const KOOPERATION_QUERY = `{
     }
 }`;
 
+// Reduzierte Projektion für die Suche
+const SEARCH_PROJECTION = `{
+    _id,
+    name,
+    "slug": slug.current,
+    typ,
+    "logo": logo.asset->url,
+    beschreibung
+}`;
+
 /**
  * Holt alle Kooperationen aus der Datenbank
  */
@@ -83,5 +93,35 @@ export async function getKooperationByType(typ: string) {
     } catch (error) {
         console.error(`Fehler beim Abrufen der Kooperationen vom Typ "${typ}":`, error);
         throw error;
+    }
+}
+
+/**
+ * Sucht nach Kooperationen basierend auf einem Suchbegriff
+ * @param searchTerm Der Suchbegriff
+ * @returns Array von gefundenen Kooperationen mit reduzierter Projektion
+ */
+export async function searchKooperationen(searchTerm: string) {
+    try {
+        const kooperationen = await sanityClient.fetch(
+            `*[_type == "kooperation" && (
+                name match $searchTerm || 
+                beschreibung match $searchTerm ||
+                typ match $searchTerm
+            )]${SEARCH_PROJECTION} | score(
+                boost(name match $searchTerm, 3),
+                boost(typ match $searchTerm, 2),
+                boost(beschreibung match $searchTerm, 1)
+            ) | order(_score desc) [0...10]`,
+            {
+                searchTerm: `*${searchTerm}*`
+            }
+        );
+
+        console.log(`Suchergebnisse für "${searchTerm}":`, kooperationen);
+        return kooperationen;
+    } catch (error) {
+        console.error('Fehler bei der Kooperationen-Suche:', error);
+        return [];
     }
 }
