@@ -2,7 +2,6 @@
 import React from "react";
 import { Kooperation } from "@/types/club-types";
 import Link from "next/link";
-import Image from "next/image";
 
 type KoopCardProps = {
     kooperation: Kooperation;

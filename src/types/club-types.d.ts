@@ -179,30 +179,18 @@ export interface GolfClub {
 export type Kooperation = {
     _type: string;
     beschreibung: string;
-    logo?: {
-        _type: string;
-        asset: {
-            _ref: string;
-            _type: string;
-        };
-    };
+    logo?: string; // Geändert: Vereinfacht zu string, da wir die URL direkt bekommen
     name: string;
     typ: string;
-    slug: {
-        current: string; // So wird der Slug korrekt typisiert
-    };
+    slug: string; // Geändert: Vereinfacht zu string statt { current: string }
 };
 
+// Wenn du die Detail Props auch anpassen möchtest:
 type KooperationDetailProps = {
     kooperation: {
         name: string;
         beschreibung: string;
-        logo?: {
-            asset: {
-                _ref: string;
-                _type: string;
-            };
-        };
+        logo?: string; // Geändert: Vereinfacht zu string
         typ: string;
         slug: string;
     } | null;
