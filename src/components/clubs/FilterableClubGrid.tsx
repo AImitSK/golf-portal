@@ -134,7 +134,7 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
     return (
         <div className="mx-auto max-w-[1280px] px-2 sm:px-4 lg:px-8 space-y-6">
             {Object.keys(filterCriteria).length > 0 && (
-                <div className="w-full mt-4">
+                <div className="w-full mt-0">
                     {/* Abstand von 16 Pixel */}
                     <div className="">
                         <div className="flex justify-between items-start py-2 gap-4">
@@ -148,7 +148,7 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
                             </div>
                             {/* Ergebnisse */}
                             <div className="bg-cta-green text-white text-sm font-semibold py-1 px-5 rounded-full flex items-center">
-                                Ergebnisse: {filteredClubs.length}
+                               {filteredClubs.length}
                             </div>
                         </div>
                     </div>
