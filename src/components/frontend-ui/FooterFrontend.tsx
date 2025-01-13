@@ -4,45 +4,37 @@ import React from 'react';
 import Image from 'next/image'; // Falls Sie Next.js verwenden
 
 const navigation = {
-    solutions: [
-        { name: 'Dashboard', href: '/dashboard' },
-        { name: 'Analytics', href: '#' },
-        { name: 'Automation', href: '#' },
-        { name: 'Commerce', href: '#' },
-        { name: 'Insights', href: '#' },
+    listen: [
+        { name: '100 besten Golfplätze ', href: '#' },
+        { name: 'besten Golfplätze Deutschlands', href: '#' },
+        { name: 'Golfplatz in der Nähe', href: '#' },
+        { name: 'top 10 Golfplätze Deutschland', href: '#' },
+        { name: 'bester Greenfee Verbund', href: '#' },
+        { name: 'Golfclub Kooperationen', href: '#' },
+
     ],
-    support: [
-        { name: 'Submit ticket', href: '#' },
-        { name: 'Documentation', href: '#' },
-        { name: 'Guides', href: '#' },
+    städte: [
+        { name: 'Golfplätz Hamburg', href: '#' },
+        { name: 'Golfplätz Berlin', href: '#' },
+        { name: 'Golfplätz München', href: '#' },
+        { name: 'Golfplätz Sylt', href: '#' },
+        { name: 'Golfplätz Rostock', href: '#' },
+        { name: 'Golfplätz Hannover', href: '#' },
     ],
-    company: [
-        { name: 'About', href: '#' },
-        { name: 'Blog', href: '#' },
-        { name: 'Jobs', href: '#' },
-        { name: 'Press', href: '#' },
+    Persöhnliches: [
+        { name: 'Wunschliste', href: '#' },
+        { name: 'Course List', href: '#' },
+        { name: 'Scoreboard', href: '#' },
+        { name: 'Login', href: '#' },
     ],
-    legal: [
-        { name: 'Terms of service', href: '#' },
-        { name: 'Privacy policy', href: '#' },
-        { name: 'License', href: '#' },
+    Allgemein: [
+        { name: 'Datenschutz', href: '#' },
+        { name: 'Impressum', href: '#' },
+        { name: 'Cookie Einstellungen', href: '#' },
+        { name: 'Login für Golfplätze', href: '#' },
+        { name: 'Mediadaten', href: '#' },
     ],
-    social: [
-        {
-            name: 'Facebook',
-            href: '#',
-            icon: (props: React.SVGProps<SVGSVGElement>) => (
-                <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
-                    <path
-                        fillRule="evenodd"
-                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                        clipRule="evenodd"
-                    />
-                </svg>
-            ),
-        },
-        // Weitere soziale Links...
-    ],
+
 };
 
 export default function FooterFrontend() {
@@ -51,7 +43,7 @@ export default function FooterFrontend() {
             <div className="container mx-auto max-w-[1280px] py-10 px-10">
                 <div className="flex flex-wrap -mx-6">
                     {/* Logo und Beschreibung */}
-                    <div className="w-full lg:w-1/3 px-6 mb-6 lg:mb-0">
+                    <div className="w-full lg:w-1/5 px-6 mb-6 lg:mb-0">
                         <Image
                             src="/logo_course_list.svg" // Nutzen Sie hier die URL direkt
                             alt="Logo"
@@ -59,13 +51,11 @@ export default function FooterFrontend() {
                             height={50} // Die Höhe des Logos
                             priority
                         />
-                        <p className="mt-4 text-sm">
-                            Willkommen bei unserem Unternehmen. Unser Ziel ist es, innovative Lösungen bereitzustellen, die Ihre Anforderungen übertreffen.
-                        </p>
+
                     </div>
 
                     {/* Navigation */}
-                    <div className="w-full lg:w-2/3 px-6">
+                    <div className="w-full lg:w-4/5 px-6">
                         <div className="flex flex-wrap justify-between">
                             {Object.entries(navigation).map(([section, links]) => (
                                 <div key={section} className="w-1/2 lg:w-1/4 mb-6">
@@ -90,7 +80,7 @@ export default function FooterFrontend() {
 
                 {/* Footer-Unterschrift */}
                 <div className="mt-10 border-t border-gray-400 pt-4 text-center text-sm text-gray-300">
-                    © {new Date().getFullYear()} Ihr Unternehmen. Alle Rechte vorbehalten.
+                    © {new Date().getFullYear()} course list. Alle Rechte vorbehalten.
                 </div>
             </div>
         </footer>
