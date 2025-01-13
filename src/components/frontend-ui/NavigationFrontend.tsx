@@ -63,6 +63,18 @@ export default function NavigationWithHamburger() {
                                             </Link>
                                         )}
                                     </Menu.Item>
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <Link
+                                                href="/pricing"
+                                                className={`block px-4 py-2 text-sm text-dark-green ${
+                                                    active ? 'bg-gray-100' : ''
+                                                }`}
+                                            >
+                                                Pricing
+                                            </Link>
+                                        )}
+                                    </Menu.Item>
                                 </div>
                             </Menu.Items>
                         </Menu>

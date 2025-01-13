@@ -170,3 +170,4 @@ export interface ClubDetailPageProps {
         slug: string;
     };
 }
+
