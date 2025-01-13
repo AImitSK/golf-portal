@@ -192,3 +192,18 @@ export type Kooperation = {
         current: string; // So wird der Slug korrekt typisiert
     };
 };
+
+type KooperationDetailProps = {
+    kooperation: {
+        name: string;
+        beschreibung: string;
+        logo?: {
+            asset: {
+                _ref: string;
+                _type: string;
+            };
+        };
+        typ: string;
+        slug: string;
+    } | null;
+};

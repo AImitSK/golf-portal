@@ -1,62 +1,87 @@
-// import { client } from './client';
+// src/lib/sanity/GetKooperation.ts
 import sanityClient from "@/lib/sanityClient";
 
-// Alle Kooperationen abrufen
-export async function getKooperation() {
-    // Fetch alle Kooperationen aus Sanity
-    // Slug wird hinzugefügt, um URLs für die Links zu generieren
-    const clubs = await sanityClient.fetch(`*[_type == "kooperation"]{
-        _type,
-        beschreibung,
-        logo{
-          _type,
-          asset{
-            _ref,
-            _type
-          }
-        },
-        name,
-        typ,
-        slug // Abruf des Felds "slug"
-    }`);
+const KOOPERATION_QUERY = `{
+    _type,
+    _id,
+    name,
+    beschreibung,
+    typ,
+    "slug": slug.current,
+    "logo": logo.asset->url,
+    website,
+    gueltigkeitszeitraum,
+    ansprechpartner,
+    kontaktEmail,
+    "clubs": *[_type == "golfclub" && references(^._id)]{
+        title,
+        "slug": slug.current,
+        adresse{
+            strasse,
+            hausnummer,
+            plz,
+            ort,
+            location{
+                lat,
+                lng
+            }
+        }
+    }
+}`;
 
-    // Fallback für fehlende Slugs (für ältere oder fehlerhafte Daten)
-    return clubs.map((club: any) => ({
-        ...club,
-        // Sicherstellen, dass slug ein gültiger Wert ist
-        slug: club.slug?.current || null
-    }));
+/**
+ * Holt alle Kooperationen aus der Datenbank
+ */
+export async function getKooperation() {
+    try {
+        const kooperationen = await sanityClient.fetch(
+            `*[_type == "kooperation"]${KOOPERATION_QUERY}`
+        );
+
+        console.log("Alle Kooperationen:", kooperationen);
+        return kooperationen;
+    } catch (error) {
+        console.error('Fehler beim Abrufen aller Kooperationen:', error);
+        throw error;
+    }
 }
 
-// Einzelne Kooperation basierend auf ihrem Slug abrufen
+/**
+ * Holt eine spezifische Kooperation anhand ihres Slugs
+ */
 export async function getKooperationBySlug(slug: string) {
-    // Fetch Kooperation basierend auf dem Slug
-    const kooperation = await sanityClient.fetch(
-        `*[_type == "kooperation" && slug.current == $slug][0]{
-          _type,
-          beschreibung,
-          logo{
-            _type,
-            asset{
-              _ref,
-              _type
-            }
-          },
-          name,
-          typ,
-          slug // Abruf des Felds "slug"
-        }`,
-        { slug }
-    );
+    try {
+        const kooperation = await sanityClient.fetch(
+            `*[_type == "kooperation" && slug.current == $slug][0]${KOOPERATION_QUERY}`,
+            { slug }
+        );
 
-    // Sicherheitsprüfung für Abfrageergebnis (falls slug nicht existiert oder falsch ist)
-    if (!kooperation) {
-        console.error(`Kooperation mit dem Slug "${slug}" wurde nicht gefunden.`);
-        return null;
+        if (!kooperation) {
+            console.error(`Kooperation mit dem Slug "${slug}" wurde nicht gefunden.`);
+            return null;
+        }
+
+        console.log("Gefundene Kooperation:", kooperation);
+        return kooperation;
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Kooperation:', error);
+        throw error;
     }
+}
 
-    return {
-        ...kooperation,
-        slug: kooperation.slug?.current || null // Falls slug fehlt, Fallback zu null
-    };
+/**
+ * Holt alle Kooperationen eines spezifischen Typs
+ */
+export async function getKooperationByType(typ: string) {
+    try {
+        const kooperationen = await sanityClient.fetch(
+            `*[_type == "kooperation" && typ == $typ]${KOOPERATION_QUERY}`,
+            { typ }
+        );
+
+        return kooperationen;
+    } catch (error) {
+        console.error(`Fehler beim Abrufen der Kooperationen vom Typ "${typ}":`, error);
+        throw error;
+    }
 }

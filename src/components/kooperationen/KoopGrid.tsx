@@ -1,3 +1,4 @@
+// src/components/kooperationen/KoopGrid.tsx
 import React from "react";
 import { KoopCard } from "./KoopCard";
 import { Kooperation } from "@/types/club-types";
@@ -8,10 +9,9 @@ type KoopGridProps = {
 
 const KoopGrid: React.FC<KoopGridProps> = ({ kooperationen }) => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {kooperationen.map((koop) => (
-                // Verwende slug.current sicher als string
-                <KoopCard key={koop.slug.current} kooperation={koop} />
+                <KoopCard key={koop.slug} kooperation={koop} />
             ))}
         </div>
     );

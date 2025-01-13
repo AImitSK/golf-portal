@@ -1,33 +1,41 @@
-// src/app/kooperation/page.tsx
+// src/app/kooperationen/page.tsx
 import React from "react";
 import { getKooperation } from "@/lib/sanity/GetKooperation";
-
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
-import KoopGrid from "@/components/kooperationen/KoopGrid"; // KORREKTER PFAD
+import KoopGrid from "@/components/kooperationen/KoopGrid";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: 'Alle Golfclubs in Deutschland',
-    description: 'Durchsuche und finde die perfekten Golfclubs in deiner Nähe',
+    title: 'Kooperationen und Partnerschaften',
+    description: 'Entdecken Sie unsere Kooperationspartner und die damit verbundenen Vorteile',
 };
 
 const KooperationPage = async () => {
-    // Daten aus Sanity CMS laden (auf Server-Seite)
     const kooperationen = await getKooperation();
 
     return (
         <>
-            {/* Navigation */}
             <NavigationFrontend />
 
-            {/* Kooperationen Grid */}
-            <div className="container mx-auto px-0 py-6 lg:px-6 xl:px-8">
-                <h1 className="text-2xl font-bold mb-4">Unsere Kooperationen</h1>
-                <KoopGrid kooperationen={kooperationen} />
+            {/* Hero Section */}
+            <div className="bg-gray-50">
+                <div className="max-w-[1280px] mx-auto px-4 py-12 lg:px-8">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                        Unsere Kooperationen
+                    </h1>
+                    <p className="text-lg text-gray-600 max-w-3xl">
+                        Profitieren Sie von unseren starken Partnerschaften und exklusiven Vereinbarungen.
+                        Als Mitglied genießen Sie besondere Vorteile bei allen unseren Kooperationspartnern.
+                    </p>
+                </div>
             </div>
 
-            {/* Footer */}
+            {/* Content Section */}
+            <main className="max-w-[1280px] mx-auto px-4 py-12 lg:px-8">
+                <KoopGrid kooperationen={kooperationen} />
+            </main>
+
             <FooterFrontend />
         </>
     );
