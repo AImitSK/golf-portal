@@ -18,6 +18,8 @@ import ClubMap from "@/components/clubs/ClubMap";
 import ClubContact from "@/components/clubs/ClubContact";
 import { ClubGallery } from "@/components/clubs/ClubGallery";
 import { Cooperations } from '@/components/clubs/Cooperations';
+import Breadcrumbs from "@/components/frontend-ui/Breadcrumbs";
+
 
 
 export async function generateMetadata({ params }: ClubDetailPageProps): Promise<Metadata> {
@@ -68,12 +70,15 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                     {/* Likes Counter */}
                     <div className="absolute bottom-3 left-0 w-full">
                         <div className="container mx-auto max-w-[1280px] px-4 lg:px-8">
-                            <LikesCounter count={1021} />
+                            <LikesCounter count={1021}/>
                         </div>
                     </div>
                 </div>
 
                 {/* Content Container */}
+                <div>
+                    <Breadcrumbs/>
+                </div>
                 <div className="container mx-auto max-w-[1280px] px-4 lg:px-8">
                     <div className="py-8">
                         {/* Header mit Titel und Actions */}
@@ -191,7 +196,7 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                         </div>
 
                         {/* Kooperationen Section */}
-                        <Cooperations cooperations={club.kooperationen} />
+                        <Cooperations cooperations={club.kooperationen}/>
 
                     </div>
                 </div>

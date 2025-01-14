@@ -2,6 +2,7 @@ import React from "react";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import { Metadata } from "next";
+import PlatformStats from "@/components/frontend-ui/CounterBox";
 
 export const metadata: Metadata = {
   title: 'Kooperationen und Partnerschaften',
@@ -23,8 +24,7 @@ const StartSeite = async () => {
             </h1>
            </div>
         </div>
-
-
+        <PlatformStats />
         <FooterFrontend />
       </>
   );
