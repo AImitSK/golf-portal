@@ -7,8 +7,8 @@ type HeadingProps = {
 } & React.HTMLAttributes<HTMLHeadingElement>;
 
 const headingStyles: Record<1 | 2 | 3 | 4, string> = {
-    1: 'text-4xl font-bold text-dark-green',
-    2: 'font-roboto text-dark-green text-[1.5rem] font-semibold leading-[1.4rem] tracking-[0.01125rem]',
+    1: 'font-roboto text-7xl font-bold text-dark-green',
+    2: 'font-roboto text-dark-green text-5xl font-semibold leading-[1.4rem] tracking-[0.01125rem]',
     3: 'text-xl font-medium text-dark-20',
     4: 'text-lg font-normal text-dark-6',
 };
