@@ -12,23 +12,38 @@ interface ClubGridProps {
 
 const ClubGrid: React.FC<ClubGridProps> = ({ clubs, onTagClick }) => {
     const sortedClubs = sortClubs([...clubs]);
-    const clubsWithImageFlag = sortedClubs.map((club, index) => {
-        const isFreeContract = club.aktuellesModell?.name?.toLowerCase() === "free";
-        const isTop5 = index < 5;
-        const showImage = !isFreeContract || isTop5;
-        return { club, showImage };
-    });
+
+    // Teile die Clubs in zwei Gruppen: Top 5 und Rest
+    const topClubs = sortedClubs.slice(0, 5);
+    const remainingClubs = sortedClubs.slice(5);
 
     return (
-        <div className="grid grid-cols-1 gap-8">
-            {clubsWithImageFlag.map(({ club, showImage }, idx) => (
-                <ClubCard
-                    key={idx}
-                    club={club}
-                    showImage={showImage}
-                    onTagClick={onTagClick}
-                />
-            ))}
+        <div className="space-y-8">
+            {/* Top 5 Clubs - Original Layout */}
+            <div className="grid grid-cols-1 gap-8">
+                {topClubs.map((club) => (
+                    <ClubCard
+                        key={club.slug}
+                        club={club}
+                        layout="large"
+                        onTagClick={onTagClick}
+                    />
+                ))}
+            </div>
+
+            {/* Restliche Clubs - Kompaktes Layout mit mehr Abstand */}
+            {remainingClubs.length > 0 && (
+                <div className="grid grid-cols-1 gap-12">
+                    {remainingClubs.map((club) => (
+                        <ClubCard
+                            key={club.slug}
+                            club={club}
+                            layout="compact"
+                            onTagClick={onTagClick}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
