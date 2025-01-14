@@ -1,4 +1,4 @@
-import { ValidationRule } from '@/types/sanity'
+import { ValidationRule } from '@/types/sanity';
 
 export default {
     name: 'kooperation',
@@ -56,6 +56,16 @@ export default {
             title: 'Kontakt Email',
             type: 'string',
             validation: (Rule: ValidationRule) => Rule.email()
+        },
+        {
+            name: 'slug', // Neues Slug-Feld
+            title: 'Slug',
+            type: 'slug',
+            options: {
+                source: 'name', // Der Slug wird automatisch basierend auf dem Name-Feld generiert
+                maxLength: 200, // Maximale Länge des Slugs
+            },
+            validation: (Rule: ValidationRule) => Rule.required() // Slug ist erforderlich
         }
     ]
-}
+};

@@ -22,6 +22,13 @@ export default {
             group: 'basis'
         },
         {
+            name: 'beschreibung',
+            title: 'Beschreibung',
+            type: 'text',
+            description: 'Allgemeine Beschreibung des Golfclubs',
+            group: 'basis'
+        },
+        {
             name: 'slug',
             title: 'Slug',
             type: 'slug',

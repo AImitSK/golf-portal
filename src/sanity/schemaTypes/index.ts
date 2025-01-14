@@ -1,11 +1,11 @@
 // sanity/schemaTypes/index.ts
 import { type SchemaTypeDefinition } from 'sanity'
-import golfclub from './golfclub'
-import administrator from './administrator'
-import vertragsmodell from './vertragsmodell'
-import feature from './feature'
-import land from './land'
-import kooperation from './kooperation'
+import golfclub from '@/sanity/schemaTypes/golfclub'
+import administrator from '@/sanity/schemaTypes/administrator'
+import vertragsmodell from '@/sanity/schemaTypes/vertragsmodell'
+import feature from '@/sanity/schemaTypes/feature'
+import land from '@/sanity/schemaTypes/land'
+import kooperation from '@/sanity/schemaTypes/kooperation'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -14,6 +14,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     vertragsmodell,
     feature,
     land,
-    kooperation,
+    kooperation
   ],
 }
