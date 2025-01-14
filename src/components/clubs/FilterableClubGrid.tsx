@@ -155,7 +155,7 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
     return (
         <div className="mx-auto max-w-[1280px] px-2 sm:px-4 lg:px-8 space-y-6">
             {Object.keys(filterCriteria).length > 0 && (
-                <div className="bg-gray-50 rounded-xl shadow-sm p-6 mb-8">
+                <div className="bg-gray-50 rounded-xl shadow-sm px-6 pt-6 mb-8">
                     {/* Kartenvorschau */}
                     <div className="w-full mb-6">
                         <FilterMapPreview
@@ -165,18 +165,21 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
                     </div>
 
                     {/* Filter und Anzahl */}
-                    <div className="w-full">
-                        <div className="flex justify-between items-start py-2 gap-4">
-                            <div>
-                                <ActiveFilters
-                                    filters={filterCriteria}
-                                    onRemoveFilter={handleRemoveFilter}
-                                    onResetAll={handleResetAll}
-                                />
-                            </div>
-                            <div className="bg-cta-green text-white text-sm font-semibold py-1 px-5 rounded-full flex items-center">
+                    <div className="flex items-start justify-between py-2 gap-4">
+                        <div className="flex flex-wrap gap-2">
+                            <ActiveFilters
+                                filters={filterCriteria}
+                                onRemoveFilter={handleRemoveFilter}
+                                onResetAll={handleResetAll}
+                            />
+                        </div>
+                        <div className="flex items-center">
+                            <div
+                                className="bg-cta-green text-white text-sm font-semibold py-1 px-5 rounded-full"
+                            >
                                 {filteredClubs.length}
                             </div>
+                            <span className="ml-2 text-sm font-semibold text-gray-600">Clubs</span>
                         </div>
                     </div>
                 </div>
