@@ -63,32 +63,12 @@ const HeroSearch: React.FC = () => {
     );
 
     return (
+
+
         <div className="relative w-full max-w-3xl mx-auto">
-            {/* Search Bar Container */}
-            <div className="relative z-10 bg-white/80 backdrop-blur-lg rounded-full shadow-lg">
-                <div className="grid w-full grid-cols-1">
-                    <input
-                        name="search"
-                        type="search"
-                        placeholder="Suche nach Clubs, Städten oder Kooperationen..."
-                        value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                        }}
-                        autoComplete="off"
-                        className={clsx(
-                            'col-start-1 row-start-1 block w-full rounded-full bg-transparent py-3 pl-12 pr-4 text-base text-gray-900 outline-none placeholder:text-gray-500 focus:bg-white focus:text-gray-900 focus:placeholder:text-gray-500 sm:text-sm'
-                        )}
-                    />
-                    <MagnifyingGlassIcon
-                        aria-hidden="true"
-                        className="pointer-events-none col-start-1 row-start-1 ml-4 size-6 self-center text-gray-500"
-                    />
-                </div>
-            </div>
 
             {/* Filter Buttons */}
-            <div className="mt-4 flex justify-center space-x-4">
+            <div className="my-4 flex justify-center space-x-4">
                 {['club', 'kooperation', 'city'].map((filter) => (
                     <button
                         key={filter}
@@ -105,15 +85,50 @@ const HeroSearch: React.FC = () => {
                 ))}
             </div>
 
+            {/* Search Bar Container */}
+            <div className="relative z-10 bg-white/80 backdrop-blur-lg rounded-full shadow-lg">
+                <div className="grid w-full grid-cols-1">
+                    <input
+                        name="search"
+                        type="search"
+                        placeholder="Suche nach Clubs, Städten oder Kooperationen..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                        }}
+                        autoComplete="off"
+                        className={clsx(
+                            'col-start-1 row-start-1 block w-full rounded-full bg-transparent py-3 pl-12 pr-4 text-base outline-none',
+                            searchTerm === ''
+                                ? 'text-white placeholder:text-white' // Weiß im nicht-angeklickten Zustand
+                                : 'text-gray-900 placeholder:text-gray-500', // Grau bei Fokussierung oder Eingabe
+                            'focus:bg-white focus:text-gray-900 focus:placeholder:text-gray-500 sm:text-sm'
+                        )}
+                    />
+                    <MagnifyingGlassIcon
+                        aria-hidden="true"
+                        className={clsx(
+                            'pointer-events-none col-start-1 row-start-1 ml-4 size-6 self-center',
+                            searchTerm === ''
+                                ? 'text-white' // Weiß im nicht-angeklickten Zustand
+                                : 'text-gray-500' // Grau bei Fokussierung oder Eingabe
+                        )}
+                    />
+                </div>
+            </div>
+
+
             {/* Results Dropdown */}
             {isLoading && (
-                <div className="absolute top-16 w-full bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-auto z-40 px-4 py-2 text-sm text-gray-500">
+                <div
+                    className="absolute top-16 w-full bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-auto z-40 px-4 py-2 text-sm text-gray-500">
                     Suche läuft...
                 </div>
             )}
 
             {filteredResults.length > 0 && (
-                <div className="absolute top-16 w-full bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-auto z-40">
+                <div
+                    className="absolute top-16 w-full bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-auto z-40">
                     <div className="py-2">
                         {filteredResults.map((result) => (
                             <Link

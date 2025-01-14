@@ -52,7 +52,8 @@ const StartPage = () => {
             <NavigationFrontend/>
 
             {/* Hero Section */}
-            <div className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-40 lg:px-8 h-screen flex items-start justify-center">
+            <div
+                className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-40 lg:px-8 h-screen flex items-start justify-center">
                 <img
                     alt=""
                     src="/gcl-hero.jpg"
@@ -60,7 +61,7 @@ const StartPage = () => {
                 />
 
                 <div className="mx-auto max-w-3xl text-center">
-                    <Heading level={1}>
+                    <Heading level={1} className="text-7xl font-bold text-dark-green">
                         Deutschlands schönsten Golfplätze
                     </Heading>
                     <p className="mt-8 text-lg font-medium text-gray-900 sm:text-xl/8">
@@ -69,20 +70,21 @@ const StartPage = () => {
                         fugiat veniam occaecat fugiat.
                     </p>
                     <div className="mt-8 max-w-md mx-auto">
-                        <HeroSearch />
+                        <HeroSearch/>
                     </div>
                 </div>
             </div>
 
             {/* Features Section */}
             <div className="bg-white py-24 sm:py-32">
-                <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="mx-auto max-w-2xl lg:mx-0">
-                        <Heading level={2} variant="section">
+                <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+                    <div className="mx-auto max-w-2xl">
+                        <Heading level={2} className="text-5xl">
                             Alles was Sie brauchen
                         </Heading>
                         <p className="mt-6 text-lg/8 text-gray-600">
-                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste
+                            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis
+                            suscipit eaque, iste
                             dolor cupiditate blanditiis.
                         </p>
                     </div>
@@ -90,9 +92,11 @@ const StartPage = () => {
                         {features.map((feature) => (
                             <div key={feature.name} className="relative pl-9">
                                 <dt className="inline font-semibold text-gray-900">
-                                    <feature.icon aria-hidden="true" className="absolute left-1 top-1 size-5 text-green-600" />
+                                    <feature.icon aria-hidden="true"
+                                                  className="absolute left-1 top-1 size-5 text-green-600"/>
                                     {feature.name}
-                                </dt>{' '}
+                                </dt>
+                                {' '}
                                 <dd className="inline">{feature.description}</dd>
                             </div>
                         ))}

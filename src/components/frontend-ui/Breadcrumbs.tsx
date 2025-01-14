@@ -36,7 +36,7 @@ export default function Breadcrumbs() {
     });
 
     return (
-        <nav aria-label="Breadcrumb" className="flex py-2 px-6 bg-gray-50">
+        <nav aria-label="Breadcrumb" className="flex py-2 px-6">
             <ol role="list" className="flex items-center space-x-4">
                 <li>
                     <Link
