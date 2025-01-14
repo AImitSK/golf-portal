@@ -1,3 +1,4 @@
+// src/components/clubs/FilterableClubGrid.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -5,13 +6,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from "framer-motion";
 import ClubGrid from "@/components/clubs/ClubGrid";
 import { ActiveFilters } from "./ActiveFilters";
+import { FilterMapPreview } from './FilterMapPreview';
 import { GolfClub, FilterValue, TagFilters, GeoFilterValue } from "@/types/club-types";
 import { calculateDistance } from "@/utils/geo-utils";
 
-// Hilfsfunktion für verschachtelte Werte:
 const getNestedValue = (obj: unknown, path: string): unknown => {
     if (!obj || typeof obj !== 'object') return undefined;
-
     return path.split('.').reduce((acc: unknown, key: string) => {
         if (acc === null || acc === undefined || typeof acc !== 'object') {
             return undefined;
@@ -20,7 +20,6 @@ const getNestedValue = (obj: unknown, path: string): unknown => {
     }, obj);
 };
 
-// URL-Handling-Funktionen
 const encodeFilters = (filters: TagFilters): string => {
     return encodeURIComponent(JSON.stringify(filters));
 };
@@ -43,7 +42,6 @@ const decodeFilters = (encoded: string | null): TagFilters => {
     }
 };
 
-// Type Guard für GeoFilterValue
 const isGeoFilterValue = (value: unknown): value is GeoFilterValue => {
     if (typeof value !== 'object' || value === null) return false;
     const candidate = value as Record<string, unknown>;
@@ -65,11 +63,16 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
                                                                }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [displayCount, setDisplayCount] = useState(10);
 
     const [filterCriteria, setFilterCriteria] = useState<TagFilters>(() => {
         const urlFilters = decodeFilters(searchParams.get('filters'));
         return Object.keys(urlFilters).length > 0 ? urlFilters : initialFilterCriteria;
     });
+
+    useEffect(() => {
+        setDisplayCount(10);
+    }, [filterCriteria]);
 
     useEffect(() => {
         const newUrl = Object.keys(filterCriteria).length > 0
@@ -83,6 +86,12 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
             ...prev,
             [fieldName]: value
         }));
+
+        // Smooth scroll nach oben
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     };
 
     const handleRemoveFilter = (fieldName: string) => {
@@ -91,35 +100,45 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
             delete newFilters[fieldName];
             return newFilters;
         });
+
+        // Smooth scroll nach oben
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     };
 
     const handleResetAll = () => {
         setFilterCriteria({});
+
+        // Smooth scroll nach oben
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
+    const handleLoadMore = () => {
+        setDisplayCount(prev => prev + 10);
     };
 
     const filteredClubs = initialClubs.filter((club) => {
         return Object.entries(filterCriteria).every(([key, filterValue]) => {
-            // Geo-Filter Handling
             if (key === 'geoFilter') {
                 if (!isGeoFilterValue(filterValue)) return false;
-
                 const { lat, lng, radius } = filterValue;
                 const clubLocation = club.adresse?.location;
                 if (!clubLocation?.lat || !clubLocation?.lng) return false;
-
                 const distance = calculateDistance(
                     lat,
                     lng,
                     clubLocation.lat,
                     clubLocation.lng
                 );
-
                 return distance <= radius;
             }
 
-            // Normale Filter
             const clubValue = getNestedValue(club, key);
-
             if (clubValue === undefined || clubValue === null) return false;
             if (Array.isArray(clubValue)) {
                 return typeof filterValue === 'string' && clubValue.includes(filterValue);
@@ -131,14 +150,23 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
         });
     });
 
+    const displayedClubs = filteredClubs.slice(0, displayCount);
+
     return (
         <div className="mx-auto max-w-[1280px] px-2 sm:px-4 lg:px-8 space-y-6">
             {Object.keys(filterCriteria).length > 0 && (
-                <div className="w-full mt-0">
-                    {/* Abstand von 16 Pixel */}
-                    <div className="">
+                <div className="bg-gray-50 rounded-xl shadow-sm p-6 mb-8">
+                    {/* Kartenvorschau */}
+                    <div className="w-full mb-6">
+                        <FilterMapPreview
+                            clubs={filteredClubs}
+                            geoFilter={filterCriteria.geoFilter as GeoFilterValue | undefined}
+                        />
+                    </div>
+
+                    {/* Filter und Anzahl */}
+                    <div className="w-full">
                         <div className="flex justify-between items-start py-2 gap-4">
-                            {/* Aktive Filter */}
                             <div>
                                 <ActiveFilters
                                     filters={filterCriteria}
@@ -146,16 +174,15 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
                                     onResetAll={handleResetAll}
                                 />
                             </div>
-                            {/* Ergebnisse */}
                             <div className="bg-cta-green text-white text-sm font-semibold py-1 px-5 rounded-full flex items-center">
-                               {filteredClubs.length}
+                                {filteredClubs.length}
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div>
+            <div className="space-y-8">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={JSON.stringify(filterCriteria)}
@@ -165,11 +192,22 @@ const FilterableClubGrid: React.FC<FilterableClubGridProps> = ({
                         transition={{ duration: 0.2 }}
                     >
                         <ClubGrid
-                            clubs={filteredClubs}
+                            clubs={displayedClubs}
                             onTagClick={handleTagClick}
                         />
                     </motion.div>
                 </AnimatePresence>
+
+                {filteredClubs.length > displayCount && (
+                    <div className="flex justify-center pt-4">
+                        <button
+                            onClick={handleLoadMore}
+                            className="px-6 py-2 bg-dark-green text-white rounded-full hover:bg-cta-green transition-colors duration-200"
+                        >
+                            Weitere Golfclubs laden
+                        </button>
+                    </div>
+                )}
 
                 {filteredClubs.length === 0 && (
                     <motion.div

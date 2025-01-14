@@ -31,18 +31,32 @@ const ClubGrid: React.FC<ClubGridProps> = ({ clubs, onTagClick }) => {
                 ))}
             </div>
 
-            {/* Restliche Clubs - Kompaktes Layout mit mehr Abstand */}
             {remainingClubs.length > 0 && (
-                <div className="grid grid-cols-1 gap-12">
-                    {remainingClubs.map((club) => (
-                        <ClubCard
-                            key={club.slug}
-                            club={club}
-                            layout="compact"
-                            onTagClick={onTagClick}
-                        />
-                    ))}
-                </div>
+                <>
+                    {/* Subtiler Divider */}
+                    <div className="relative py-4">
+                        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div className="w-full border-t border-dark-green/10"></div>
+                        </div>
+                        <div className="relative flex justify-center">
+                            <span className="bg-white px-4 text-sm text-dark-green/60">
+                                Weitere Golfclubs
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Restliche Clubs - Kompaktes Layout */}
+                    <div className="grid grid-cols-1 gap-12">
+                        {remainingClubs.map((club) => (
+                            <ClubCard
+                                key={club.slug}
+                                club={club}
+                                layout="compact"
+                                onTagClick={onTagClick}
+                            />
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );

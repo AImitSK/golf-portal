@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 import { Geist, Geist_Mono } from "next/font/google";
+import { ScrollToTop } from '@/components/common/ScrollToTop';
 import "./globals.css";
 import { Metadata } from "next";
 
@@ -21,8 +22,6 @@ const geistMono = Geist_Mono({
     subsets: ["latin"],
 });
 
-
-
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
@@ -33,6 +32,7 @@ export default function RootLayout({
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {/* Hauptinhalt der Seite */}
         {children}
+        <ScrollToTop />
         </body>
         </html>
     );
