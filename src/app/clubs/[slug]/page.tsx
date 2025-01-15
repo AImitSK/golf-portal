@@ -76,9 +76,7 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                 </div>
 
                 {/* Content Container */}
-                <div>
-                    <Breadcrumbs/>
-                </div>
+
                 <div className="container mx-auto max-w-[1280px] px-4 lg:px-8">
                     <div className="py-8">
                         {/* Header mit Titel und Actions */}

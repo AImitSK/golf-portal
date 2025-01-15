@@ -9,7 +9,6 @@ import { KoopDescription } from "@/components/kooperationen/KoopDescription";
 import { KoopClubList } from "@/components/kooperationen/KoopClubList";
 import { KoopSidebar } from "@/components/kooperationen/KoopSidebar";
 import { Metadata } from "next";
-import Breadcrumbs from "@/components/frontend-ui/Breadcrumbs";
 import React from "react";
 
 interface PageProps {
@@ -65,9 +64,7 @@ export default async function KooperationPage({ params }: PageProps) {
         return (
             <>
                 <NavigationFrontend/>
-                <div>
-                    <Breadcrumbs/>
-                </div>
+
 
                 <KoopHero
                     name={kooperation.name}

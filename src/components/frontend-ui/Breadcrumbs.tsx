@@ -37,12 +37,12 @@ export default function Breadcrumbs() {
 
 
     return (
-        <nav aria-label="Breadcrumb" className="flex py-2 px-6">
+        <nav aria-label="Breadcrumb" className="flex py-2 px-6 max-w-[1280px] mx-auto bg-gray-50">
             <ol role="list" className="flex items-center space-x-4">
                 <li>
                     <Link
                         href="/"
-                        className="text-gray-400 hover:text-gray-500"
+                        className="text-gray-400 hover:text-gray-500 uppercase tracking-wide"
                     >
                         <HomeIcon aria-hidden="true" className="size-5 shrink-0" />
                         <span className="sr-only">Startseite</span>
@@ -53,15 +53,15 @@ export default function Breadcrumbs() {
                         <div className="flex items-center">
                             <ChevronRightIcon
                                 aria-hidden="true"
-                                className="size-5 shrink-0 text-gray-400"
+                                className="size-5 shrink-0 text-gray-400 uppercase tracking-wide"
                             />
                             <Link
                                 href={page.href}
                                 aria-current={page.current ? 'page' : undefined}
-                                className={`ml-4 text-sm font-medium ${
+                                className={`ml-4 text-sm font-medium  ${
                                     page.current
-                                        ? 'text-dark-green'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                        ? 'text-gray-500 hover:text-gray-700'
+                                        : 'text-gray-400 hover:text-gray-700'
                                 }`}
                             >
                                 {page.name}

@@ -51,26 +51,33 @@ const StartPage = () => {
         <>
             <NavigationFrontend/>
 
+
+
             {/* Hero Section */}
-            <div
-                className="relative isolate overflow-hidden bg-gray-900 px-6 py-24 sm:py-40 lg:px-8 h-screen flex items-start justify-center">
+            <div className="relative isolate overflow-hidden bg-gray-900 h-screen">
                 <img
                     alt=""
                     src="/gcl-hero.jpg"
                     className="absolute inset-0 -z-10 size-full object-cover h-full"
                 />
 
-                <div className="mx-auto max-w-3xl text-center">
-                    <Heading level={1} className="text-7xl font-bold text-dark-green">
-                        Deutschlands schönsten Golfplätze
-                    </Heading>
-                    <p className="mt-8 text-lg font-medium text-gray-900 sm:text-xl/8">
-                        Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit
-                        sunt amet
-                        fugiat veniam occaecat fugiat.
-                    </p>
-                    <div className="mt-8 max-w-md mx-auto">
-                        <HeroSearch/>
+                <div className="w-full h-full flex items-start justify-center px-6 py-24 sm:py-40">
+                    <div className="w-full max-w-3xl">
+                        {/* Text Container - behält volle Breite */}
+                        <div className="text-center px-4 sm:px-6">
+                            <Heading level={1} className="text-5xl sm:text-7xl font-bold text-dark-green">
+                                Deutschlands besten Golfplätze
+                            </Heading>
+                            <p className="mt-8 text-lg font-medium text-gray-900 sm:text-xl/8">
+                                Wir vernetzen Deutschlands Golfwelt. Unsere Plattform verbindet Privatclubs und öffentliche Golfanlagen. Nutzen Sie bundesweite Greenfee-Vorteile für Ihr Golfspiel.
+                            </p>
+                        </div>
+                        {/* Search Container - zentriert und schmaler */}
+                        <div className="mt-8 flex justify-center px-4 sm:px-6">
+                            <div className="w-full sm:w-[500px]">
+                                <HeroSearch/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -84,8 +91,7 @@ const StartPage = () => {
                         </Heading>
                         <p className="mt-6 text-lg/8 text-gray-600">
                             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis
-                            suscipit eaque, iste
-                            dolor cupiditate blanditiis.
+                            suscipit eaque, iste dolor cupiditate blanditiis.
                         </p>
                     </div>
                     <dl className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base/7 text-gray-600 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-x-16">

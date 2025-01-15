@@ -149,6 +149,12 @@ export interface GolfClub {
 
     // Galerie-Bilder
     galerie?: GalleryImage[]; // Optional: Bildergalerie des Golfclubs
+
+    // Kontaktinformationen
+    clubTelefon?: string; // Telefonnummer des Clubs
+    clubEmail?: string; // E-Mail-Adresse des Clubs
+    clubWebsite?: string; // Website-URL des Clubs
+
 }
 
 // Map Component Props Types

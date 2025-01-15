@@ -20,7 +20,6 @@ const ClubsPage = async () => {
         <>
             {/* Navigation */}
             <NavigationFrontend />
-            <Breadcrumbs />
 
             {/* FilterableClubGrid */}
             <div className="container mx-auto px-0 py-6 lg:px-6 xl:px-8">

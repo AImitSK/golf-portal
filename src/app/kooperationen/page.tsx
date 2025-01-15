@@ -18,7 +18,6 @@ const KooperationPage = async () => {
     return (
         <>
             <NavigationFrontend/>
-            <Breadcrumbs/>
 
 
             {/* Hero Section */}

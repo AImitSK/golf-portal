@@ -1,22 +1,36 @@
-// "use client" directive ensures React hooks work correctly
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
+import {
+    FlagIcon,
+    UserGroupIcon,
+    MapPinIcon,
+    ExclamationCircleIcon,
+    CheckCircleIcon
+} from '@heroicons/react/24/outline';
+import { Menu } from '@headlessui/react';
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useDebounce } from '@/hooks/useDebounce';
 import { searchGolfClubs } from '@/lib/sanity/getGolfClubs';
 import { searchKooperationen } from '@/lib/sanity/GetKooperation';
 import Link from 'next/link';
-import clsx from 'clsx';
 import { GolfClub, SearchKooperation, SearchResult } from '@/types/club-types';
 
-const HeroSearch: React.FC = () => {
+const filterOptions = [
+    { id: 'all', name: 'Alle', icon: CheckCircleIcon, iconColor: 'text-dark-green', bgColor: 'bg-dark-green' },
+    { id: 'club', name: 'Clubs', icon: FlagIcon, iconColor: 'text-cta-green', bgColor: 'bg-cta-green' },
+    { id: 'kooperation', name: 'Kooperationen', icon: UserGroupIcon, iconColor: 'text-blue-600', bgColor: 'bg-blue-600' },
+    { id: 'city', name: 'Städte', icon: MapPinIcon, iconColor: 'text-red-600', bgColor: 'bg-red-600' }
+];
+
+const HeroSearch = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [activeFilter, setActiveFilter] = useState<'club' | 'kooperation' | 'city' | 'all'>('all');
+    const [isOpen, setIsOpen] = useState(false);
     const debouncedSearch = useDebounce(searchTerm, 300);
-
     useEffect(() => {
         const fetchResults = async () => {
             if (debouncedSearch.length < 2) {
@@ -62,92 +76,124 @@ const HeroSearch: React.FC = () => {
         activeFilter === 'all' ? true : result.type === activeFilter
     );
 
+    const handleSearchFocus = () => {
+        setIsOpen(true);
+    };
+
+    const getIconForType = (type: string) => {
+        switch (type) {
+            case 'club':
+                return <FlagIcon className="size-5 text-cta-green flex-shrink-0" />;
+            case 'kooperation':
+                return <UserGroupIcon className="size-5 text-blue-600 flex-shrink-0" />;
+            case 'city':
+                return <MapPinIcon className="size-5 text-red-600 flex-shrink-0" />;
+            default:
+                return <CheckCircleIcon className="size-5 text-dark-green flex-shrink-0" />;
+        }
+    };
+
+    const activeFilterOption = filterOptions.find(option => option.id === activeFilter) || filterOptions[0];
+    const ActiveFilterIcon = activeFilterOption.icon;
+
     return (
-
-
-        <div className="relative w-full max-w-3xl mx-auto">
-
-            {/* Filter Buttons */}
-            <div className="my-4 flex justify-center space-x-4">
-                {['club', 'kooperation', 'city'].map((filter) => (
-                    <button
-                        key={filter}
-                        onClick={() => setActiveFilter(filter as 'club' | 'kooperation' | 'city')}
-                        className={clsx(
-                            'px-4 py-2 rounded-full text-sm font-medium',
-                            activeFilter === filter
-                                ? 'bg-green-600 text-white'
-                                : 'bg-white text-gray-900 shadow'
-                        )}
-                    >
-                        {filter === 'club' ? 'Clubs' : filter === 'kooperation' ? 'Kooperationen' : 'Städte'}
-                    </button>
-                ))}
-            </div>
-
-            {/* Search Bar Container */}
-            <div className="relative z-10 bg-white/80 backdrop-blur-lg rounded-full shadow-lg">
-                <div className="grid w-full grid-cols-1">
+        <div className="relative w-full max-w-4xl mx-auto">
+            {/* Combined Search Input and Filter */}
+            <div className="relative w-full">
+                <div className="relative flex items-center">
                     <input
-                        name="search"
-                        type="search"
-                        placeholder="Suche nach Clubs, Städten oder Kooperationen..."
+                        type="text"
+                        className="w-full rounded-xl py-3 pl-12 pr-32 bg-white/80 backdrop-blur text-gray-900 placeholder:text-gray-500 shadow-lg ring-1 ring-gray-900/5 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Suche"
                         value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                        }}
-                        autoComplete="off"
-                        className={clsx(
-                            'col-start-1 row-start-1 block w-full rounded-full bg-transparent py-3 pl-12 pr-4 text-base outline-none',
-                            searchTerm === ''
-                                ? 'text-white placeholder:text-white' // Weiß im nicht-angeklickten Zustand
-                                : 'text-gray-900 placeholder:text-gray-500', // Grau bei Fokussierung oder Eingabe
-                            'focus:bg-white focus:text-gray-900 focus:placeholder:text-gray-500 sm:text-sm'
-                        )}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onFocus={handleSearchFocus}
                     />
                     <MagnifyingGlassIcon
+                        className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400"
                         aria-hidden="true"
-                        className={clsx(
-                            'pointer-events-none col-start-1 row-start-1 ml-4 size-6 self-center',
-                            searchTerm === ''
-                                ? 'text-white' // Weiß im nicht-angeklickten Zustand
-                                : 'text-gray-500' // Grau bei Fokussierung oder Eingabe
-                        )}
                     />
-                </div>
-            </div>
 
+                    {/* Integrated Filter Menu */}
+                    <div className="absolute right-2">
+                        <Menu as="div" className="relative">
+                            <Menu.Button className={`
+                inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium 
+                ${activeFilterOption.bgColor} text-white
+                hover:opacity-90 focus:outline-none
+              `}>
+                <span className="flex items-center">
+                  <ActiveFilterIcon className="size-5 mr-2 text-white" />
+                  <span className="hidden sm:inline">{activeFilterOption.name}</span>
+                </span>
+                                <ChevronDownIcon className="size-5 text-white ml-1" aria-hidden="true" />
+                            </Menu.Button>
 
-            {/* Results Dropdown */}
-            {isLoading && (
-                <div
-                    className="absolute top-16 w-full bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-auto z-40 px-4 py-2 text-sm text-gray-500">
-                    Suche läuft...
-                </div>
-            )}
-
-            {filteredResults.length > 0 && (
-                <div
-                    className="absolute top-16 w-full bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 max-h-96 overflow-auto z-40">
-                    <div className="py-2">
-                        {filteredResults.map((result) => (
-                            <Link
-                                key={result.id}
-                                href={`/${result.type === 'club' ? 'clubs' : 'kooperationen'}/${result.slug}`}
-                                className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 rounded-md mt-1 flex items-center"
-                                onClick={() => {
-                                    setSearchTerm('');
-                                }}
-                            >
-                                <div className="font-medium">{result.title}</div>
-                                {result.subtitle && (
-                                    <div className="text-xs text-gray-500 ml-2">{result.subtitle}</div>
-                                )}
-                            </Link>
-                        ))}
+                            <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div className="py-1">
+                                    {filterOptions.map((option) => (
+                                        <Menu.Item key={option.id}>
+                                            {({ active }) => (
+                                                <button
+                                                    onClick={() => setActiveFilter(option.id as typeof activeFilter)}
+                                                    className={`${
+                                                        active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                                                    } block w-full px-4 py-2 text-left text-sm`}
+                                                >
+                          <span className="flex items-center">
+                            <option.icon className={`size-5 mr-2 ${option.iconColor}`} />
+                              {option.name}
+                          </span>
+                                                </button>
+                                            )}
+                                        </Menu.Item>
+                                    ))}
+                                </div>
+                            </Menu.Items>
+                        </Menu>
                     </div>
                 </div>
-            )}
+
+                {/* Results Panel */}
+                {isOpen && (searchTerm || results.length > 0) && (
+                    <div className="absolute top-full left-0 right-0 mt-2 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden max-h-96 overflow-y-auto">
+                        {isLoading ? (
+                            <div className="px-4 py-3 text-sm text-gray-500">Suche läuft...</div>
+                        ) : filteredResults.length > 0 ? (
+                            <div className="py-2">
+                                {filteredResults.map((result) => (
+                                    <Link
+                                        key={result.id}
+                                        href={`/${result.type === 'club' ? 'clubs' : 'kooperationen'}/${result.slug}`}
+                                        className="block px-4 py-2 hover:bg-gray-50 w-full"
+                                        onClick={() => {
+                                            setSearchTerm('');
+                                            setIsOpen(false);
+                                        }}
+                                    >
+                                        <div className="flex items-start gap-3 w-full">
+                                            {getIconForType(result.type)}
+                                            <div className="flex-1 min-w-0 text-left">
+                                                <div className="text-sm font-medium text-gray-900">{result.title}</div>
+                                                {result.subtitle && (
+                                                    <div className="text-xs text-gray-500">{result.subtitle}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : searchTerm && (
+                            <div className="px-4 py-10 text-center sm:px-14">
+                                <ExclamationCircleIcon className="mx-auto size-6 text-gray-400" aria-hidden="true" />
+                                <p className="mt-4 text-sm text-gray-900">
+                                    Keine Ergebnisse gefunden.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

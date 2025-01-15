@@ -3,7 +3,7 @@
 import { Menu } from '@headlessui/react';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import SearchBar from '@/components/search/SearchBar';
+import HeroSearch from "@/components/search/HeroSearch";
 
 export default function NavigationWithHamburger() {
     return (
@@ -25,7 +25,7 @@ export default function NavigationWithHamburger() {
 
                     {/* Search Bar */}
                     <div className="flex flex-1 justify-center px-2">
-                        <SearchBar />
+                        <HeroSearch />
                     </div>
 
                     {/* Menu Button */}
