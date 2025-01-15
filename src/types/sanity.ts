@@ -46,6 +46,7 @@ export type ZahlungsIntervall = 'monatlich' | 'jährlich'
 export type DocumentStatus = 'draft' | 'published'
 export type AdminRole = 'admin' | 'manager' | 'staff'
 export type AdminPermission = 'manage_users' | 'manage_clubs' | 'manage_contracts' | 'view_statistics'
+export type WeatherType = 'Sonnig' | 'Bewölkt' | 'Regnerisch' | 'Windig'
 
 export interface Administrator extends SanityDocument {
     _type: 'administrator'
@@ -60,4 +61,35 @@ export interface Administrator extends SanityDocument {
     passwordResetToken?: string
     passwordResetExpiry?: string
     permissions?: AdminPermission[]
+}
+
+export interface GolfUser extends SanityDocument {
+    _type: 'golfUser'
+    name: string
+    email: string
+    image?: SanityImage
+}
+
+export interface Like extends SanityDocument {
+    _type: 'like'
+    user: SanityReference
+    club: SanityReference
+    createdAt: string
+}
+
+export interface CoursePlayed extends SanityDocument {
+    _type: 'coursePlayed'
+    user: SanityReference
+    club: SanityReference
+    date: string
+    score: number
+    weather?: WeatherType
+    notes?: string
+}
+
+export interface Wishlist extends SanityDocument {
+    _type: 'wishlist'
+    user: SanityReference
+    club: SanityReference
+    notes?: string
 }
