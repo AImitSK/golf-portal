@@ -9,10 +9,12 @@ type KoopGridProps = {
 
 const KoopGrid: React.FC<KoopGridProps> = ({ kooperationen }) => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            {kooperationen.map((koop) => (
-                <KoopCard key={koop.slug} kooperation={koop} />
-            ))}
+        <div className="max-w-[1280px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {kooperationen.map((koop) => (
+                    <KoopCard key={koop.slug} kooperation={koop} />
+                ))}
+            </div>
         </div>
     );
 };

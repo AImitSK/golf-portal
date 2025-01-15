@@ -65,20 +65,20 @@ export default async function KooperationPage({ params }: PageProps) {
             <>
                 <NavigationFrontend/>
 
-
                 <KoopHero
                     name={kooperation.name}
                     typ={kooperation.typ}
                     logo={kooperation.logo}
                 />
 
-                <main className="max-w-[1280px] mx-auto px-4 py-12 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-8">
-                            <KoopDescription beschreibung={kooperation.beschreibung}/>
+                <main>
+                    {/* Container für den Hauptinhalt und Sidebar */}
+                    <div className="max-w-[1280px] mx-auto px-4 py-12 lg:px-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div className="lg:col-span-2 space-y-8">
+                                <KoopDescription beschreibung={kooperation.beschreibung}/>
 
-                            {kooperation.clubs && kooperation.clubs.length > 0 && (
-                                <>
+                                {kooperation.clubs && kooperation.clubs.length > 0 && (
                                     <div className="bg-white rounded-lg shadow-sm p-8">
                                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                                             Partner Standorte
@@ -88,20 +88,27 @@ export default async function KooperationPage({ params }: PageProps) {
                                             kooperationName={kooperation.name}
                                         />
                                     </div>
+                                )}
+                            </div>
 
-                                    <KoopClubList clubs={kooperation.clubs}/>
-                                </>
-                            )}
+                            <KoopSidebar
+                                gueltigkeitszeitraum={kooperation.gueltigkeitszeitraum}
+                                website={kooperation.website}
+                                clubCount={kooperation.clubs?.length || 0}
+                                ansprechpartner={kooperation.ansprechpartner}
+                                kontaktEmail={kooperation.kontaktEmail}
+                            />
                         </div>
-
-                        <KoopSidebar
-                            gueltigkeitszeitraum={kooperation.gueltigkeitszeitraum}
-                            website={kooperation.website}
-                            clubCount={kooperation.clubs?.length || 0}
-                            ansprechpartner={kooperation.ansprechpartner}
-                            kontaktEmail={kooperation.kontaktEmail}
-                        />
                     </div>
+
+                    {/* Separate Container für die Club-Liste über volle Breite */}
+                    {kooperation.clubs && kooperation.clubs.length > 0 && (
+                        <div className="bg-gray-50 py-12">
+                            <div className="max-w-[1280px] mx-auto px-4 lg:px-8">
+                                <KoopClubList clubs={kooperation.clubs}/>
+                            </div>
+                        </div>
+                    )}
                 </main>
 
                 <FooterFrontend/>

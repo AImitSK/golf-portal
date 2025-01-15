@@ -16,6 +16,7 @@ const KOOPERATION_QUERY = `{
     "clubs": *[_type == "golfclub" && references(^._id)]{
         title,
         "slug": slug.current,
+        "logo": logo.asset->url,  // Diese Zeile fehlt bisher
         adresse{
             strasse,
             hausnummer,

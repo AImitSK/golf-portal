@@ -110,6 +110,8 @@ export interface GolfClub {
     slug: string; // URL-Slug des Clubs
     image?: string; // Optional: Bild-URL des Clubs
     city: string; // Stadt des Clubs
+    logo?: string;  // URL des Club-Logos
+
 
     // Kooperationen
     kooperationen?: Kooperation[]; // Liste der Kooperationen
