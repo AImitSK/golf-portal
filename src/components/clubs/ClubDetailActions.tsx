@@ -3,8 +3,14 @@
 
 import React, { useState } from 'react';
 import GridNavi from "@/components/frontend-ui/GridNavi";
+import { LikeButton } from './LikeButton';
 
-export const ClubDetailActions = () => {
+interface ClubDetailActionsProps {
+    clubId: string;
+    userId?: string; // Optional bis Auth implementiert ist
+}
+
+export const ClubDetailActions: React.FC<ClubDetailActionsProps> = ({ clubId, userId }) => {
     const [showCopiedMessage, setShowCopiedMessage] = useState(false);
 
     const copyToClipboard = () => {
@@ -31,9 +37,7 @@ export const ClubDetailActions = () => {
                     </div>
                 )}
             </div>
-            <button className="flex items-center justify-center h-9 w-9 rounded-full bg-dark-green text-white hover:bg-dark-green/90 transition-colors">
-                <img src="/icons/iconLoveWithe.svg" alt="Favorit" className="h-5 w-5" />
-            </button>
+            <LikeButton clubId={clubId} userId={userId} />
             <div className="relative flex items-center justify-center h-9 w-9">
                 <GridNavi />
             </div>

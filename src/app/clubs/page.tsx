@@ -5,7 +5,6 @@ import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import FilterableClubGrid from "@/components/clubs/FilterableClubGrid";
 import { Metadata } from "next";
-import Breadcrumbs from "@/components/frontend-ui/Breadcrumbs";
 
 export const metadata: Metadata = {
     title: 'Alle Golfclubs in Deutschland',

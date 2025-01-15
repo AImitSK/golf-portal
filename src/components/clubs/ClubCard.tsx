@@ -6,6 +6,8 @@ import GridNavi from "@/components/frontend-ui/GridNavi";
 import { ClubTag, ClubTagArray } from "./ClubTag";
 import LocationButton from './LocationButton';
 import Link from 'next/link';
+import { LikesCounter } from "@/components/clubs/LikesCounter";
+import { LikeButton } from './LikeButton';
 
 type ClubCardProps = {
     club: GolfClub;
@@ -140,18 +142,18 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
                     <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
                         <img src="/icons/iconShareWithe.svg" alt="Teilen" className="h-5 w-5"/>
                     </button>
-                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
-                        <img src="/icons/iconLoveWithe.svg" alt="Favorit" className="h-5 w-5"/>
-                    </button>
+                    <LikeButton
+                        clubId={club._id}
+                        className="bg-black/30 hover:bg-black/40"
+                    />
                     <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
                         <GridNavi/>
                     </div>
                 </div>
 
                 {/* Likes Counter unten links */}
-                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5">
-                    <img src="/icons/iconLikeDarkGreen.svg" alt="Likes" className="w-4 h-4"/>
-                    <span className="text-sm font-medium text-dark-green">1.021</span>
+                <div className="absolute bottom-3 left-3">
+                    <LikesCounter clubId={club._id} />
                 </div>
             </div>
 

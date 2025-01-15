@@ -2,6 +2,7 @@
 import sanityClient from '@/lib/sanityClient'
 
 const CLUB_PROJECTION = `{
+    _id,          // ID hinzufügen
     title,
     "slug": slug.current,
     status,
