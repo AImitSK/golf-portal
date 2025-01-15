@@ -1,32 +1,33 @@
-import { type SchemaTypeDefinition } from 'sanity'
-import { ValidationRule } from '@/types/sanity'
+// src/sanity/schemaTypes/like.ts
+import { defineType } from 'sanity';
 
-const schema: SchemaTypeDefinition = {
+export default defineType({
     name: 'like',
     title: 'Like',
     type: 'document',
     fields: [
         {
+            name: 'club',
+            title: 'Golf Club',
+            type: 'reference',
+            to: [{ type: 'golfclub' }],
+            validation: Rule => Rule.required()
+        },
+        {
             name: 'user',
             title: 'User',
             type: 'reference',
             to: [{ type: 'golfUser' }],
-            validation: (Rule: ValidationRule) => Rule.required()
-        },
-        {
-            name: 'club',
-            title: 'Golfclub',
-            type: 'reference',
-            to: [{ type: 'golfclub' }],
-            validation: (Rule: ValidationRule) => Rule.required()
+            validation: Rule => Rule.required()
         },
         {
             name: 'createdAt',
-            title: 'Erstellt am',
+            title: 'Created At',
             type: 'datetime',
-            readOnly: true
+            validation: Rule => Rule.required()
         }
+    ],
+    indexes: [
+        { name: 'unique_club_user', unique: true, fields: ['club', 'user'] }
     ]
-}
-
-export default schema
+});

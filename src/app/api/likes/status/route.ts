@@ -1,9 +1,9 @@
 // src/app/api/likes/status/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import sanityClient from '@/lib/sanityClient';
 
-export async function GET(req: Request) {
-    const { searchParams } = new URL(req.url);
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
     const clubId = searchParams.get('clubId');
     const userId = searchParams.get('userId');
 
@@ -20,7 +20,9 @@ export async function GET(req: Request) {
             { clubId, userId }
         );
 
-        return NextResponse.json({ hasLiked: !!like });
+        return NextResponse.json({
+            hasLiked: !!like
+        });
     } catch (error) {
         console.error('Error fetching like status:', error);
         return NextResponse.json(

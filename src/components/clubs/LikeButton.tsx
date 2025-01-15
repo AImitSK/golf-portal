@@ -1,49 +1,32 @@
 // src/components/clubs/LikeButton.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 interface LikeButtonProps {
     clubId: string;
-    userId?: string;
     className?: string;
     onLikeChange?: (newCount: number) => void;
 }
 
 export const LikeButton: React.FC<LikeButtonProps> = ({
                                                           clubId,
-                                                          userId,
                                                           className = '',
                                                           onLikeChange
                                                       }) => {
+    // Temporäre feste Benutzer-ID für Tests
+    const tempUserId = 'test-user-001';
+
     const [isLiked, setIsLiked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    // Prüft den initialen Like-Status
-    useEffect(() => {
-        const checkLikeStatus = async () => {
-            if (!userId) return;
-
-            try {
-                const response = await fetch(`/api/likes/status?clubId=${clubId}&userId=${userId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setIsLiked(data.hasLiked);
-                }
-            } catch (error) {
-                console.error('Error checking like status:', error);
-            }
-        };
-
-        checkLikeStatus();
-    }, [clubId, userId]);
+    const [error, setError] = useState<string | null>(null);
 
     const handleLikeClick = async () => {
-        // Temporär für Test
-        const tempUserId = "test-user-id";
-        if (!clubId) return;
+        if (isLoading) return;
 
         setIsLoading(true);
+        setError(null);
+
         try {
             const response = await fetch('/api/likes', {
                 method: 'POST',
@@ -52,27 +35,48 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
                 },
                 body: JSON.stringify({
                     clubId,
-                    userId: tempUserId // später durch echte userId ersetzen
+                    userId: tempUserId
                 }),
             });
 
-            if (response.ok) {
-                // Toggle den lokalen Like-Status
-                setIsLiked(prevState => !prevState);
+            const data = await response.json();
 
-                // Hole die aktualisierte Like-Anzahl
-                const countResponse = await fetch(`/api/likes?clubId=${clubId}`);
-                if (countResponse.ok) {
-                    const { count } = await countResponse.json();
-                    onLikeChange?.(count);
-                }
+            if (!response.ok) {
+                // Fehler aus der Antwort extrahieren
+                const errorMessage = data.error || 'Unbekannter Fehler';
+                console.error('Like Fehler:', errorMessage);
+                setError(errorMessage);
+                throw new Error(errorMessage);
+            }
+
+            // Toggle lokalen Like-Status basierend auf der Antwort
+            setIsLiked(data.action === 'added');
+
+            // Aktuelle Like-Anzahl abrufen
+            const countResponse = await fetch(`/api/likes?clubId=${clubId}`);
+            if (countResponse.ok) {
+                const { count } = await countResponse.json();
+                onLikeChange?.(count);
             }
         } catch (error) {
-            console.error('Error toggling like:', error);
+            console.error('Fehler beim Liken:', error);
+            setError(error instanceof Error ? error.message : 'Fehler beim Liken');
         } finally {
             setIsLoading(false);
         }
     };
+
+    // Fehler-Rendering
+    if (error) {
+        return (
+            <div
+                className="bg-red-500 text-white p-2 rounded"
+                onClick={() => setError(null)}
+            >
+                {error}
+            </div>
+        );
+    }
 
     return (
         <button

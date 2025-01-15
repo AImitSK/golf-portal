@@ -19,15 +19,38 @@ export default defineConfig({
     ],
     document: {
         actions: (prev, context) => {
-            console.log('Document actions called:', {
-                schemaType: context.schemaType,
-                hasGeocodeAction: !!GeocodeAction
-            })
-
+            // Geocode-Aktion für Golfclubs
             if (context.schemaType === 'golfclub') {
                 return [...prev, GeocodeAction]
             }
+
+            // Berechtigungen für 'like' Dokumente
+            if (context.schemaType === 'like') {
+                return [
+                    ...prev,
+                    {
+                        name: 'create',
+                        title: 'Create',
+                        type: 'mutation',
+                        handler: async (props) => {
+                            console.log('Like document creation attempted', props)
+                            return props
+                        }
+                    }
+                ]
+            }
+
             return prev
+        },
+        // Füge globale Berechtigungsregeln hinzu
+        permissions: {
+            create: (prev, context) => {
+                // Erlaube Erstellung für 'like' Dokumente
+                if (context.schemaType === 'like') {
+                    return true
+                }
+                return prev
+            }
         }
     }
 })
