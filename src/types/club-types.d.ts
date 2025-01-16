@@ -171,3 +171,22 @@ export interface ClubDetailPageProps {
     };
 }
 
+// Typen für Suchergebnisse
+export interface SearchClub extends GolfClub {
+    _id: string;
+}
+
+export interface SearchKooperation {
+    _id: string;
+    name: string;
+    slug: string;
+    typ: string;
+}
+
+export type SearchResult = {
+    id: string;
+    title: string;
+    type: 'club' | 'kooperation';
+    slug: string;
+    subtitle?: string;
+};

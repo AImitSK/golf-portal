@@ -9,6 +9,8 @@ import { KoopDescription } from "@/components/kooperationen/KoopDescription";
 import { KoopClubList } from "@/components/kooperationen/KoopClubList";
 import { KoopSidebar } from "@/components/kooperationen/KoopSidebar";
 import { Metadata } from "next";
+import Breadcrumbs from "@/components/frontend-ui/Breadcrumbs";
+import React from "react";
 
 interface PageProps {
     params: {
@@ -62,7 +64,10 @@ export default async function KooperationPage({ params }: PageProps) {
 
         return (
             <>
-                <NavigationFrontend />
+                <NavigationFrontend/>
+                <div>
+                    <Breadcrumbs/>
+                </div>
 
                 <KoopHero
                     name={kooperation.name}
@@ -73,7 +78,7 @@ export default async function KooperationPage({ params }: PageProps) {
                 <main className="max-w-[1280px] mx-auto px-4 py-12 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-2 space-y-8">
-                            <KoopDescription beschreibung={kooperation.beschreibung} />
+                            <KoopDescription beschreibung={kooperation.beschreibung}/>
 
                             {kooperation.clubs && kooperation.clubs.length > 0 && (
                                 <>
@@ -87,7 +92,7 @@ export default async function KooperationPage({ params }: PageProps) {
                                         />
                                     </div>
 
-                                    <KoopClubList clubs={kooperation.clubs} />
+                                    <KoopClubList clubs={kooperation.clubs}/>
                                 </>
                             )}
                         </div>
@@ -102,7 +107,7 @@ export default async function KooperationPage({ params }: PageProps) {
                     </div>
                 </main>
 
-                <FooterFrontend />
+                <FooterFrontend/>
             </>
         );
     } catch (error) {

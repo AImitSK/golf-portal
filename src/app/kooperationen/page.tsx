@@ -5,6 +5,7 @@ import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import KoopGrid from "@/components/kooperationen/KoopGrid";
 import { Metadata } from "next";
+import Breadcrumbs from "@/components/frontend-ui/Breadcrumbs";
 
 export const metadata: Metadata = {
     title: 'Kooperationen und Partnerschaften',
@@ -16,7 +17,9 @@ const KooperationPage = async () => {
 
     return (
         <>
-            <NavigationFrontend />
+            <NavigationFrontend/>
+            <Breadcrumbs/>
+
 
             {/* Hero Section */}
             <div className="bg-gray-50">
@@ -33,10 +36,10 @@ const KooperationPage = async () => {
 
             {/* Content Section */}
             <main className="max-w-[1280px] mx-auto px-4 py-12 lg:px-8">
-                <KoopGrid kooperationen={kooperationen} />
+                <KoopGrid kooperationen={kooperationen}/>
             </main>
 
-            <FooterFrontend />
+            <FooterFrontend/>
         </>
     );
 };

@@ -46,7 +46,7 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
                 {club.image && (
                     <Link
                         href={`/clubs/${club.slug}`}
-                        className="block shrink-0 w-[140px] h-[140px] relative rounded-lg overflow-hidden"
+                        className="block shrink-0 w-[120px] h-[120px] relative rounded-lg overflow-hidden"
                     >
                         <img
                             src={club.image}
