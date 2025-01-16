@@ -3,6 +3,7 @@ import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import VerticalNavigation from "@/components/club-backend/VerticalNavigation";
 import { Metadata } from "next";
+import { Heading } from "@/components/catalyst-ui-kit/heading"; // Import der Heading-Komponente
 
 export const metadata: Metadata = {
     title: "Kooperationen und Partnerschaften",
@@ -17,16 +18,19 @@ const ClubDashboard = async () => {
 
             {/* Hauptlayout */}
             <div className="flex justify-center bg-gray-100">
-                {/* Container für max. 1280px Breite */}
-                <div className="flex w-full max-w-[1280px]">
+
+                <div className="flex w-full max-w-[1200px]">
                     {/* Navigation auf der linken Seite */}
-                    <aside className="w-1/4 bg-white shadow-md p-4">
+                    <aside className="w-[300px] bg-white shadow-md p-4">
                         <VerticalNavigation />
                     </aside>
 
                     {/* Dynamischer Content auf der rechten Seite */}
-                    <main className="w-3/4 bg-white shadow-md p-6">
-                        <h1 className="text-2xl font-bold">Dashboard-Inhalt</h1>
+                    <main className="flex-1 bg-white shadow-md p-6">
+                        {/* Überschrift */}
+                        <Heading level={1} className="mb-4">
+                            Dashboard
+                        </Heading>
                         <p>Hier wird der dynamische Content geladen.</p>
                     </main>
                 </div>
