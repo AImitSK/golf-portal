@@ -66,14 +66,12 @@ export default {
             name: 'clubEmail',
             title: 'Club E-Mail',
             type: 'string',
-            validation: (Rule: ValidationRule) => Rule.required().email(),
             group: 'basis'
         },
         {
             name: 'clubTelefon',
             title: 'Club Telefon',
             type: 'string',
-            validation: (Rule: ValidationRule) => Rule.required().regex(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/),
             group: 'basis'
         },
         // SEO
@@ -161,7 +159,6 @@ export default {
                     name: 'hausnummer',
                     type: 'string',
                     title: 'Hausnummer',
-                    validation: (Rule: ValidationRule) => Rule.required()
                 },
                 {
                     name: 'plz',
@@ -195,7 +192,6 @@ export default {
             title: 'Hauptadministrator',
             type: 'reference',
             to: [{type: 'administrator'}],
-            validation: (Rule: ValidationRule) => Rule.required(),
             group: 'administration'
         },
         {
@@ -210,7 +206,6 @@ export default {
             title: 'Aktuelles Vertragsmodell',
             type: 'reference',
             to: [{type: 'vertragsmodell'}],
-            validation: (Rule: ValidationRule) => Rule.required(),
             group: 'administration'
         },
         {
@@ -256,14 +251,12 @@ export default {
             name: 'parGesamt',
             title: 'Par Gesamt',
             type: 'number',
-            validation: (Rule: ValidationRule) => Rule.required(),
-            group: 'platz'
+             group: 'platz'
         },
         {
             name: 'laengeMeter',
             title: 'Länge in Metern',
             type: 'number',
-            validation: (Rule: ValidationRule) => Rule.required(),
             group: 'platz'
         },
         {

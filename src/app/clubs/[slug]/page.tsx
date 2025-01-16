@@ -61,15 +61,15 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
                 {/* Hero Section mit Bild */}
                 <div className="relative w-full h-[280px] md:h-[400px] lg:h-[600px]">
                     <img
-                        src={club.image}
-                        alt={club.title}
+                        src={club.image || "/gcl-hero.jpg"} // Standardbild, falls kein "club.image" existiert
+                        alt={club.title || "Standard Club"} // Fallback für den Alternativtext
                         className="w-full h-full object-cover"
                     />
 
                     {/* Likes Counter */}
                     <div className="absolute bottom-3 left-0 w-full">
                         <div className="container mx-auto max-w-[1280px] px-4 lg:px-8">
-                            <LikesCounter clubId={club._id} />
+                            <LikesCounter clubId={club._id}/>
                         </div>
                     </div>
                 </div>

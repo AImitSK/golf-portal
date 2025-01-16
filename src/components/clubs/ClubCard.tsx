@@ -40,23 +40,26 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
         );
     };
 
-    // Kompakte Layout-Komponente
+// Kompakte Layout-Komponente
     if (!isLargeLayout) {
+        // Daten Vorabbereitung mit Fallbacks für Adresse
+        const { location, city } = club.adresse ?? {};
+        const lat = location?.lat ?? 0;
+        const lng = location?.lng ?? 0;
+
         return (
             <div className="flex gap-6">
-                {/* Image Section - Jetzt links */}
-                {club.image && (
-                    <Link
-                        href={`/clubs/${club.slug}`}
-                        className="block shrink-0 w-[120px] h-[120px] relative rounded-lg overflow-hidden"
-                    >
-                        <img
-                            src={club.image}
-                            alt={club.title}
-                            className="w-full h-full object-cover"
-                        />
-                    </Link>
-                )}
+                {/* Image Section */}
+                <Link
+                    href={`/clubs/${club.slug}`}
+                    className="block shrink-0 w-[120px] h-[120px] relative rounded-lg overflow-hidden"
+                >
+                    <img
+                        src={club.image || "/gcl-hero.jpg"} // Fallback-Bild
+                        alt={club.title || "Standard Club"} // Fallback-Alt-Text
+                        className="w-full h-full object-cover"
+                    />
+                </Link>
 
                 {/* Content Section */}
                 <div className="flex-1">
@@ -65,7 +68,7 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
                             level={2}
                             className="text-dark-green font-semibold hover:text-cta-green transition-colors"
                         >
-                            {club.title}
+                            {club.title || "Standard Club"} {/* Fallback-Titel */}
                         </Heading>
                     </Link>
 
@@ -90,23 +93,28 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
                             )}
                         </div>
 
-                        {/* Location - Invertierter Button für kompaktes Layout */}
-                        <button
-                            onClick={() => onTagClick('geoFilter', {
-                                lat: club.adresse?.location?.lat || 0,
-                                lng: club.adresse?.location?.lng || 0,
-                                radius: 50
-                            })}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-green text-white hover:bg-cta-green transition-colors text-sm font-medium"
-                        >
-                            <img src="/icons/iconLocationDarkGreen.svg" alt="Location" className="w-4 h-4 brightness-0 invert" />
-                            <span>{club.city}</span>
-                        </button>
+                        {/* Location - Button für Standortfunktion */}
+                        {location && (
+                            <button
+                                onClick={() =>
+                                    onTagClick("geoFilter", { lat, lng, radius: 50 })
+                                }
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-green text-white hover:bg-cta-green transition-colors text-sm font-medium"
+                            >
+                                <img
+                                    src="/icons/iconLocationDarkGreen.svg"
+                                    alt="Location"
+                                    className="w-4 h-4 brightness-0 invert"
+                                />
+                                <span>{city || "Unbekannt"}</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
         );
     }
+
 
     // Großes Layout (original)
     return (
@@ -118,9 +126,9 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
                     className="block relative w-full aspect-[16/9] lg:aspect-[32/9] overflow-hidden rounded-2xl"
                 >
                     <img
-                        src={club.image}
-                        alt={club.title}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        src={club.image || "/gcl-hero.jpg"} // Standardbild, falls kein "club.image" existiert
+                        alt={club.title || "Standard Club"} // Fallback für den Alternativtext
+                        className="w-full h-full object-cover"
                     />
                 </Link>
 

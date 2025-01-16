@@ -17,7 +17,7 @@ export default defineType({
             name: 'user',
             title: 'User',
             type: 'reference',
-            to: [{ type: 'golfUser' }],
+            to: [{ type: 'user' }],
             validation: Rule => Rule.required()
         },
         {
@@ -27,7 +27,4 @@ export default defineType({
             validation: Rule => Rule.required()
         }
     ],
-    indexes: [
-        { name: 'unique_club_user', unique: true, fields: ['club', 'user'] }
-    ]
 });

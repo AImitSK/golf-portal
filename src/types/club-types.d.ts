@@ -46,6 +46,7 @@ export interface Address {
         code: string;
     };
     location?: GeoLocation;
+    city?: string;
 }
 
 // Service Typ

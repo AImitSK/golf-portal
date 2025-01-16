@@ -5,7 +5,7 @@ import vertragsmodell from './vertragsmodell'
 import feature from './feature'
 import land from './land'
 import kooperation from './kooperation'
-import golfUser from './user'
+import user from './user'
 import like from './like'
 import wishlist from './wishlist'
 import coursePlayed from './coursePlayed'
@@ -18,7 +18,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     feature,
     land,
     kooperation,
-    golfUser,
+    user,
     like,
     wishlist,
     coursePlayed
