@@ -21,6 +21,7 @@ export default {
       name: 'emailVerified',
       title: 'Email Verified',
       type: 'datetime',
+      readOnly: true
     },
     {
       name: 'image',
@@ -31,7 +32,6 @@ export default {
       name: 'role',
       title: 'Role',
       type: 'string',
-      initialValue: 'user',
       options: {
         list: [
           { title: 'User', value: 'user' },
