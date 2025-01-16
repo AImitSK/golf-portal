@@ -25,13 +25,13 @@ const navigation = {
         { name: 'Wunschliste', href: '#' },
         { name: 'Course List', href: '#' },
         { name: 'Scoreboard', href: '#' },
-        { name: 'Login', href: '#' },
+        { name: 'Login', href: '/auth/login' },
     ],
     Allgemein: [
         { name: 'Datenschutz', href: '#' },
         { name: 'Impressum', href: '#' },
         { name: 'Cookie Einstellungen', href: '#' },
-        { name: 'Login für Golfplätze', href: '#' },
+        { name: 'Login für Golfplätze', href: '/auth/login' },
         { name: 'Mediadaten', href: '#' },
     ],
 
