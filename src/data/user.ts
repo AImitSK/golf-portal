@@ -2,12 +2,10 @@ import sanityClient from "@/lib/sanityClient";
 
 export const getUserByEmail = async (email: string) => {
     try {
-    // Fetch user by email
-    const userQry = `*[_type == "user" && email == "${email}"][0]`;
-    const user = await sanityClient.fetch(userQry);
-
-    return user;
-
+        // Suche in beiden Schemas (user und administrator)
+        const query = `*[(_type == "user" || _type == "administrator") && email == "${email}"][0]`;
+        const user = await sanityClient.fetch(query);
+        return user;
     } catch {
         return null;
     }
@@ -15,12 +13,10 @@ export const getUserByEmail = async (email: string) => {
 
 export const getUserById = async (_id: string) => {
     try {
-    // Fetch user by ID
-    const userQry = `*[_type == "user" && _id == "${_id}"][0]`;
-    const user = await sanityClient.fetch(userQry);
-
-    return user;
-
+        // Auch hier beide Schemas berücksichtigen
+        const query = `*[(_type == "user" || _type == "administrator") && _id == "${_id}"][0]`;
+        const user = await sanityClient.fetch(query);
+        return user;
     } catch {
         return null;
     }

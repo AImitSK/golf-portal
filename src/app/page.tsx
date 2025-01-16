@@ -4,7 +4,6 @@ import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import { Metadata } from "next";
 import PlatformStats from "@/components/frontend-ui/CounterBox";
 import { Heading } from "@/components/frontend-ui/Heading";
-import Button from "@/components/frontend-ui/Button";
 import { ArrowPathIcon, CloudArrowUpIcon, Cog6ToothIcon, FingerPrintIcon, LockClosedIcon, ServerIcon } from '@heroicons/react/20/solid';
 import HeroSearch from "@/components/search/HeroSearch";
 
