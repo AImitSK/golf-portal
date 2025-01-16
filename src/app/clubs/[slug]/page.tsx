@@ -90,13 +90,13 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
 
                         <div className="mb-8">
                             {/* Tags */}
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 ">
                                 <ClubDetailTags club={club}/>
                             </div>
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {club.schwierigkeitsgrad && (
                                     <div
-                                        className="px-3 py-1 rounded-full text-sm font-medium bg-dark-green-10 text-dark-green">
+                                        className="px-3 py-1 rounded-full text-sm font-medium bg-cta-green-15 text-dark-green">
                                         Schwierigkeitsgrad: {club.schwierigkeitsgrad}
                                     </div>
                                 )}

@@ -116,7 +116,6 @@ export interface GolfClub {
 
 
 
-
     // Kooperationen
     kooperationen?: Kooperation[]; // Liste der Kooperationen
 
@@ -195,10 +194,26 @@ export interface SearchKooperation {
     typ: string;
 }
 
+
+
+
 export type SearchResult = {
     id: string;
     title: string;
-    type: 'club' | 'kooperation';
+    type: 'club' | 'kooperation' | 'city';
     slug: string;
     subtitle?: string;
+    location?: {
+        lat: number;
+        lng: number;
+    };
 };
+
+// In club-types.d.ts
+export interface CitySearchResult {
+    city: string;
+    location: {
+        lat: number;
+        lng: number;
+    };
+}
