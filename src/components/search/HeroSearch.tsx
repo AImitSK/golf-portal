@@ -14,8 +14,9 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useDebounce } from '@/hooks/useDebounce';
 import { searchGolfClubs } from '@/lib/sanity/getGolfClubs';
 import { searchKooperationen } from '@/lib/sanity/GetKooperation';
-import Link from 'next/link';
-import { GolfClub, SearchKooperation, SearchResult } from '@/types/club-types';
+import { searchCities } from '@/lib/sanity/getGolfClubs';
+import { useRouter } from 'next/navigation';
+import { GolfClub, SearchKooperation, SearchResult, CitySearchResult } from '@/types/club-types';
 
 const filterOptions = [
     { id: 'all', name: 'Alle', icon: CheckCircleIcon, iconColor: 'text-dark-green', bgColor: 'bg-dark-green' },
@@ -31,50 +32,7 @@ const HeroSearch = () => {
     const [activeFilter, setActiveFilter] = useState<'club' | 'kooperation' | 'city' | 'all'>('all');
     const [isOpen, setIsOpen] = useState(false);
     const debouncedSearch = useDebounce(searchTerm, 300);
-    useEffect(() => {
-        const fetchResults = async () => {
-            if (debouncedSearch.length < 2) {
-                setResults([]);
-                return;
-            }
-
-            setIsLoading(true);
-            try {
-                const [clubs, kooperationen] = await Promise.all([
-                    searchGolfClubs(debouncedSearch),
-                    searchKooperationen(debouncedSearch),
-                ]);
-
-                const clubResults: SearchResult[] = (clubs as GolfClub[]).map((club) => ({
-                    id: club.slug,
-                    title: club.title,
-                    type: 'club',
-                    slug: club.slug,
-                    subtitle: club.adresse?.ort,
-                }));
-
-                const koopResults: SearchResult[] = (kooperationen as SearchKooperation[]).map((koop) => ({
-                    id: koop._id,
-                    title: koop.name,
-                    type: 'kooperation',
-                    slug: koop.slug,
-                    subtitle: koop.typ,
-                }));
-
-                setResults([...clubResults, ...koopResults]);
-            } catch (error) {
-                console.error('Fehler bei der Suche:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchResults();
-    }, [debouncedSearch]);
-
-    const filteredResults = results.filter((result) =>
-        activeFilter === 'all' ? true : result.type === activeFilter
-    );
+    const router = useRouter();
 
     const handleSearchFocus = () => {
         setIsOpen(true);
@@ -93,8 +51,91 @@ const HeroSearch = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchResults = async () => {
+            if (debouncedSearch.length < 2) {
+                setResults([]);
+                return;
+            }
+
+            setIsLoading(true);
+            try {
+                const searchPromises = [
+                    searchGolfClubs(debouncedSearch),
+                    searchKooperationen(debouncedSearch)
+                ];
+
+                if (activeFilter === 'city' || activeFilter === 'all') {
+                    searchPromises.push(searchCities(debouncedSearch));
+                }
+
+                const [clubs, kooperationen, cities = []] = await Promise.all(searchPromises);
+
+                const clubResults: SearchResult[] = (clubs as GolfClub[]).map((club) => ({
+                    id: club.slug,
+                    title: club.title,
+                    type: 'club' as const,
+                    slug: club.slug,
+                    subtitle: club.adresse?.ort,
+                }));
+
+                const koopResults: SearchResult[] = (kooperationen as SearchKooperation[]).map((koop) => ({
+                    id: koop._id,
+                    title: koop.name,
+                    type: 'kooperation' as const,
+                    slug: koop.slug,
+                    subtitle: koop.typ,
+                }));
+
+                const cityResults: SearchResult[] = (cities as CitySearchResult[]).map((city) => ({
+                    id: `city-${city.city}`,
+                    title: city.city,
+                    type: 'city' as const,
+                    slug: '',
+                    subtitle: 'Stadt',
+                    location: city.location
+                }));
+
+                let combinedResults = [...clubResults, ...koopResults, ...cityResults];
+
+                if (activeFilter !== 'all') {
+                    combinedResults = combinedResults.filter(result => result.type === activeFilter);
+                }
+
+                setResults(combinedResults);
+            } catch (error) {
+                console.error('Fehler bei der Suche:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, [debouncedSearch, activeFilter]);
+
+    const handleResultClick = (result: SearchResult) => {
+        if (result.type === 'city' && result.location) {
+            const filters = {
+                geoFilter: {
+                    lat: result.location.lat,
+                    lng: result.location.lng,
+                    radius: 50
+                }
+            };
+
+            router.push(`/clubs?filters=${encodeURIComponent(JSON.stringify(filters))}`);
+        } else {
+            router.push(`/${result.type === 'club' ? 'clubs' : 'kooperationen'}/${result.slug}`);
+        }
+
+        setSearchTerm('');
+        setIsOpen(false);
+    };
+
     const activeFilterOption = filterOptions.find(option => option.id === activeFilter) || filterOptions[0];
     const ActiveFilterIcon = activeFilterOption.icon;
+
+    const filteredResults = results;
 
     return (
         <div className="relative w-full max-w-4xl mx-auto">
@@ -118,14 +159,14 @@ const HeroSearch = () => {
                     <div className="absolute right-2">
                         <Menu as="div" className="relative">
                             <Menu.Button className={`
-                inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium 
-                ${activeFilterOption.bgColor} text-white
-                hover:opacity-90 focus:outline-none
-              `}>
-                <span className="flex items-center">
-                  <ActiveFilterIcon className="size-5 mr-2 text-white" />
-                  <span className="hidden sm:inline">{activeFilterOption.name}</span>
-                </span>
+                                inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium 
+                                ${activeFilterOption.bgColor} text-white
+                                hover:opacity-90 focus:outline-none
+                            `}>
+                                <span className="flex items-center">
+                                    <ActiveFilterIcon className="size-5 mr-2 text-white" />
+                                    <span className="hidden sm:inline">{activeFilterOption.name}</span>
+                                </span>
                                 <ChevronDownIcon className="size-5 text-white ml-1" aria-hidden="true" />
                             </Menu.Button>
 
@@ -140,10 +181,10 @@ const HeroSearch = () => {
                                                         active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
                                                     } block w-full px-4 py-2 text-left text-sm`}
                                                 >
-                          <span className="flex items-center">
-                            <option.icon className={`size-5 mr-2 ${option.iconColor}`} />
-                              {option.name}
-                          </span>
+                                                    <span className="flex items-center">
+                                                        <option.icon className={`size-5 mr-2 ${option.iconColor}`} />
+                                                        {option.name}
+                                                    </span>
                                                 </button>
                                             )}
                                         </Menu.Item>
@@ -162,14 +203,10 @@ const HeroSearch = () => {
                         ) : filteredResults.length > 0 ? (
                             <div className="py-2">
                                 {filteredResults.map((result) => (
-                                    <Link
+                                    <div
                                         key={result.id}
-                                        href={`/${result.type === 'club' ? 'clubs' : 'kooperationen'}/${result.slug}`}
-                                        className="block px-4 py-2 hover:bg-gray-50 w-full"
-                                        onClick={() => {
-                                            setSearchTerm('');
-                                            setIsOpen(false);
-                                        }}
+                                        onClick={() => handleResultClick(result)}
+                                        className="block px-4 py-2 hover:bg-gray-50 w-full cursor-pointer"
                                     >
                                         <div className="flex items-start gap-3 w-full">
                                             {getIconForType(result.type)}
@@ -180,7 +217,7 @@ const HeroSearch = () => {
                                                 )}
                                             </div>
                                         </div>
-                                    </Link>
+                                    </div>
                                 ))}
                             </div>
                         ) : searchTerm && (

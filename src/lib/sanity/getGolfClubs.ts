@@ -127,3 +127,52 @@ export async function searchGolfClubs(searchTerm: string) {
         return [];
     }
 }
+
+// in getGolfClubs.ts
+
+// Interface für die Stadtsuche
+interface CitySearchResult {
+    city: string;
+    location: {
+        lat: number;
+        lng: number;
+    };
+}
+
+export async function searchCities(searchTerm: string) {
+    try {
+        // Hole nur die relevanten Stadt-Informationen
+        const cityProjection = `{
+            "city": adresse.ort,
+            "location": adresse.location{
+                lat,
+                lng
+            }
+        }`;
+
+        const cities = await sanityClient.fetch(
+            `*[_type == "golfclub" && defined(adresse.ort) && adresse.ort match $searchTerm]${cityProjection}`,
+            { searchTerm: `*${searchTerm}*` }
+        );
+
+        // Entferne Duplikate und formatiere die Ergebnisse
+        const uniqueCities = cities.reduce((acc: CitySearchResult[], curr: any) => {
+            if (!acc.some(city => city.city.toLowerCase() === curr.city.toLowerCase())) {
+                acc.push({
+                    city: curr.city,
+                    location: curr.location
+                });
+            }
+            return acc;
+        }, []);
+
+        // Sortiere alphabetisch und limitiere auf 10 Ergebnisse
+        return uniqueCities
+            .sort((a: CitySearchResult, b: CitySearchResult) =>
+                a.city.localeCompare(b.city, 'de'))
+            .slice(0, 10);
+    } catch (error) {
+        console.error('Fehler bei der Städtesuche:', error);
+        return [];
+    }
+}

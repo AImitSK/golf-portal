@@ -10,7 +10,7 @@ const colorConfigs: Record<ColorScheme, {
     hoverText: string;
 }> = {
     'dark-green': {
-        background: 'bg-dark-green-10',
+        background: 'bg-cta-green-15',
         text: 'text-dark-green',
         hoverBackground: 'hover:bg-dark-green',
         hoverText: 'hover:text-white'

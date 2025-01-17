@@ -46,6 +46,7 @@ export interface Address {
         code: string;
     };
     location?: GeoLocation;
+    city?: string;
 }
 
 // Service Typ
@@ -113,7 +114,6 @@ export interface GolfClub {
     image?: string; // Optional: Bild-URL des Clubs
     city: string; // Stadt des Clubs
     logo?: string;  // URL des Club-Logos
-
 
 
 
@@ -195,10 +195,26 @@ export interface SearchKooperation {
     typ: string;
 }
 
+
+
+
 export type SearchResult = {
     id: string;
     title: string;
-    type: 'club' | 'kooperation';
+    type: 'club' | 'kooperation' | 'city';
     slug: string;
     subtitle?: string;
+    location?: {
+        lat: number;
+        lng: number;
+    };
 };
+
+// In club-types.d.ts
+export interface CitySearchResult {
+    city: string;
+    location: {
+        lat: number;
+        lng: number;
+    };
+}

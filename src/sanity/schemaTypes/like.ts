@@ -27,7 +27,4 @@ export default defineType({
             validation: Rule => Rule.required()
         }
     ],
-    indexes: [
-        { name: 'unique_club_user', unique: true, fields: ['club', 'user'] }
-    ]
 });

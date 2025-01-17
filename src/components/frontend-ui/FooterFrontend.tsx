@@ -14,24 +14,27 @@ const navigation = {
 
     ],
     städte: [
-        { name: 'Golfplätz Hamburg', href: '#' },
-        { name: 'Golfplätz Berlin', href: '#' },
-        { name: 'Golfplätz München', href: '#' },
-        { name: 'Golfplätz Sylt', href: '#' },
-        { name: 'Golfplätz Rostock', href: '#' },
-        { name: 'Golfplätz Hannover', href: '#' },
+        { name: 'Golfplatz Hamburg', href: '/stadt/golfplatz-hamburg' },
+        { name: 'Golfplatz Berlin', href: '/stadt/golfplatz-berlin' },
+        { name: 'Golfplatz München', href: '/stadt/golfplatz-muenchen' },
+        { name: 'Golfplatz Hannover', href: '/stadt/golfplatz-hannover' },
+        { name: 'Golfplatz Bielefeld', href: '/stadt/golfplatz-bielefeld' },
+        { name: 'Golfplatz Sylt', href: '/stadt/golfplatz-sylt' },
+        { name: 'Golfplatz Frankfurt', href: '/stadt/golfplatz-frankfurt' },
+        { name: 'Golfplatz Köln', href: '/stadt/golfplatz-koeln' },
     ],
+
     Persöhnliches: [
         { name: 'Wunschliste', href: '#' },
         { name: 'Course List', href: '#' },
         { name: 'Scoreboard', href: '#' },
-        { name: 'Login', href: '#' },
+        { name: 'Login', href: '/auth/login' },
     ],
     Allgemein: [
         { name: 'Datenschutz', href: '#' },
         { name: 'Impressum', href: '#' },
         { name: 'Cookie Einstellungen', href: '#' },
-        { name: 'Login für Golfplätze', href: '#' },
+        { name: 'Login für Golfplätze', href: '/auth/login' },
         { name: 'Mediadaten', href: '#' },
     ],
 
