@@ -1,13 +1,13 @@
 // src/components/clubs/ClubCard.tsx
 import React from "react";
-import { GolfClub, FilterValue } from "@/types/club-types";
-import { Heading } from "@/components/frontend-ui/Heading";
+import {GolfClub, FilterValue} from "@/types/club-types";
+import {Heading} from "@/components/frontend-ui/Heading";
 import GridNavi from "@/components/frontend-ui/GridNavi";
-import { ClubTag, ClubTagArray } from "./ClubTag";
+import {ClubTag, ClubTagArray} from "./ClubTag";
 import LocationButton from './LocationButton';
 import Link from 'next/link';
-import { LikesCounter } from "@/components/clubs/LikesCounter";
-import { LikeButton } from './LikeButton';
+import {LikesCounter} from "@/components/clubs/LikesCounter";
+import {LikeButton} from './LikeButton';
 
 type ClubCardProps = {
     club: GolfClub;
@@ -15,7 +15,7 @@ type ClubCardProps = {
     onTagClick: (fieldName: string, value: FilterValue) => void;
 };
 
-export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
+export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
     const isLargeLayout = layout === "large";
 
     // Rendere einen Tag nur, wenn der Wert existiert
@@ -40,41 +40,35 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
         );
     };
 
-// Kompakte Layout-Komponente
     if (!isLargeLayout) {
-        // Daten Vorabbereitung mit Fallbacks für Adresse
-        const { location, city } = club.adresse ?? {};
-        const lat = location?.lat ?? 0;
-        const lng = location?.lng ?? 0;
+        const city = club.adresse?.city || club.city || "Unbekannt";
+        const lat = club.adresse?.location?.lat || 0;
+        const lng = club.adresse?.location?.lng || 0;
 
         return (
             <div className="flex gap-6">
-                {/* Image Section */}
                 <Link
                     href={`/clubs/${club.slug}`}
                     className="block shrink-0 w-[120px] h-[120px] relative rounded-lg overflow-hidden"
                 >
                     <img
-                        src={club.image || "/gcl-hero.jpg"} // Fallback-Bild
-                        alt={club.title || "Standard Club"} // Fallback-Alt-Text
+                        src={club.image || "/gcl-hero.jpg"}
+                        alt={club.title || "Standard Club"}
                         className="w-full h-full object-cover"
                     />
                 </Link>
 
-                {/* Content Section */}
                 <div className="flex-1">
                     <Link href={`/clubs/${club.slug}`} className="block mb-3">
                         <Heading
                             level={2}
                             className="text-dark-green font-semibold hover:text-cta-green transition-colors"
                         >
-                            {club.title || "Standard Club"} {/* Fallback-Titel */}
+                            {club.title || "Standard Club"}
                         </Heading>
                     </Link>
 
-                    {/* Tags and Location */}
                     <div className="space-y-2">
-                        {/* Tags */}
                         <div className="flex flex-wrap gap-2">
                             {renderTag("anzahlLoecher", club.anzahlLoecher, "dark-green", undefined, " Loch")}
                             {renderTag("parGesamt", club.parGesamt, "dark-green", "Par")}
@@ -92,23 +86,12 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
                                 />
                             )}
                         </div>
-
-                        {/* Location - Button für Standortfunktion */}
-                        {location && (
-                            <button
-                                onClick={() =>
-                                    onTagClick("geoFilter", { lat, lng, radius: 50 })
-                                }
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-dark-green text-white hover:bg-cta-green transition-colors text-sm font-medium"
-                            >
-                                <img
-                                    src="/icons/iconLocationDarkGreen.svg"
-                                    alt="Location"
-                                    className="w-4 h-4 brightness-0 invert"
-                                />
-                                <span>{city || "Unbekannt"}</span>
-                            </button>
-                        )}
+                        <LocationButton
+                            city={city}
+                            coordinates={{ lat, lng }}
+                            colorScheme="dark-green"
+                            onClick={onTagClick}
+                        />
                     </div>
                 </div>
             </div>
@@ -116,10 +99,12 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
     }
 
 
+
     // Großes Layout (original)
     return (
         <div className="bg-white">
-            <div className="relative rounded-2xl overflow-visible hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200">
+            <div
+                className="relative rounded-2xl overflow-visible hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200">
                 {/* Bild-Container mit Link */}
                 <Link
                     href={`/clubs/${club.slug}`}
@@ -147,21 +132,23 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
 
                 {/* Aktionen unten rechts */}
                 <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
+                    <button
+                        className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
                         <img src="/icons/iconShareWithe.svg" alt="Teilen" className="h-5 w-5"/>
                     </button>
                     <LikeButton
                         clubId={club._id}
                         className="bg-black/30 hover:bg-black/40"
                     />
-                    <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
+                    <div
+                        className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
                         <GridNavi/>
                     </div>
                 </div>
 
                 {/* Likes Counter unten links */}
                 <div className="absolute bottom-3 left-3">
-                    <LikesCounter clubId={club._id} />
+                    <LikesCounter clubId={club._id}/>
                 </div>
             </div>
 
@@ -231,3 +218,4 @@ export const ClubCard = ({ club, layout, onTagClick }: ClubCardProps) => {
         </div>
     );
 };
+

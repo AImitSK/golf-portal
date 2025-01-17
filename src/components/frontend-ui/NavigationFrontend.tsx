@@ -1,13 +1,33 @@
 "use client";
 
-import { Menu } from '@headlessui/react';
-import { Bars3Icon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import HeroSearch from "@/components/search/HeroSearch";
+import { useEffect, useState } from "react";
+import { Menu } from "@headlessui/react";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 export default function NavigationWithHamburger() {
+    const [isSticky, setIsSticky] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Überprüfen, ob die Seite gescrollt wurde
+            setIsSticky(window.scrollY > 0);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        // Clean-up Funktion
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
     return (
-        <nav className="sticky top-0 z-20 bg-dark-green w-full">
+        <nav
+            className={`sticky top-0 z-20 w-full bg-dark-green bg-opacity-90 backdrop-blur-md transition-shadow ${
+                isSticky ? "shadow-md" : "shadow-none"
+            }`}
+        >
             <div className="mx-auto max-w-[1280px] px-2 sm:px-4 lg:px-8">
                 <div className="relative flex h-16 items-center justify-between">
                     {/* Logo mit Link */}
@@ -21,11 +41,6 @@ export default function NavigationWithHamburger() {
                                 />
                             </Link>
                         </div>
-                    </div>
-
-                    {/* Search Bar */}
-                    <div className="flex flex-1 justify-center px-2">
-                        <HeroSearch />
                     </div>
 
                     {/* Menu Button */}
@@ -44,7 +59,7 @@ export default function NavigationWithHamburger() {
                                             <Link
                                                 href="/clubs"
                                                 className={`block px-4 py-2 text-sm text-dark-green ${
-                                                    active ? 'bg-gray-100' : ''
+                                                    active ? "bg-gray-100" : ""
                                                 }`}
                                             >
                                                 Golfclubs
@@ -56,7 +71,7 @@ export default function NavigationWithHamburger() {
                                             <Link
                                                 href="/kooperationen"
                                                 className={`block px-4 py-2 text-sm text-dark-green ${
-                                                    active ? 'bg-gray-100' : ''
+                                                    active ? "bg-gray-100" : ""
                                                 }`}
                                             >
                                                 Kooperationen
@@ -68,7 +83,7 @@ export default function NavigationWithHamburger() {
                                             <Link
                                                 href="/pricing"
                                                 className={`block px-4 py-2 text-sm text-dark-green ${
-                                                    active ? 'bg-gray-100' : ''
+                                                    active ? "bg-gray-100" : ""
                                                 }`}
                                             >
                                                 Pricing

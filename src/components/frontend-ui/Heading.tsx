@@ -8,7 +8,7 @@ type HeadingProps = {
 
 const headingStyles: Record<1 | 2 | 3 | 4, string> = {
     1: 'font-inter text-4xl font-bold text-dark-green',
-    2: 'font-inter text-dark-green text-2xl font-semibold leading-[1.4rem] tracking-[0.01125rem]',
+    2: 'font-inter text-dark-green text-2xl font-semibold  tracking-[0.01125rem]',
     3: 'text-xl font-medium text-dark-20',
     4: 'text-lg font-normal text-dark-6',
 };

@@ -64,10 +64,14 @@ const LocationButton: React.FC<LocationButtonProps> = ({
                     ${colors.text}
                     group-hover:text-white
                 `}
+
             />
             <span className="transition-colors group-hover:text-white">{city}</span>
         </button>
+
     );
+
 };
+
 
 export default LocationButton;
