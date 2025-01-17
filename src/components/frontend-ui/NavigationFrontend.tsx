@@ -5,18 +5,11 @@ import { Menu } from "@headlessui/react";
 import { Bars3Icon, UserCircleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Avatar } from "../catalyst-ui-kit/avatar";
-
-// Beispiel für einen User-Typ - an deine Auth-Lösung anpassen
-type User = {
-    name: string;
-    email: string;
-    image?: string;
-} | null;
+import { useSession, signOut } from "next-auth/react";
 
 export default function NavigationWithHamburger() {
     const [isSticky, setIsSticky] = useState(false);
-    // Hier später durch echte Auth ersetzen
-    const [user, setUser] = useState<User>(null);
+    const { data: session } = useSession();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -28,6 +21,12 @@ export default function NavigationWithHamburger() {
             window.removeEventListener("scroll", handleScroll);
         };
     }, []);
+
+    const handleLogout = async () => {
+        await signOut({ callbackUrl: '/' });
+    };
+
+    const isAdmin = session?.user?.role === 'admin';
 
     return (
         <nav
@@ -52,16 +51,18 @@ export default function NavigationWithHamburger() {
 
                     {/* Right side navigation items */}
                     <div className="flex items-center gap-4">
-                        {user ? (
+                        {session?.user ? (
                             // Eingeloggter Zustand - Avatar mit Dropdown
                             <Menu as="div" className="relative">
-                                <Menu.Button className="flex items-center">
-                                    <Avatar
-                                        src={user.image}
-                                        initials={user.name?.[0]}
-                                        alt={user.name}
-                                        className="h-8 w-8 cursor-pointer"
-                                    />
+                                <Menu.Button>
+    <span className="h-8 w-8 cursor-pointer inline-grid shrink-0 align-middle [--avatar-radius:50%] overflow-hidden rounded-full">
+        <Avatar
+            src={session.user.image || undefined}
+            initials={session.user.name?.[0]}
+            alt={session.user.name || ''}
+            className="size-full [&>img]:object-cover [&>img]:w-full [&>img]:h-full"
+        />
+    </span>
                                 </Menu.Button>
                                 <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
@@ -101,10 +102,24 @@ export default function NavigationWithHamburger() {
                                                 </Link>
                                             )}
                                         </Menu.Item>
+                                        {isAdmin && (
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <Link
+                                                        href="/club-backend"
+                                                        className={`block px-4 py-2 text-sm text-dark-green ${
+                                                            active ? "bg-gray-100" : ""
+                                                        }`}
+                                                    >
+                                                        Administration
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
+                                        )}
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <button
-                                                    onClick={() => setUser(null)}
+                                                    onClick={handleLogout}
                                                     className={`block w-full px-4 py-2 text-left text-sm text-dark-green ${
                                                         active ? "bg-gray-100" : ""
                                                     }`}

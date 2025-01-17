@@ -1,6 +1,7 @@
 // src/app/layout.tsx
 import { Geist, Geist_Mono } from "next/font/google";
 import { ScrollToTop } from '@/components/common/ScrollToTop';
+import AuthProvider from "@/components/providers/SessionProvider";
 import "./globals.css";
 import { Metadata } from "next";
 
@@ -30,9 +31,10 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* Hauptinhalt der Seite */}
-        {children}
-        <ScrollToTop />
+        <AuthProvider>
+            {children}
+            <ScrollToTop />
+        </AuthProvider>
         </body>
         </html>
     );

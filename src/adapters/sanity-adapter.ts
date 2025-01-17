@@ -5,58 +5,52 @@ import type {
   AdapterSession,
   AdapterUser,
 } from "@auth/core/adapters";
-import { User, UserRole } from "@/models/typings";
+import { UserRole } from "@/models/typings";
+import { SanityAdapterUser, SanityUserCreate } from "@/types/schemas/auth";
 
-/**
- * In den Adapter-Optionen definieren wir, welche Sanity-Schemas wir haben.
- * Hier: user, administrator, account, verificationToken, session.
- */
 export function SanityAdapter(
-  sanityClient: SanityClient,
-  options = {
-    schemas: {
-      account: "account",
-      verificationToken: "verificationToken",
-      user: "user",
-      administrator: "administrator",
-      session: "session",
-    },
-  }
+    sanityClient: SanityClient,
+    options = {
+      schemas: {
+        account: "account",
+        verificationToken: "verificationToken",
+        user: "user",
+        administrator: "administrator",
+        session: "session",
+      },
+    }
 ): Adapter {
   return {
-    /**
-     * createUser – erstellt entweder ein `_type: 'administrator'` oder `_type: 'user'`
-     * je nachdem, ob user.role === 'admin' (oder UserRole.ADMIN).
-     */
-    async createUser(user) {
+    async createUser(user): Promise<SanityAdapterUser> {
       try {
-        // 1) E-Mail checken (ob es schon existiert, in user ODER administrator)
         const existingUser_qry = `*[_type in ["${options.schemas.user}","${options.schemas.administrator}"] && email == "${user.email}"][0]`;
-        const existingUser = await sanityClient.fetch(existingUser_qry);
+        const existingUser = await sanityClient.fetch<SanityAdapterUser>(existingUser_qry);
         if (existingUser) return existingUser;
 
-        // 2) Bestimmen, ob wir "administrator" oder "user" anlegen
-        //    Falls du in `models/typings` => `export enum UserRole { USER = 'user', ADMIN = 'admin' }`
         const docType =
-          user.role === UserRole.ADMIN
-            ? options.schemas.administrator
-            : options.schemas.user;
+            user.role === UserRole.ADMIN
+                ? options.schemas.administrator
+                : options.schemas.user;
 
-        const createdUser = await sanityClient.create({
+        const userToCreate: SanityUserCreate = {
           _type: docType,
           _id: `${docType}.${uuid()}`,
-          role: user.role ?? UserRole.USER, 
-          name: user.name,
+          id: `${docType}.${uuid()}`,
+          role: user.role ?? UserRole.USER,
+          name: user.name ?? "",
           email: user.email,
           image: user.image,
-          emailVerified: user.emailVerified ?? null,
-        });
+          emailVerified: user.emailVerified,
+          aktiv: true, // Standardwert
+        };
+
+        const createdUser = await sanityClient.create(userToCreate);
 
         return {
-          id: createdUser._id,
           ...createdUser,
-        };
-      } catch (error) {
+          id: createdUser._id,
+        } as SanityAdapterUser;
+      } catch {
         throw new Error("Failed to Create user");
       }
     },
@@ -70,7 +64,7 @@ export function SanityAdapter(
         const user = await sanityClient.fetch(user_qry);
 
         return user;
-      } catch (error) {
+      } catch {
         throw new Error("Couldnt get the user");
       }
     },
@@ -84,7 +78,7 @@ export function SanityAdapter(
         const user = await sanityClient.fetch(user_qry);
 
         return user;
-      } catch (error) {
+      } catch {
         throw new Error("Couldnt get the user");
       }
     },
@@ -108,7 +102,7 @@ export function SanityAdapter(
           role: user.role,
           ...user,
         };
-      } catch (error) {
+      } catch {
         throw new Error("Couldnt get the user");
       }
     },
@@ -116,34 +110,38 @@ export function SanityAdapter(
     /**
      * updateUser – Patch an user- oder administrator-Dokument
      */
-    async updateUser(updatedUser) {
+    async updateUser(updatedUser): Promise<SanityAdapterUser> {
       try {
-        // existingUser anhand ID abfragen, egal ob user/administrator
         const existingUser_qry = `*[_type in ["${options.schemas.user}","${options.schemas.administrator}"] && _id == "${updatedUser?.id}"][0]`;
-        const existingUser = await sanityClient.fetch(existingUser_qry);
+        const existingUser = await sanityClient.fetch<SanityAdapterUser>(existingUser_qry);
 
         if (!existingUser) {
           throw new Error(
-            `Could not update user: ${updatedUser.id}; unable to find user`
+              `Could not update user: ${updatedUser.id}; unable to find user`
           );
         }
 
-        // Patch
-        const patchedUser = await sanityClient
-          .patch(existingUser._id)
-          .set({
-            // Wenn updatedUser.emailVerified === null => undefined => "keine Änderung"
-            emailVerified:
-              updatedUser.emailVerified === null
-                ? undefined
-                : updatedUser.emailVerified,
-            ...existingUser,
-          })
-          .commit();
+        const updatedFields = {
+          ...existingUser,
+          emailVerified: updatedUser.emailVerified === null
+              ? undefined
+              : updatedUser.emailVerified,
+          name: updatedUser.name ?? existingUser.name,
+          email: updatedUser.email ?? existingUser.email,
+          image: updatedUser.image ?? existingUser.image,
+        };
 
-        return patchedUser as any;
-      } catch (error) {
-        throw new Error("Couldnt update the user");
+        const patchedUser = await sanityClient
+            .patch(existingUser._id)
+            .set(updatedFields)
+            .commit();
+
+        return {
+          ...patchedUser,
+          id: patchedUser._id,
+        } as SanityAdapterUser;
+      } catch {
+        throw new Error("Couldn't update the user");
       }
     },
 
@@ -151,21 +149,22 @@ export function SanityAdapter(
      * deleteUser – egal ob user oder administrator, wir löschen per _id
      */
     async deleteUser(userId) {
-      try {
-        return await sanityClient.delete(userId);
-      } catch (error: any) {
-        throw new Error("Could not delete user");
-      }
-    },
+    try {
+      return await sanityClient.delete(userId);
+    } catch {
+      throw new Error("Could not delete user");
+    }
+  },
 
     /**
      * linkAccount – unberührt, da hier _type: "account" benutzt wird
-     *  und user._id referenziert wird. 
+     *  und user._id referenziert wird.
      */
     async linkAccount(account) {
       try {
         const createdAccount = await sanityClient.create({
           _type: options.schemas.account,
+          _id: `account.${uuid()}`,
           userId: account.userId,
           type: account.type,
           provider: account.provider,
@@ -182,21 +181,25 @@ export function SanityAdapter(
           },
         });
 
-        const userToUpdate = await sanityClient.getDocument(account.userId);
+        const userToUpdate = await sanityClient.getDocument<SanityAdapterUser>(account.userId);
+        if (!userToUpdate?._id) throw new Error("User not found");
 
-        await sanityClient.createOrReplace<User>({
-          ...userToUpdate,
-          emailVerified: new Date().toISOString(),
-          accounts: {
-            //@ts-ignore
-            _type: "reference",
-            _key: uuid(),
-            _ref: createdAccount._id,
-          },
-        });
+        await sanityClient.patch(userToUpdate._id)
+            .set({
+              emailVerified: new Date().toISOString(),
+              accounts: [
+                ...(userToUpdate.accounts || []),
+                {
+                  _type: "reference",
+                  _key: uuid(),
+                  _ref: createdAccount._id,
+                }
+              ]
+            })
+            .commit();
 
         return account;
-      } catch (error) {
+      } catch {
         throw new Error("Error linking account");
       }
     },
@@ -207,20 +210,20 @@ export function SanityAdapter(
         const account = await sanityClient.fetch(account_qry);
         if (!account) return;
 
-        const accountUser = await sanityClient.getDocument<User>(account.userId);
+        const accountUser = await sanityClient.getDocument<SanityAdapterUser>(account.userId);
+        if (!accountUser?._id) return;
 
-        // Filter out the user account to be deleted
-        const updatedUserAccounts = (accountUser?.accounts || []).filter(
-          (ac) => ac._ref !== account._id
-        );
-
-        await sanityClient.createOrReplace({
-          ...accountUser,
-          accounts: updatedUserAccounts,
-        });
+        await sanityClient
+            .patch(accountUser._id)
+            .set({
+              accounts: (accountUser.accounts || []).filter(
+                  (ac) => ac._ref !== account._id
+              )
+            })
+            .commit();
 
         await sanityClient.delete(account._id);
-      } catch (error) {
+      } catch {
         throw new Error("Could not Unlink account");
       }
     },
@@ -240,7 +243,7 @@ export function SanityAdapter(
         });
 
         return session;
-      } catch (error) {
+      } catch {
         throw new Error("Error Creating Session");
       }
     },
@@ -266,7 +269,7 @@ export function SanityAdapter(
           session: session,
           user: user,
         };
-      } catch (error) {
+      } catch  {
         throw new Error("Operation Failed");
       }
     },
@@ -283,7 +286,7 @@ export function SanityAdapter(
             ...session,
           })
           .commit();
-      } catch (error) {
+      } catch  {
         throw new Error("Operation Failed");
       }
     },
@@ -295,7 +298,7 @@ export function SanityAdapter(
         if (!session) return null;
 
         await sanityClient.delete(session._id);
-      } catch (error) {
+      } catch {
         throw new Error("Operation Failed");
       }
     },

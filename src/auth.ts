@@ -1,4 +1,6 @@
 import NextAuth from "next-auth"
+import type { JWT } from "next-auth/jwt"
+import type { DefaultSession } from "next-auth"
 import Google from "next-auth/providers/google"
 import { SanityAdapter } from "@/adapters/sanity-adapter"
 import sanityClient from "@/lib/sanityClient"
@@ -6,124 +8,156 @@ import Credentials from "next-auth/providers/credentials"
 import { LoginSchema } from "@/types/schemas/auth-schemas"
 import bcrypt from "bcryptjs"
 import { getUserById } from "@/data/user"
-import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation"
-import { getAccountByUserId } from "@/data/account"
+import type { Adapter } from "next-auth/adapters"
 
-export const { 
-  handlers: { GET, POST }, 
-  auth,
-  signIn,
-  signOut,
-  //unstable update in Beta version
-  unstable_update
-} = NextAuth({
-  pages: {
-    signIn: "/auth/login",
-    error: "/auth/error"
-  },
-  providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    }),
-    Credentials({
-      async authorize(credentials) {
-        try {
-          console.log("Starting authorize with email:", credentials?.email);
-          const validatedFields = LoginSchema.safeParse(credentials);
-          console.log("Validation result:", validatedFields.success);
-          if(!validatedFields.success) return null;
-   
-          const user_qry = `*[(_type == "user" || _type == "administrator") && email== "${credentials?.email}"][0]`;
-          const user = await sanityClient.fetch(user_qry);
-          console.log("Found user:", user ? { ...user, password: '***' } : null);
-   
-          if (!user || !user.password) return null;
-   
-          const passwordsMatch = await bcrypt.compare(
-            credentials?.password as string, 
-            user.password
-          );
-          console.log("Password match:", passwordsMatch);
-     
-          if (passwordsMatch) {
-            const returnUser = {
-              id: user._id,
-              _id: user._id,
-              role: user.role,
-              _type: user._type,
-              aktiv: user.aktiv,
-              email: user.email,
-              name: user.name
-            };
-            console.log("Returning user:", returnUser);
-            return returnUser;
-          }  
-          
-          return null;
-        } catch (error) {
-          console.error("Auth error:", error);
-          return null;
-        }
-      }
-    })
-  ],
-  session: { strategy: "jwt" },
-  adapter: SanityAdapter(sanityClient),
-  callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider !== "credentials") return true;
+type UserType = "user" | "administrator";
+type UserRole = "user" | "admin";
 
-      const existingUser = await getUserById(user.id)
+interface SanityUser {
+    id: string;
+    _id: string;
+    _rev: string;
+    _createdAt: string;
+    _updatedAt: string;
+    role: UserRole;
+    _type: UserType;
+    aktiv: boolean;
+    email: string;
+    name: string;
+    password?: string;
+}
 
-      if(!existingUser?.emailVerified) return false;
+interface LoginCredentials {
+    email?: string;
+    password?: string;
+}
 
-      if(existingUser.isTwoFactorEnabled) {
-        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser._id);
-
-        if(!twoFactorConfirmation) return false;
-
-        await sanityClient.delete(twoFactorConfirmation._id);
-      }
-
-      return true;
-    },
-    async session({ session, token }) {
-      if(token.sub && session.user) {
-        session.user.id = token.sub;
-      }
-
-      if(token.role && session.user) {
-        session.user.role = token.role;
-      }
-
-      if (session.user) {
-        session.user._type = token._type as string;
-        session.user._id = token._id as string;
-        session.user.aktiv = token.aktiv as boolean;
-        session.user.name = token.name;
-        session.user.email = token.email;
-      }
-
-      return session;
-    },
-    async jwt({ token }) {
-      if(!token.sub) return token;
-
-      const existingUser = await getUserById(token.sub);
-
-      if (!existingUser) return token;
-
-      const existingAccount = await getAccountByUserId(existingUser._id);
-
-      token.name = existingUser.name;
-      token.email = existingUser.email;
-      token.role = existingUser.role;
-      token._type = existingUser._type;
-      token._id = existingUser._id;
-      token.aktiv = existingUser.aktiv;
-
-      return token;
+declare module "next-auth" {
+    interface Session {
+        user: {
+            id: string;
+            role: UserRole;
+            _type: UserType;
+            _id: string;
+            aktiv: boolean;
+        } & DefaultSession["user"]
     }
-  }
+
+    interface User {
+        role: UserRole;
+        _type: UserType;
+        _id: string;
+        aktiv: boolean;
+    }
+}
+
+declare module "next-auth/jwt" {
+    /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
+    interface JWT {
+        role: UserRole;
+        _type: UserType;
+        _id: string;
+        aktiv: boolean;
+    }
+}
+
+export const {
+    handlers: { GET, POST },
+    auth,
+    signIn,
+    signOut,
+    unstable_update
+} = NextAuth({
+    pages: {
+        signIn: "/auth/login",
+        error: "/auth/error"
+    },
+    providers: [
+        Google({
+            clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ''
+        }),
+        Credentials({
+            async authorize(credentials): Promise<SanityUser | null> {
+                try {
+                    const validatedFields = LoginSchema.safeParse(credentials);
+                    if (!validatedFields.success) return null;
+
+                    const loginCredentials = credentials as unknown as LoginCredentials;
+
+                    if (!loginCredentials.email || !loginCredentials.password) return null;
+
+                    const user_qry = `*[(_type == "user" || _type == "administrator") && email == $email][0]`;
+                    const user = await sanityClient.fetch<SanityUser>(user_qry, { email: loginCredentials.email });
+
+                    if (!user || !user.password) return null;
+
+                    const passwordsMatch = await bcrypt.compare(
+                        loginCredentials.password,
+                        user.password
+                    );
+
+                    if (passwordsMatch) {
+                        return {
+                            id: user._id,
+                            _id: user._id,
+                            _rev: user._rev,
+                            _createdAt: user._createdAt,
+                            _updatedAt: user._updatedAt,
+                            role: user.role,
+                            _type: user._type,
+                            aktiv: user.aktiv,
+                            email: user.email,
+                            name: user.name
+                        };
+                    }
+
+                    return null;
+                } catch (error) {
+                    console.error("Auth error:", error);
+                    return null;
+                }
+            }
+        })
+    ],
+    session: { strategy: "jwt" },
+    adapter: SanityAdapter(sanityClient) as Adapter,
+    callbacks: {
+        async session({ session, token }) {
+            if (!session.user) return session;
+
+            return {
+                ...session,
+                user: {
+                    ...session.user,
+                    id: token.sub ?? session.user.id,
+                    role: token.role as UserRole,
+                    _type: token._type as UserType,
+                    _id: token._id as string,
+                    aktiv: token.aktiv as boolean,
+                    name: token.name as string,
+                    email: token.email as string,
+                    image: token.picture ?? null  // Hier wird das Bild übertragen
+                }
+            };
+        },
+        async jwt({ token }) {
+            if(!token.sub) return token;
+
+            const existingUser = await getUserById(token.sub);
+
+            if (!existingUser) return token;
+
+            return {
+                ...token,
+                name: existingUser.name,
+                email: existingUser.email,
+                role: existingUser.role as UserRole,
+                _type: existingUser._type as UserType,
+                _id: existingUser._id,
+                aktiv: existingUser.aktiv,
+                picture: existingUser.image  // Hier speichern wir die Bild-URL
+            };
+        }
+    }
 })
