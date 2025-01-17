@@ -4,7 +4,8 @@ import {
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-  CLUB_BACKEND  
+  CLUB_BACKEND,
+  USER_CLUBS
 } from "@/routes";
 
 type AuthRequest = {
@@ -41,7 +42,7 @@ export default auth((req: AuthRequest) => {
       if (role === 'admin') {
         return Response.redirect(new URL(CLUB_BACKEND, nextUrl));  
       }
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+      return Response.redirect(new URL(role === 'user' ? USER_CLUBS : DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return;
   }
