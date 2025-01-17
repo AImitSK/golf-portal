@@ -17,7 +17,7 @@ export default defineType({
             name: 'user',
             title: 'User',
             type: 'reference',
-            to: [{ type: 'user' }],
+            to: [{ type: 'user' }, { type: 'administrator' }], // Beide User-Typen erlauben
             validation: Rule => Rule.required()
         },
         {

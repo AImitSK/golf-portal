@@ -1,7 +1,9 @@
 // src/components/clubs/LikeButton.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface LikeButtonProps {
     clubId: string;
@@ -14,15 +16,42 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
                                                           className = '',
                                                           onLikeChange
                                                       }) => {
-    // Temporäre feste Benutzer-ID für Tests
-    const tempUserId = 'test-user-001';
+    const { data: session, status } = useSession();
+    const router = useRouter();
 
     const [isLiked, setIsLiked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Prüfe initial, ob der User den Club bereits geliked hat
+    useEffect(() => {
+        const checkLikeStatus = async () => {
+            if (!session?.user?._id) return;
+
+            try {
+                const response = await fetch(`/api/likes/status?clubId=${clubId}&userId=${session.user._id}`);
+                if (response.ok) {
+                    const { hasLiked } = await response.json();
+                    setIsLiked(hasLiked);
+                }
+            } catch (error) {
+                console.error('Fehler beim Prüfen des Like-Status:', error);
+            }
+        };
+
+        if (status === 'authenticated') {
+            checkLikeStatus();
+        }
+    }, [clubId, session?.user?._id, status]);
+
     const handleLikeClick = async () => {
         if (isLoading) return;
+
+        // Wenn nicht eingeloggt, zur Login-Seite weiterleiten
+        if (!session?.user) {
+            router.push('/auth/login');
+            return;
+        }
 
         setIsLoading(true);
         setError(null);
@@ -35,24 +64,22 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
                 },
                 body: JSON.stringify({
                     clubId,
-                    userId: tempUserId
+                    userId: session.user._id
                 }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                // Fehler aus der Antwort extrahieren
                 const errorMessage = data.error || 'Unbekannter Fehler';
-                console.error('Like Fehler:', errorMessage);
                 setError(errorMessage);
                 throw new Error(errorMessage);
             }
 
-            // Toggle lokalen Like-Status basierend auf der Antwort
+            // Toggle lokalen Like-Status
             setIsLiked(data.action === 'added');
 
-            // Aktuelle Like-Anzahl abrufen
+            // Aktualisiere Like-Zähler
             const countResponse = await fetch(`/api/likes?clubId=${clubId}`);
             if (countResponse.ok) {
                 const { count } = await countResponse.json();
@@ -66,22 +93,10 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
         }
     };
 
-    // Fehler-Rendering
-    if (error) {
-        return (
-            <div
-                className="bg-red-500 text-white p-2 rounded"
-                onClick={() => setError(null)}
-            >
-                {error}
-            </div>
-        );
-    }
-
     return (
         <button
             onClick={handleLikeClick}
-            disabled={isLoading}
+            disabled={isLoading || status === 'loading'}
             className={`
                 flex items-center justify-center h-9 w-9 rounded-full 
                 transition-all duration-200

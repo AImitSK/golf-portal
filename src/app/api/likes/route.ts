@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
     }
 }
 
+// src/app/api/likes/route.ts
 export async function POST(request: NextRequest) {
     try {
         // Parse den Anfrage-Body
@@ -58,6 +59,20 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Überprüfe, ob der Benutzer existiert
+        const userExists = await sanityClient.fetch(
+            `*[(_type == "user" || _type == "administrator") && _id == $userId][0]`,
+            { userId }
+        );
+
+        if (!userExists) {
+            console.error('Benutzer nicht gefunden:', userId);
+            return NextResponse.json(
+                { error: 'Benutzer nicht gefunden' },
+                { status: 404 }
+            );
+        }
+
         // Überprüfe, ob der Club existiert
         const clubExists = await sanityClient.fetch(
             `*[_type == "golfclub" && _id == $clubId][0]`,
@@ -68,20 +83,6 @@ export async function POST(request: NextRequest) {
             console.error('Club nicht gefunden:', clubId);
             return NextResponse.json(
                 { error: 'Club nicht gefunden' },
-                { status: 404 }
-            );
-        }
-
-        // Überprüfe, ob der Benutzer existiert (falls du eine Benutzer-Validierung möchtest)
-        const userExists = await sanityClient.fetch(
-            `*[_type == "golfUser" && _id == $userId][0]`,
-            { userId }
-        );
-
-        if (!userExists) {
-            console.error('Benutzer nicht gefunden:', userId);
-            return NextResponse.json(
-                { error: 'Benutzer nicht gefunden' },
                 { status: 404 }
             );
         }
