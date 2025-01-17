@@ -6,7 +6,15 @@
 export const publicRoutes = [
   "/",
   "/studio",
-  "/auth/new-verification"
+  "/auth/new-verification",
+  "/logo-c-list-green.svg",
+  "/logo_course_list.svg",
+  "/gcl-hero.jpg",
+  "/hero-golf.webp",
+  "/globe.svg",
+  "/file.svg",
+  "/window.svg",
+  "/public/(.*)"
 ];
 
 /**

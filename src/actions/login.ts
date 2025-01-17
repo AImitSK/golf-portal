@@ -2,8 +2,8 @@
 
 import * as z from "zod";
 import { LoginSchema } from "@/types/schemas/auth-schemas";
-import { signIn } from "~/auth";
-import { getRedirectPath } from "~/routes";
+import { signIn } from "@/auth";
+import { getRedirectPath } from "@/routes";
 import { AuthError } from "next-auth";
 import { getUserByEmail } from "@/data/user";
 import { sendVerificationEmail } from "@/lib/mail";

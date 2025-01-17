@@ -12,6 +12,7 @@ export const getUserByEmail = async (email: string) => {
 }
 
 export const getUserById = async (_id: string) => {
+    console.log("Getting user by id:", _id);
     try {
         // Auch hier beide Schemas berücksichtigen
         const query = `*[(_type == "user" || _type == "administrator") && _id == "${_id}"][0]`;
