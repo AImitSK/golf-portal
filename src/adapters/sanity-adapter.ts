@@ -45,7 +45,7 @@ export function SanityAdapter(
         const createdUser = await sanityClient.create({
           _type: docType,
           _id: `${docType}.${uuid()}`,
-          role: user.role ?? UserRole.USER, // Default auf normaler User
+          role: user.role ?? UserRole.USER, 
           name: user.name,
           email: user.email,
           image: user.image,
@@ -137,7 +137,6 @@ export function SanityAdapter(
               updatedUser.emailVerified === null
                 ? undefined
                 : updatedUser.emailVerified,
-            // restliche Felder aus existingUser, falls du es so beibehalten willst
             ...existingUser,
           })
           .commit();

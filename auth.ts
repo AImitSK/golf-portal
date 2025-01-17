@@ -34,8 +34,7 @@ export const {
          const validatedFields = LoginSchema.safeParse(credentials);
          if(!validatedFields.success) return null;
  
-         const user_qry =  `*[_type == "user" && email== "${credentials?.email}"][0]`;
-         const user = await sanityClient.fetch(user_qry);
+         const user_qry =  `*[(_type == "user" || _type == "administrator") && email== "${credentials?.email}"][0]`;         const user = await sanityClient.fetch(user_qry);
  
          if (!user || !user.password) return null;
  

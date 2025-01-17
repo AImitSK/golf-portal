@@ -19,6 +19,12 @@ const schema: SchemaTypeDefinition = {
             validation: (Rule: ValidationRule) => Rule.required().email()
         },
         {
+            name: 'emailVerified',
+            title: 'Email Verified',
+            type: 'datetime',
+            readOnly: true
+        },
+        {
             name: 'image',
             title: 'Profilbild',
             type: 'image',
@@ -27,11 +33,27 @@ const schema: SchemaTypeDefinition = {
             }
         },
         {
+            name: 'role',
+            title: 'Role',
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'User', value: 'user' },
+                ]
+            }
+        },
+        {
             name: 'createdAt',
             title: 'Erstellt am',
             type: 'datetime',
             readOnly: true
-        }
+        },
+        {
+            name: 'password',
+            title: 'Passwort',
+            type: 'string',
+            hidden: false, 
+        },
     ]
 }
 

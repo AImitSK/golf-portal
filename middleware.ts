@@ -3,38 +3,61 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   authRoutes,
-  publicRoutes
+  publicRoutes,
+  CLUB_BACKEND  
 } from "~/routes";
 
-export default auth((req) => {
+type AuthRequest = {
+  auth: any;
+  nextUrl: URL;
+}
+
+export default auth((req: AuthRequest) => {
+  console.log("Middleware executing");
+  console.log("Path:", req.nextUrl.pathname);
+  console.log("Auth:", !!req.auth);
+  console.log("Role:", req.auth?.user?.role);
+  
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
+  const role = req.auth?.user?.role;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-
+  const isClubBackendRoute = nextUrl.pathname.startsWith(CLUB_BACKEND);  
   if (isApiAuthRoute) {
-    return null;
+    return;
   }
 
   if (isAuthRoute) {
     if(isLoggedIn) {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
+      if (role === 'admin') {
+        return Response.redirect(new URL(CLUB_BACKEND, nextUrl));  
+      }
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
-    return null;
+    return;
+  }
+
+  // Schützt Club-Backend Routes
+  if (isClubBackendRoute) {  
+    if (!isLoggedIn) {
+      return Response.redirect(new URL("/auth/login", nextUrl));
+    }
+    
+    if (role !== 'admin') {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
   }
 
   if(!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL("/auth/login", nextUrl))
+    return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
+  return;
+});
 
-  return null;
-
-})
-
-// Optionally, don't invoke Middleware on some paths
 export const config = {
-    matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)']
 }

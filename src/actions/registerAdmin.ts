@@ -4,7 +4,7 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { uuid } from '@sanity/uuid';
 
-import { RegisterSchema } from "@/types/schemas/auth-schemas";
+import { AdminRegisterSchema } from "@/types/schemas/auth-schemas";
 import { sendVerificationEmail } from "@/lib/mail";
 import { generateVerificationToken } from "@/lib/tokens";
 import sanityClient from "@/lib/sanityClient";
@@ -14,8 +14,8 @@ const getUserByEmail = async (email: string) => {
   return await sanityClient.fetch(query, { email });
 };
 
-export const register = async (values: z.infer<typeof RegisterSchema>) => {
-    const validatedFields = RegisterSchema.safeParse(values);
+export const registerAdmin = async (values: z.infer<typeof AdminRegisterSchema>) => {
+    const validatedFields = AdminRegisterSchema.safeParse(values);
 
     if(!validatedFields.success) {
         return {error: "Ungültige Eingaben"};

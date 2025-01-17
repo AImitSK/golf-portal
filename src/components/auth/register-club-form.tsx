@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // Schemas und Actions
-import { UserRegisterSchema } from "@/types/schemas/auth-schemas";
-import { registerUser } from "@/actions/registerUser";
+import { AdminRegisterSchema } from "@/types/schemas/auth-schemas";
+import { registerAdmin } from "@/actions/registerAdmin";
 import { FormError } from "@/components/auth/form-error";
 import { FormSuccess } from "@/components/auth/form-success";
 
@@ -16,22 +16,22 @@ export const RegisterForm = () => {
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<z.infer<typeof UserRegisterSchema>>({
-    resolver: zodResolver(UserRegisterSchema),
+  const form = useForm<z.infer<typeof AdminRegisterSchema>>({
+    resolver: zodResolver(AdminRegisterSchema),
     defaultValues: {
       email: "",
       password: "",
       name: "",
-      role: "user", // Default Role für Golf-Club-Besitzer
+      role: "admin", // Default Role für Golf-Club-Besitzer
     },
   });
 
-  const onSubmit = (values: z.infer<typeof UserRegisterSchema>) => {
+  const onSubmit = (values: z.infer<typeof AdminRegisterSchema>) => {
     setError("");
     setSuccess("");
     
     startTransition(() => {
-      registerUser(values)
+      registerAdmin(values)
         .then((data) => {
           setError(data.error);
           setSuccess(data.success);
@@ -48,7 +48,7 @@ export const RegisterForm = () => {
           className="mx-auto h-16 w-auto"
         />
         <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-          Als Nutzer registrieren
+          Als Golfclub registrieren
         </h2>
       </div>
 

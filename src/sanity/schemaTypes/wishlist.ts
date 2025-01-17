@@ -10,7 +10,7 @@ const schema: SchemaTypeDefinition = {
             name: 'user',
             title: 'User',
             type: 'reference',
-            to: [{ type: 'golfUser' }],
+            to: [{ type: 'user' }],
             validation: (Rule: ValidationRule) => Rule.required()
         },
         {
