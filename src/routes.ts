@@ -45,6 +45,12 @@ export const apiAuthPrefix = "/api/auth";
 export const CLUB_BACKEND = "/club-backend";
 
 /**
+* The clubs route for normal users
+* @type {string}
+*/
+export const USER_CLUBS = "/clubs";
+
+/**
 * The default redirect path after logging in
 * @type {string}
 */
@@ -60,7 +66,7 @@ export const getRedirectPath = (role?: string) => {
       case "admin":
           return CLUB_BACKEND;
       case "user":
-          return "/";
+          return USER_CLUBS;
       default:
           return DEFAULT_LOGIN_REDIRECT;
   }
