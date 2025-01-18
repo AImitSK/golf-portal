@@ -14,7 +14,16 @@ export const publicRoutes = [
     "/globe.svg",
     "/file.svg",
     "/window.svg",
-    "/public/(.*)"
+    "/public/(.*)",
+    // Hauptseiten
+    "/clubs",
+    "/kooperationen",
+    "/stadt",
+    "/pricing",
+    // Dynamische Unterseiten
+    "/clubs/[^/]+",     // Matcht /clubs/irgendwas
+    "/kooperationen/[^/]+",  // Matcht /kooperationen/irgendwas
+    "/stadt/[^/]+"      // Matcht /stadt/irgendwas
 ];
 
 /**

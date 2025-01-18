@@ -4,48 +4,74 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   authRoutes,
-  publicRoutes,
   CLUB_BACKEND,
   USER_CLUBS
 } from "@/routes";
 
+// Hilfsfunktion für öffentliche Routen
+const isPublicRoute = (path: string) => {
+  // Statische öffentliche Routen
+  const basePublicRoutes = [
+    "/",
+    "/studio",
+    "/auth/new-verification",
+    "/pricing",
+    "/logo-c-list-green.svg",
+    "/logo_course_list.svg",
+    "/gcl-hero.jpg",
+    "/hero-golf.webp",
+    "/globe.svg",
+    "/file.svg",
+    "/window.svg"
+  ];
+
+  if (basePublicRoutes.includes(path)) return true;
+
+  // Öffentliche Bereiche und deren Unterseiten
+  const publicSections = ['/clubs', '/kooperationen', '/stadt'];
+  return publicSections.some(section =>
+      path === section || // Hauptseite
+      path.startsWith(`${section}/`) // Unterseiten
+  );
+};
+
 export default auth((req) => {
-  if (req.nextUrl.pathname.startsWith(apiAuthPrefix)) {
-    return null;
+  const { nextUrl } = req;
+
+  // API Routes ignorieren
+  if (nextUrl.pathname.startsWith(apiAuthPrefix)) {
+    return; // Rückgabe von `undefined`, was mit `void` kompatibel ist
   }
 
   const isLoggedIn = !!req.auth;
 
-  // Public routes - allow access
-  if (publicRoutes.includes(req.nextUrl.pathname)) {
-    return null;
+  // Öffentliche Routen - Zugriff erlauben
+  if (isPublicRoute(nextUrl.pathname)) {
+    return;
   }
 
-  // Auth routes - redirect if logged in
-  if (authRoutes.includes(req.nextUrl.pathname)) {
+  // Auth Routes - Weiterleitung wenn eingeloggt
+  if (authRoutes.includes(nextUrl.pathname)) {
     if (isLoggedIn) {
       const role = req.auth?.user?.role;
       const redirectUrl = role === 'admin' ? CLUB_BACKEND : USER_CLUBS;
-      return Response.redirect(new URL(redirectUrl, req.nextUrl));
+      return Response.redirect(new URL(redirectUrl, nextUrl));
     }
-    return null;
+    return;
   }
 
-  // Protected routes - handle auth
+  // Protected Routes - Auth prüfen
   if (!isLoggedIn) {
-    return Response.redirect(new URL("/auth/login", req.nextUrl));
+    return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
-  // Handle club backend access
-  if (req.nextUrl.pathname.startsWith(CLUB_BACKEND)) {
+  // Club Backend Zugriff prüfen
+  if (nextUrl.pathname.startsWith(CLUB_BACKEND)) {
     if (req.auth?.user?.role !== 'admin') {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.nextUrl));
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
   }
 
-  return null;
+  // Rückgabe `void` oder `Response`
+  return;
 });
-
-export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"]
-}

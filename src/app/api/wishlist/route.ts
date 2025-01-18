@@ -3,29 +3,54 @@ import { auth } from "@/auth"
 import sanityClient from "@/lib/sanityClient"
 import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(req: NextRequest) {
+// In /api/wishlist/route.ts
+export async function POST(request: Request) {
     try {
-        const session = await auth()
+        const session = await auth();
 
-        // Check für Auth
-        if (!session || !session.user || !session.user._id) {
-            return new NextResponse("Unauthorized", { status: 401 })
+        if (!session?.user) {
+            return new NextResponse(
+                JSON.stringify({ message: "Nicht eingeloggt" }),
+                {
+                    status: 401,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
         }
 
-        // Body parsen
-        let body;
-        try {
-            body = await req.json()
-        } catch (e) {
-            return new NextResponse("Invalid JSON", { status: 400 })
-        }
+        const body = await request.json();
+        const { clubId } = body;
 
-        const { clubId } = body
         if (!clubId) {
-            return new NextResponse("Club ID is required", { status: 400 })
+            return new NextResponse(
+                JSON.stringify({ message: "Club ID fehlt" }),
+                {
+                    status: 400,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
         }
 
-        // Wishlist Entry erstellen
+        // Prüfe ob der Eintrag bereits existiert
+        const existingEntry = await sanityClient.fetch(
+            `*[_type == "wishlist" && user._ref == $userId && club._ref == $clubId][0]`,
+            {
+                userId: session.user._id,
+                clubId
+            }
+        );
+
+        if (existingEntry) {
+            return NextResponse.json({
+                message: "Club ist bereits auf der Wunschliste"
+            });
+        }
+
+        // Erstelle einen neuen Wishlist-Eintrag
         const wishlistEntry = {
             _type: 'wishlist',
             user: {
@@ -37,14 +62,26 @@ export async function POST(req: NextRequest) {
                 _ref: clubId
             },
             createdAt: new Date().toISOString()
-        }
+        };
 
-        const response = await sanityClient.create(wishlistEntry)
-        return NextResponse.json(response)
+        const response = await sanityClient.create(wishlistEntry);
+
+        return NextResponse.json({
+            message: "Erfolgreich zur Wunschliste hinzugefügt",
+            entry: response
+        });
 
     } catch (error) {
-        console.error('[WISHLIST_POST]', error)
-        return new NextResponse("Internal Error", { status: 500 })
+        console.error('[WISHLIST_POST]', error);
+        return new NextResponse(
+            JSON.stringify({ message: "Ein Fehler ist aufgetreten" }),
+            {
+                status: 500,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
     }
 }
 

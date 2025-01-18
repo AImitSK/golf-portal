@@ -30,12 +30,11 @@ export default function GridNavi({ clubId }: GridNaviProps) {
                 body: JSON.stringify({ clubId }),
             });
 
-            const data = await response.json();
-
             if (response.ok) {
                 toast.success('Golfclub zur Wunschliste hinzugefügt');
                 router.refresh();
             } else {
+                const data = await response.json();
                 toast.error(data.message || 'Ein Fehler ist aufgetreten');
             }
         } catch (error) {
@@ -51,7 +50,6 @@ export default function GridNavi({ clubId }: GridNaviProps) {
             <div>
                 <Menu.Button
                     className="flex items-center justify-center h-9 w-9 rounded-full bg-white text-dark-green hover:text-dark-green focus:outline-none focus:ring-2 focus:ring-dark-green focus:ring-offset-2 focus:ring-offset-white"
-                    disabled={isLoading}
                 >
                     <span className="sr-only">Menü öffnen</span>
                     <EllipsisVerticalIcon aria-hidden="true" className="h-5 w-5" />
