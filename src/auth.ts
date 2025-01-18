@@ -124,40 +124,85 @@ export const {
     adapter: SanityAdapter(sanityClient) as Adapter,
     callbacks: {
         async session({ session, token }) {
-            if (!session.user) return session;
+            if (!session?.user) return session;
 
-            return {
-                ...session,
-                user: {
-                    ...session.user,
-                    id: token.sub ?? session.user.id,
-                    role: token.role as UserRole,
-                    _type: token._type as UserType,
-                    _id: token._id as string,
-                    aktiv: token.aktiv as boolean,
-                    name: token.name as string,
-                    email: token.email as string,
-                    image: token.picture ?? null  // Hier wird das Bild übertragen
-                }
-            };
+            try {
+                return {
+                    ...session,
+                    user: {
+                        ...session.user,
+                        id: token.sub || session.user.id,
+                        role: (token.role as UserRole) || "user",
+                        _type: (token._type as UserType) || "user",
+                        _id: (token._id as string) || token.sub || session.user.id,
+                        aktiv: (token.aktiv as boolean) ?? true,
+                        name: (token.name as string) || session.user.name,
+                        email: (token.email as string) || session.user.email,
+                        image: token.picture || null
+                    }
+                };
+            } catch (error) {
+                console.error("Session callback error:", error);
+                return session;
+            }
         },
-        async jwt({ token }) {
-            if(!token.sub) return token;
+        async jwt({ token, user }) {
+            try {
+                // Wenn wir einen neuen User haben, aktualisiere das Token
+                if (user) {
+                    return {
+                        ...token,
+                        role: user.role || "user",
+                        _type: user._type || "user",
+                        _id: user._id || token.sub,
+                        aktiv: user.aktiv ?? true
+                    };
+                }
 
-            const existingUser = await getUserById(token.sub);
+                // Wenn kein sub vorhanden ist, return basic token
+                if (!token?.sub) {
+                    return {
+                        ...token,
+                        role: "user",
+                        _type: "user",
+                        aktiv: true
+                    };
+                }
 
-            if (!existingUser) return token;
+                // Hole existierenden User
+                const existingUser = await getUserById(token.sub);
 
-            return {
-                ...token,
-                name: existingUser.name,
-                email: existingUser.email,
-                role: existingUser.role as UserRole,
-                _type: existingUser._type as UserType,
-                _id: existingUser._id,
-                aktiv: existingUser.aktiv,
-                picture: existingUser.image  // Hier speichern wir die Bild-URL
-            };
+                // Wenn kein User gefunden wurde, return basic token
+                if (!existingUser) {
+                    return {
+                        ...token,
+                        role: "user",
+                        _type: "user",
+                        aktiv: true
+                    };
+                }
+
+                // Aktualisiere Token mit User-Daten
+                return {
+                    ...token,
+                    name: existingUser.name || token.name,
+                    email: existingUser.email || token.email,
+                    role: existingUser.role || "user",
+                    _type: existingUser._type || "user",
+                    _id: existingUser._id || token.sub,
+                    aktiv: existingUser.aktiv ?? true,
+                    picture: existingUser.image || token.picture || null
+                };
+            } catch (error) {
+                console.error("JWT callback error:", error);
+                // Return basic token bei Fehler
+                return {
+                    ...token,
+                    role: "user",
+                    _type: "user",
+                    aktiv: true
+                };
+            }
         }
     }
 })

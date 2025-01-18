@@ -1,4 +1,3 @@
-// src/components/clubs/ClubDetailActions.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -7,10 +6,9 @@ import { LikeButton } from './LikeButton';
 
 interface ClubDetailActionsProps {
     clubId: string;
-    userId?: string; // Optional bis Auth implementiert ist
 }
 
-export const ClubDetailActions: React.FC<ClubDetailActionsProps> = ({ clubId, userId }) => {
+export const ClubDetailActions: React.FC<ClubDetailActionsProps> = ({ clubId }) => {
     const [showCopiedMessage, setShowCopiedMessage] = useState(false);
 
     const copyToClipboard = () => {
@@ -37,9 +35,9 @@ export const ClubDetailActions: React.FC<ClubDetailActionsProps> = ({ clubId, us
                     </div>
                 )}
             </div>
-            <LikeButton clubId={clubId} userId={userId} />
+            <LikeButton clubId={clubId} />
             <div className="relative flex items-center justify-center h-9 w-9">
-                <GridNavi />
+                <GridNavi clubId={clubId} />
             </div>
         </div>
     );

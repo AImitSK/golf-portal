@@ -1,26 +1,58 @@
+// src/data/user.ts
 import sanityClient from "@/lib/sanityClient";
 
 export const getUserByEmail = async (email: string) => {
+    if (!email) {
+        console.warn("getUserByEmail called without email");
+        return null;
+    }
+
     try {
-        // Suche in beiden Schemas (user und administrator)
-        const query = `*[(_type == "user" || _type == "administrator") && email == "${email}"][0]`;
-        const user = await sanityClient.fetch(query);
-        return user;
-    } catch {
+        const query = '*[(_type == "user" || _type == "administrator") && email == $email][0]';
+        const user = await sanityClient.fetch(query, { email });
+        return user || null;
+    } catch (error) {
+        console.error("Error in getUserByEmail:", error);
         return null;
     }
 }
 
-export const getUserById = async (_id: string) => {
-    console.log("Getting user by id:", _id);
+export const getUserById = async (id: string) => {
+    if (!id) {
+        console.warn("getUserById called without id");
+        return null;
+    }
+
     try {
-        const query = `*[(_type == "user" || _type == "administrator") && _id == "${_id}"][0]{
-            ...,
+        console.log("Getting user by id:", id);
+
+        const query = `*[(_type == "user" || _type == "administrator") && _id == $id][0]{
+            _id,
+            _type,
+            name,
+            email,
+            role,
+            aktiv,
             "image": image.asset->url
         }`;
-        const user = await sanityClient.fetch(query);
-        return user;
-    } catch {
+
+        const params = { id };
+        const user = await sanityClient.fetch(query, params);
+
+        if (!user) {
+            console.warn(`No user found with id: ${id}`);
+            return null;
+        }
+
+        return {
+            ...user,
+            // Ensure required fields have default values
+            role: user.role || "user",
+            _type: user._type || "user",
+            aktiv: user.aktiv ?? true,
+        };
+    } catch (error) {
+        console.error("Error in getUserById:", error);
         return null;
     }
 }

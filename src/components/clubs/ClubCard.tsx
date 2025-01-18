@@ -92,27 +92,27 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
                             colorScheme="dark-green"
                             onClick={onTagClick}
                         />
+                        <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
+                            <GridNavi clubId={club._id} />
+                        </div>
                     </div>
                 </div>
             </div>
         );
     }
 
-
-
     // Großes Layout (original)
     return (
         <div className="bg-white">
-            <div
-                className="relative rounded-2xl overflow-visible hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200">
+            <div className="relative rounded-2xl overflow-visible hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200">
                 {/* Bild-Container mit Link */}
                 <Link
                     href={`/clubs/${club.slug}`}
                     className="block relative w-full aspect-[16/9] lg:aspect-[32/9] overflow-hidden rounded-2xl"
                 >
                     <img
-                        src={club.image || "/gcl-hero.jpg"} // Standardbild, falls kein "club.image" existiert
-                        alt={club.title || "Standard Club"} // Fallback für den Alternativtext
+                        src={club.image || "/gcl-hero.jpg"}
+                        alt={club.title || "Standard Club"}
                         className="w-full h-full object-cover"
                     />
                 </Link>
@@ -132,17 +132,15 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
 
                 {/* Aktionen unten rechts */}
                 <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <button
-                        className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
+                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
                         <img src="/icons/iconShareWithe.svg" alt="Teilen" className="h-5 w-5"/>
                     </button>
                     <LikeButton
                         clubId={club._id}
                         className="bg-black/30 hover:bg-black/40"
                     />
-                    <div
-                        className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
-                        <GridNavi/>
+                    <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
+                        <GridNavi clubId={club._id} />
                     </div>
                 </div>
 
@@ -218,4 +216,3 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
         </div>
     );
 };
-

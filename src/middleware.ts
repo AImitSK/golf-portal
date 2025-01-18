@@ -1,3 +1,4 @@
+// src/middleware.ts
 import { auth } from "@/auth";
 import {
   DEFAULT_LOGIN_REDIRECT,
@@ -8,73 +9,43 @@ import {
   USER_CLUBS
 } from "@/routes";
 
-type AuthRequest = {
-  auth: any;
-  nextUrl: URL;
-}
+export default auth((req) => {
+  if (req.nextUrl.pathname.startsWith(apiAuthPrefix)) {
+    return null;
+  }
 
-export default auth((req: AuthRequest) => {
-  console.log("Middleware executing");
-  console.log("Path:", req.nextUrl.pathname);
-  console.log("Auth:", !!req.auth);
-  console.log("Role:", req.auth?.user?.role);
-  
-  const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  const role = req.auth?.user?.role;
-  console.log({
-    path: nextUrl.pathname,
-    isLoggedIn,
-    role,
-    auth: req.auth
-  })
 
-  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-  const isClubBackendRoute = nextUrl.pathname.startsWith(CLUB_BACKEND);  
-  if (isApiAuthRoute) {
-    return;
+  // Public routes - allow access
+  if (publicRoutes.includes(req.nextUrl.pathname)) {
+    return null;
   }
 
-  if (isAuthRoute) {
-    if(isLoggedIn) {
-      if (role === 'admin') {
-        return Response.redirect(new URL(CLUB_BACKEND, nextUrl));  
-      }
-      return Response.redirect(new URL(role === 'user' ? USER_CLUBS : DEFAULT_LOGIN_REDIRECT, nextUrl));
+  // Auth routes - redirect if logged in
+  if (authRoutes.includes(req.nextUrl.pathname)) {
+    if (isLoggedIn) {
+      const role = req.auth?.user?.role;
+      const redirectUrl = role === 'admin' ? CLUB_BACKEND : USER_CLUBS;
+      return Response.redirect(new URL(redirectUrl, req.nextUrl));
     }
-    return;
+    return null;
   }
 
-  // Schützt Club-Backend Routes
-  if (isClubBackendRoute) {  
-    if (!isLoggedIn) {
-      return Response.redirect(new URL("/auth/login", nextUrl));
-    }
-    
-    if (role !== 'admin') {
-      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+  // Protected routes - handle auth
+  if (!isLoggedIn) {
+    return Response.redirect(new URL("/auth/login", req.nextUrl));
+  }
+
+  // Handle club backend access
+  if (req.nextUrl.pathname.startsWith(CLUB_BACKEND)) {
+    if (req.auth?.user?.role !== 'admin') {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.nextUrl));
     }
   }
 
-  if(!isLoggedIn && !isPublicRoute) {
-    return Response.redirect(new URL("/auth/login", nextUrl));
-  }
-
-  return;
+  return null;
 });
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (auth API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!api/auth|_next/static|_next/image|public|favicon.ico|logo-c-list-green.svg|logo_course_list.svg|gcl-hero.jpg|hero-golf.webp|globe.svg|file.svg|window.svg).*)',
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"]
 }

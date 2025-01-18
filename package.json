@@ -37,6 +37,7 @@
     "react-spinners": "^0.15.0",
     "sanity": "^3.68.3",
     "shadcn-ui": "^0.9.4",
+    "sonner": "^1.7.2",
     "styled-components": "^6.1.13",
     "twilio": "^5.4.0",
     "yet-another-react-lightbox": "^3.12.3"
