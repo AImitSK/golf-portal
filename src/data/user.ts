@@ -15,7 +15,7 @@ export const getUserByEmail = async (email: string) => {
         console.error("Error in getUserByEmail:", error);
         return null;
     }
-}
+};
 
 export const getUserById = async (id: string) => {
     if (!id) {
@@ -37,6 +37,7 @@ export const getUserById = async (id: string) => {
         }`;
 
         const params = { id };
+
         const user = await sanityClient.fetch(query, params);
 
         if (!user) {
@@ -55,4 +56,4 @@ export const getUserById = async (id: string) => {
         console.error("Error in getUserById:", error);
         return null;
     }
-}
+};

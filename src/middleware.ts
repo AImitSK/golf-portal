@@ -40,14 +40,14 @@ export default auth((req) => {
 
   // API Routes ignorieren
   if (nextUrl.pathname.startsWith(apiAuthPrefix)) {
-    return; // Rückgabe von `undefined`, was mit `void` kompatibel ist
+    return null;
   }
 
   const isLoggedIn = !!req.auth;
 
   // Öffentliche Routen - Zugriff erlauben
   if (isPublicRoute(nextUrl.pathname)) {
-    return;
+    return null;
   }
 
   // Auth Routes - Weiterleitung wenn eingeloggt
@@ -57,7 +57,7 @@ export default auth((req) => {
       const redirectUrl = role === 'admin' ? CLUB_BACKEND : USER_CLUBS;
       return Response.redirect(new URL(redirectUrl, nextUrl));
     }
-    return;
+    return null;
   }
 
   // Protected Routes - Auth prüfen
@@ -72,6 +72,11 @@ export default auth((req) => {
     }
   }
 
-  // Rückgabe `void` oder `Response`
-  return;
+  return null;
 });
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|public|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"
+  ]
+}

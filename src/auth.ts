@@ -1,14 +1,14 @@
-import NextAuth from "next-auth"
-import type { JWT } from "next-auth/jwt"
-import type { DefaultSession } from "next-auth"
-import Google from "next-auth/providers/google"
-import { SanityAdapter } from "@/adapters/sanity-adapter"
-import sanityClient from "@/lib/sanityClient"
-import Credentials from "next-auth/providers/credentials"
-import { LoginSchema } from "@/types/schemas/auth-schemas"
-import bcrypt from "bcryptjs"
-import { getUserById } from "@/data/user"
-import type { Adapter } from "next-auth/adapters"
+import NextAuth from "next-auth";
+import type { JWT } from "next-auth/jwt";
+import type { DefaultSession } from "next-auth";
+import Google from "next-auth/providers/google";
+import { SanityAdapter } from "@/adapters/sanity-adapter";
+import sanityClient from "@/lib/sanityClient";
+import Credentials from "next-auth/providers/credentials";
+import { LoginSchema } from "@/types/schemas/auth-schemas";
+import bcrypt from "bcryptjs";
+import { getUserById } from "@/data/user";
+import type { Adapter } from "next-auth/adapters";
 
 type UserType = "user" | "administrator";
 type UserRole = "user" | "admin";
@@ -40,7 +40,7 @@ declare module "next-auth" {
             _type: UserType;
             _id: string;
             aktiv: boolean;
-        } & DefaultSession["user"]
+        } & DefaultSession["user"];
     }
 
     interface User {
@@ -52,7 +52,6 @@ declare module "next-auth" {
 }
 
 declare module "next-auth/jwt" {
-    /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
     interface JWT {
         role: UserRole;
         _type: UserType;
@@ -74,8 +73,8 @@ export const {
     },
     providers: [
         Google({
-            clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ''
+            clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
         }),
         Credentials({
             async authorize(credentials): Promise<SanityUser | null> {
@@ -148,7 +147,6 @@ export const {
         },
         async jwt({ token, user }) {
             try {
-                // Wenn wir einen neuen User haben, aktualisiere das Token
                 if (user) {
                     return {
                         ...token,
@@ -159,7 +157,6 @@ export const {
                     };
                 }
 
-                // Wenn kein sub vorhanden ist, return basic token
                 if (!token?.sub) {
                     return {
                         ...token,
@@ -169,10 +166,8 @@ export const {
                     };
                 }
 
-                // Hole existierenden User
                 const existingUser = await getUserById(token.sub);
 
-                // Wenn kein User gefunden wurde, return basic token
                 if (!existingUser) {
                     return {
                         ...token,
@@ -182,7 +177,6 @@ export const {
                     };
                 }
 
-                // Aktualisiere Token mit User-Daten
                 return {
                     ...token,
                     name: existingUser.name || token.name,
@@ -195,7 +189,6 @@ export const {
                 };
             } catch (error) {
                 console.error("JWT callback error:", error);
-                // Return basic token bei Fehler
                 return {
                     ...token,
                     role: "user",
@@ -205,4 +198,4 @@ export const {
             }
         }
     }
-})
+});

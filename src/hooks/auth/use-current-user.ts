@@ -1,7 +1,12 @@
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export const useCurrentUser = () => {
-  const session = useSession();
+  const { data: session, update } = useSession();
 
-  return session.data?.user;
+  useEffect(() => {
+    if (session) update();
+  }, [session]);
+
+  return session?.user;
 };

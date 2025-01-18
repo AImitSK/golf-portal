@@ -9,7 +9,7 @@ import { useSession, signOut } from "next-auth/react";
 
 export default function NavigationWithHamburger() {
     const [isSticky, setIsSticky] = useState(false);
-    const { data: session } = useSession();
+    const { data: session, status } = useSession(); // Status hinzufügen
 
     useEffect(() => {
         const handleScroll = () => {
@@ -51,18 +51,21 @@ export default function NavigationWithHamburger() {
 
                     {/* Right side navigation items */}
                     <div className="flex items-center gap-4">
-                        {session?.user ? (
+                        {status === "loading" ? (
+                            // Ladezustand anzeigen
+                            <div className="h-8 w-8 rounded-full bg-gray-300 animate-pulse"></div>
+                        ) : session?.user ? (
                             // Eingeloggter Zustand - Avatar mit Dropdown
                             <Menu as="div" className="relative">
                                 <Menu.Button>
-    <span className="h-8 w-8 cursor-pointer inline-grid shrink-0 align-middle [--avatar-radius:50%] overflow-hidden rounded-full">
-        <Avatar
-            src={session.user.image || undefined}
-            initials={session.user.name?.[0]}
-            alt={session.user.name || ''}
-            className="size-full [&>img]:object-cover [&>img]:w-full [&>img]:h-full"
-        />
-    </span>
+                                    <span className="h-8 w-8 cursor-pointer inline-grid shrink-0 align-middle [--avatar-radius:50%] overflow-hidden rounded-full">
+                                        <Avatar
+                                            src={session.user.image || undefined}
+                                            initials={session.user.name?.[0]}
+                                            alt={session.user.name || ''}
+                                            className="size-full [&>img]:object-cover [&>img]:w-full [&>img]:h-full"
+                                        />
+                                    </span>
                                 </Menu.Button>
                                 <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
