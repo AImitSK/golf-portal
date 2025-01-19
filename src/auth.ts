@@ -1,6 +1,8 @@
+// src/auth.ts
+
 import NextAuth from "next-auth";
+import type { DefaultSession, Session, User } from "next-auth";
 import type { JWT } from "next-auth/jwt";
-import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 import { SanityAdapter } from "@/adapters/sanity-adapter";
 import sanityClient from "@/lib/sanityClient";
@@ -10,21 +12,18 @@ import bcrypt from "bcryptjs";
 import { getUserById } from "@/data/user";
 import type { Adapter } from "next-auth/adapters";
 
-type UserType = "user" | "administrator";
-type UserRole = "user" | "admin";
+// Definiere die Basis-Typen hier, bis das Modul-Problem gelöst ist
+type UserRole = 'user' | 'admin';
+type UserType = 'user' | 'administrator';
 
-interface SanityUser {
-    id: string;
+// Interface für den Sanity User
+interface SanityAdapterUser extends User {
     _id: string;
-    _rev: string;
-    _createdAt: string;
-    _updatedAt: string;
-    role: UserRole;
     _type: UserType;
+    role: UserRole;
     aktiv: boolean;
-    email: string;
-    name: string;
     password?: string;
+    emailVerified: Date | null;
 }
 
 interface LoginCredentials {
@@ -40,7 +39,7 @@ declare module "next-auth" {
             _type: UserType;
             _id: string;
             aktiv: boolean;
-        } & DefaultSession["user"];
+        } & DefaultSession["user"]
     }
 
     interface User {
@@ -77,7 +76,7 @@ export const {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
         }),
         Credentials({
-            async authorize(credentials): Promise<SanityUser | null> {
+            async authorize(credentials): Promise<SanityAdapterUser | null> {
                 try {
                     const validatedFields = LoginSchema.safeParse(credentials);
                     if (!validatedFields.success) return null;
@@ -87,7 +86,7 @@ export const {
                     if (!loginCredentials.email || !loginCredentials.password) return null;
 
                     const user_qry = `*[(_type == "user" || _type == "administrator") && email == $email][0]`;
-                    const user = await sanityClient.fetch<SanityUser>(user_qry, { email: loginCredentials.email });
+                    const user = await sanityClient.fetch<SanityAdapterUser>(user_qry, { email: loginCredentials.email });
 
                     if (!user || !user.password) return null;
 
@@ -96,20 +95,7 @@ export const {
                         user.password
                     );
 
-                    if (passwordsMatch) {
-                        return {
-                            id: user._id,
-                            _id: user._id,
-                            _rev: user._rev,
-                            _createdAt: user._createdAt,
-                            _updatedAt: user._updatedAt,
-                            role: user.role,
-                            _type: user._type,
-                            aktiv: user.aktiv,
-                            email: user.email,
-                            name: user.name
-                        };
-                    }
+                    if (passwordsMatch) return user;
 
                     return null;
                 } catch (error) {
@@ -122,7 +108,7 @@ export const {
     session: { strategy: "jwt" },
     adapter: SanityAdapter(sanityClient) as Adapter,
     callbacks: {
-        async session({ session, token }) {
+        async session({ session, token }): Promise<Session> {
             if (!session?.user) return session;
 
             try {
@@ -130,29 +116,46 @@ export const {
                     ...session,
                     user: {
                         ...session.user,
-                        id: token.sub || session.user.id,
-                        role: (token.role as UserRole) || "user",
-                        _type: (token._type as UserType) || "user",
-                        _id: (token._id as string) || token.sub || session.user.id,
-                        aktiv: (token.aktiv as boolean) ?? true,
-                        name: (token.name as string) || session.user.name,
-                        email: (token.email as string) || session.user.email,
-                        image: token.picture || null
+                        // Stelle sicher, dass id immer einen String-Wert hat
+                        id: token.sub ?? "",
+                        role: token.role ?? "user",
+                        _type: token._type ?? "user",
+                        _id: token._id ?? token.sub ?? "",
+                        aktiv: token.aktiv ?? true,
+                        // Verwende Nullish Coalescing für optionale Werte
+                        name: token.name ?? session.user.name ?? "",
+                        email: token.email ?? session.user.email ?? "",
+                        image: token.picture ?? null
                     }
                 };
             } catch (error) {
                 console.error("Session callback error:", error);
-                return session;
+                // Stelle einen validen Default-User bereit
+                return {
+                    ...session,
+                    user: {
+                        ...session.user,
+                        id: "",
+                        role: "user",
+                        _type: "user",
+                        _id: "",
+                        aktiv: true,
+                        name: session.user.name ?? "",
+                        email: session.user.email ?? "",
+                        image: null
+                    }
+                };
             }
         },
-        async jwt({ token, user }) {
+
+        async jwt({ token, user }): Promise<JWT> {
             try {
                 if (user) {
                     return {
                         ...token,
-                        role: user.role || "user",
-                        _type: user._type || "user",
-                        _id: user._id || token.sub,
+                        role: user.role ?? "user",
+                        _type: user._type ?? "user",
+                        _id: user._id ?? token.sub ?? "",
                         aktiv: user.aktiv ?? true
                     };
                 }
@@ -160,8 +163,10 @@ export const {
                 if (!token?.sub) {
                     return {
                         ...token,
+                        sub: "", // Expliziter leerer String statt undefined
                         role: "user",
                         _type: "user",
+                        _id: "",
                         aktiv: true
                     };
                 }
@@ -173,19 +178,20 @@ export const {
                         ...token,
                         role: "user",
                         _type: "user",
+                        _id: token.sub,
                         aktiv: true
                     };
                 }
 
                 return {
                     ...token,
-                    name: existingUser.name || token.name,
-                    email: existingUser.email || token.email,
-                    role: existingUser.role || "user",
-                    _type: existingUser._type || "user",
-                    _id: existingUser._id || token.sub,
+                    name: existingUser.name ?? token.name ?? "",
+                    email: existingUser.email ?? token.email ?? "",
+                    role: existingUser.role ?? "user",
+                    _type: existingUser._type ?? "user",
+                    _id: existingUser._id ?? token.sub ?? "",
                     aktiv: existingUser.aktiv ?? true,
-                    picture: existingUser.image || token.picture || null
+                    picture: existingUser.image ?? token.picture ?? null
                 };
             } catch (error) {
                 console.error("JWT callback error:", error);
@@ -193,6 +199,7 @@ export const {
                     ...token,
                     role: "user",
                     _type: "user",
+                    _id: token.sub ?? "",
                     aktiv: true
                 };
             }

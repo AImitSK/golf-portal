@@ -1,25 +1,38 @@
 import 'next-auth'
-import { Administrator } from './sanity'
+import { UserRole, UserType, AdminPermissions } from '@/types/schemas/auth'
 
 declare module 'next-auth' {
-    interface User extends Administrator {}
+    interface User {
+        id: string;
+        role: UserRole;
+        _type: UserType;
+        _id: string;
+        aktiv: boolean;
+        permissions?: AdminPermissions[];
+    }
 
     interface Session {
         user: {
-            id: string
-            name?: string | null
-            email?: string | null
-            role: string
-            permissions?: string[]
-            image?: string | null
+            id: string;
+            name?: string | null;
+            email?: string | null;
+            role: UserRole;
+            _type: UserType;
+            _id: string;
+            aktiv: boolean;
+            permissions?: AdminPermissions[];
+            image?: string | null;
         }
     }
 }
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        id: string
-        role: string
-        permissions?: string[]
+        id: string;
+        role: UserRole;
+        _type: UserType;
+        _id: string;
+        aktiv: boolean;
+        permissions?: AdminPermissions[];
     }
 }

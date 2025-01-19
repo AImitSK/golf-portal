@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { UserRole } from './auth';
 
 export const LoginSchema = z.object({
   email: z.string().email({
@@ -19,7 +20,7 @@ export const UserRegisterSchema = z.object({
   name: z.string().min(1, {
     message: "Name ist erforderlich"
   }),
-  role: z.enum(["user", "admin"]).default("user")
+  role: z.literal("user").default("user")
 });
 
 export const AdminRegisterSchema = z.object({
@@ -32,7 +33,7 @@ export const AdminRegisterSchema = z.object({
   name: z.string().min(1, {
     message: "Name ist erforderlich"
   }),
-  role: z.enum(["user", "admin"]).default("admin")
+  role: z.enum(["club_admin", "developer"]).default("club_admin")
 });
 
 export const ResetSchema = z.object({
