@@ -25,6 +25,12 @@ const schema: SchemaTypeDefinition = {
             readOnly: true
         },
         {
+            name: 'aktiv',
+            title: 'Aktiv',
+            type: 'boolean',
+            initialValue: true
+        },
+        {
             name: 'image',
             title: 'Profilbild',
             type: 'image',
