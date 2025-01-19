@@ -16,6 +16,7 @@ export const publicRoutes = [
     "/file.svg",
     "/window.svg",
     "/public/(.*)",
+    "/public",
     "/clubs",
     "/kooperationen",
     "/stadt",
@@ -78,9 +79,9 @@ export const getRedirectPath = (role?: UserRole) => {
         case "developer":
             return "/studio";
         case "club_admin":
-            return CLUB_BACKEND;
+            return "/club-backend";
         case "user":
-            return USER_DASHBOARD;
+            return "/";
         default:
             return DEFAULT_LOGIN_REDIRECT;
     }
