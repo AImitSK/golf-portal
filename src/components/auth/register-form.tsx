@@ -22,7 +22,7 @@ export const RegisterForm = () => {
       email: "",
       password: "",
       name: "",
-      role: "user", // Default Role für Golf-Club-Besitzer
+      role: "user", 
     },
   });
 
