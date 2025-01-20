@@ -3,7 +3,7 @@
 
 import { Menu } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
-import { ClubTag } from '@/components/clubs/ClubTag'
+import ClubTag from "@/components/clubs/ClubTag";
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 

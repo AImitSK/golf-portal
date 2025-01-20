@@ -39,7 +39,7 @@ declare module "next-auth" {
             _type: UserType;
             _id: string;
             aktiv: boolean;
-        } & DefaultSession["user"]
+        } & DefaultSession["user"];
     }
 
     interface User {
@@ -79,25 +79,49 @@ export const {
             async authorize(credentials): Promise<SanityAdapterUser | null> {
                 try {
                     const validatedFields = LoginSchema.safeParse(credentials);
-                    if (!validatedFields.success) return null;
+                    if (!validatedFields.success) {
+                        console.error("Validation fehlgeschlagen:", validatedFields.error);
+                        return null;
+                    }
 
                     const loginCredentials = credentials as unknown as LoginCredentials;
 
-                    if (!loginCredentials.email || !loginCredentials.password) return null;
+                    if (!loginCredentials.email || !loginCredentials.password) {
+                        console.error("Ungültige Login-Daten (fehlende E-Mail oder Passwort).");
+                        return null;
+                    }
 
+                    console.log("Sanity Login mit E-Mail:", loginCredentials.email);
+
+                    // Abruf vom Benutzer aus Sanity
                     const user_qry = `*[(_type == "user" || _type == "administrator") && email == $email][0]`;
                     const user = await sanityClient.fetch<SanityAdapterUser>(user_qry, { email: loginCredentials.email });
 
-                    if (!user || !user.password) return null;
+                    if (!user) {
+                        console.error("Benutzer nicht gefunden:", loginCredentials.email);
+                        return null;
+                    }
 
+                    // Überprüfe Passwort
                     const passwordsMatch = await bcrypt.compare(
                         loginCredentials.password,
-                        user.password
+                        user.password ?? ""
                     );
 
-                    if (passwordsMatch) return user;
+                    if (!passwordsMatch) {
+                        console.error("Passwort stimmt nicht überein für:", loginCredentials.email);
+                        return null;
+                    }
 
-                    return null;
+                    // Validierung der Benutzer-ID
+                    if (!user._id.startsWith("user.")) {
+                        console.error("Ungültige Benutzer-ID:", user._id);
+                        return null;
+                    }
+
+                    console.log("Benutzer erfolgreich eingeloggt:", user._id);
+                    return user;
+
                 } catch (error) {
                     console.error("Auth error:", error);
                     return null;
@@ -108,101 +132,69 @@ export const {
     session: { strategy: "jwt" },
     adapter: SanityAdapter(sanityClient) as Adapter,
     callbacks: {
-        async session({ session, token }): Promise<Session> {
+        async session({ session, token }: { session: Session; token: JWT }): Promise<Session> {
             if (!session?.user) return session;
 
-            try {
-                return {
-                    ...session,
-                    user: {
-                        ...session.user,
-                        // Stelle sicher, dass id immer einen String-Wert hat
-                        id: token.sub ?? "",
-                        role: token.role ?? "user",
-                        _type: token._type ?? "user",
-                        _id: token._id ?? token.sub ?? "",
-                        aktiv: token.aktiv ?? true,
-                        // Verwende Nullish Coalescing für optionale Werte
-                        name: token.name ?? session.user.name ?? "",
-                        email: token.email ?? session.user.email ?? "",
-                        image: token.picture ?? null
-                    }
-                };
-            } catch (error) {
-                console.error("Session callback error:", error);
-                // Stelle einen validen Default-User bereit
-                return {
-                    ...session,
-                    user: {
-                        ...session.user,
-                        id: "",
-                        role: "user",
-                        _type: "user",
-                        _id: "",
-                        aktiv: true,
-                        name: session.user.name ?? "",
-                        email: session.user.email ?? "",
-                        image: null
-                    }
-                };
-            }
+            const formattedId =
+                token._id?.startsWith("user.") || token._id?.startsWith("administrator.")
+                    ? token._id
+                    : `user.${token._id ?? token.sub ?? ""}`;
+
+            session.user = {
+                ...session.user,
+                id: token.sub ?? "",
+                role: token.role ?? "user",
+                _type: token._type ?? "user",
+                _id: formattedId,
+                aktiv: token.aktiv ?? true,
+                name: token.name ?? session.user.name ?? "",
+                email: token.email ?? session.user.email ?? "",
+                image: token.picture ?? null,
+            };
+
+            console.log("Session erfolgreich erstellt:", session.user);
+            return session;
         },
 
-        async jwt({ token, user }): Promise<JWT> {
-            try {
-                if (user) {
-                    return {
-                        ...token,
-                        role: user.role ?? "user",
-                        _type: user._type ?? "user",
-                        _id: user._id ?? token.sub ?? "",
-                        aktiv: user.aktiv ?? true
-                    };
-                }
-
-                if (!token?.sub) {
-                    return {
-                        ...token,
-                        sub: "", // Expliziter leerer String statt undefined
-                        role: "user",
-                        _type: "user",
-                        _id: "",
-                        aktiv: true
-                    };
-                }
-
-                const existingUser = await getUserById(token.sub);
-
-                if (!existingUser) {
-                    return {
-                        ...token,
-                        role: "user",
-                        _type: "user",
-                        _id: token.sub,
-                        aktiv: true
-                    };
-                }
-
+        async jwt({ token, user }: { token: JWT; user?: User }): Promise<JWT> {
+            if (user) {
                 return {
                     ...token,
-                    name: existingUser.name ?? token.name ?? "",
-                    email: existingUser.email ?? token.email ?? "",
-                    role: existingUser.role ?? "user",
-                    _type: existingUser._type ?? "user",
-                    _id: existingUser._id ?? token.sub ?? "",
-                    aktiv: existingUser.aktiv ?? true,
-                    picture: existingUser.image ?? token.picture ?? null
+                    role: user.role ?? "user",
+                    _type: user._type ?? "user",
+                    _id: user._id.startsWith("user.") ? user._id : `user.${user._id}`, // Hier sicherstellen
+                    aktiv: user.aktiv ?? true,
                 };
-            } catch (error) {
-                console.error("JWT callback error:", error);
+            }
+
+            const prefixedId = token._id.startsWith("user.") || token._id.startsWith("administrator.")
+                ? token._id
+                : `user.${token._id}`;
+
+            const existingUser = await getUserById(prefixedId); // Ändern Sie hier auf die formatierte ID
+
+            if (!existingUser) {
+                console.error("Benutzer-ID existiert nicht:", prefixedId); // Gibt "präfixierte" ID aus
                 return {
                     ...token,
                     role: "user",
                     _type: "user",
-                    _id: token.sub ?? "",
-                    aktiv: true
+                    _id: prefixedId,
+                    aktiv: true,
                 };
             }
+
+            return {
+                ...token,
+                name: existingUser.name ?? token.name ?? "",
+                email: existingUser.email ?? token.email ?? "",
+                role: existingUser.role ?? "user",
+                _type: existingUser._type ?? "user",
+                _id: existingUser._id ?? token.sub ?? "",
+                aktiv: existingUser.aktiv ?? true,
+                picture: existingUser.image ?? token.picture ?? null,
+            };
         }
-    }
+    },
+
 });
