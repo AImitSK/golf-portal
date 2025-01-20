@@ -1,9 +1,10 @@
-// src/components/clubs/LikeButton.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { HeartIcon } from '@heroicons/react/24/outline'; // Für nicht-aktiviertes Herz
+import { HeartIcon as SolidHeartIcon } from '@heroicons/react/24/solid'; // Für aktiviertes Herz
 
 interface LikeButtonProps {
     clubId: string;
@@ -14,7 +15,7 @@ interface LikeButtonProps {
 export const LikeButton: React.FC<LikeButtonProps> = ({
                                                           clubId,
                                                           className = '',
-                                                          onLikeChange
+                                                          onLikeChange,
                                                       }) => {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -23,7 +24,6 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Prüfe initial, ob der User den Club bereits geliked hat
     useEffect(() => {
         const checkLikeStatus = async () => {
             if (!session?.user?._id) return;
@@ -47,7 +47,6 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
     const handleLikeClick = async () => {
         if (isLoading) return;
 
-        // Wenn nicht eingeloggt, zur Login-Seite weiterleiten
         if (!session?.user) {
             router.push('/auth/login');
             return;
@@ -64,7 +63,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
                 },
                 body: JSON.stringify({
                     clubId,
-                    userId: session.user._id
+                    userId: session.user._id,
                 }),
             });
 
@@ -76,10 +75,8 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
                 throw new Error(errorMessage);
             }
 
-            // Toggle lokalen Like-Status
             setIsLiked(data.action === 'added');
 
-            // Aktualisiere Like-Zähler
             const countResponse = await fetch(`/api/likes?clubId=${clubId}`);
             if (countResponse.ok) {
                 const { count } = await countResponse.json();
@@ -107,16 +104,13 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
                 disabled:opacity-50 disabled:cursor-not-allowed
                 ${className}
             `}
-            title={isLiked ? "Als Favorit entfernen" : "Als Favorit markieren"}
+            title={isLiked ? 'Als Favorit entfernen' : 'Als Favorit markieren'}
         >
-            <img
-                src="/icons/iconLoveWithe.svg"
-                alt={isLiked ? "Gefällt mir" : "Gefällt mir nicht"}
-                className={`h-5 w-5 transition-transform duration-200 
-                    ${isLoading ? 'opacity-50' : ''}
-                    ${isLiked ? 'scale-110' : 'scale-100'}
-                `}
-            />
+            {isLiked ? (
+                <SolidHeartIcon className="h-5 w-5 text-white" aria-hidden="true" />
+            ) : (
+                <HeartIcon className="h-5 w-5 text-white" aria-hidden="true" />
+            )}
         </button>
     );
 };

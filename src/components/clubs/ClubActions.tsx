@@ -1,9 +1,8 @@
-// src/components/clubs/ClubActions.tsx
 import { memo } from 'react';
+import { ShareIcon } from '@heroicons/react/24/outline'; // Heroicons verwenden
 import type { ClubActionsProps } from '@/types/ClubComponentTypes';
 import { LikeButton } from './LikeButton';
 import GridNavi from '@/components/frontend-ui/GridNavi';
-import ClubImage from './ClubImage';
 
 const ClubActions = memo(function ClubActions({ clubId, className }: ClubActionsProps) {
     return (
@@ -12,10 +11,8 @@ const ClubActions = memo(function ClubActions({ clubId, className }: ClubActions
                 className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors"
                 aria-label="Teilen"
             >
-                <ClubImage
-                    src="/icons/iconShareWithe.svg"
-                    alt=""
-                    className="h-5 w-5"
+                <ShareIcon
+                    className="h-5 w-5 text-white"
                     aria-hidden="true"
                 />
             </button>
