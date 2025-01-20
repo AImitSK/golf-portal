@@ -18,6 +18,7 @@ import ClubMap from "@/components/clubs/ClubMap";
 import ClubContact from "@/components/clubs/ClubContact";
 import { ClubGallery } from "@/components/clubs/ClubGallery";
 import { Cooperations } from '@/components/clubs/Cooperations';
+import { PhotoIcon } from "@heroicons/react/24/outline"; // Für ein Fotodarstellung
 
 
 
@@ -60,11 +61,19 @@ export default async function ClubDetailPage({ params }: ClubDetailPageProps) {
             <main>
                 {/* Hero Section mit Bild */}
                 <div className="relative w-full h-[280px] md:h-[400px] lg:h-[600px]">
-                    <img
-                        src={club.image || "/gcl-hero.jpg"} // Standardbild, falls kein "club.image" existiert
-                        alt={club.title || "Standard Club"} // Fallback für den Alternativtext
-                        className="w-full h-full object-cover"
-                    />
+                    {club.image ? (
+                        // Zeige Club-Bild, wenn verfügbar
+                        <img
+                            src={club.image}
+                            alt={club.title || "Standard Club"}
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        // Zeige Fallback-Icon ("No Image"-Ersatz)
+                        <div className="flex items-center justify-center w-full h-full bg-gray-100">
+                            <PhotoIcon className="w-10 h-10 text-gray-400"/>
+                        </div>
+                    )}
 
                     {/* Likes Counter */}
                     <div className="absolute bottom-3 left-0 w-full">
