@@ -1,62 +1,38 @@
 // src/components/clubs/ClubCard.tsx
-import React from "react";
-import {GolfClub, FilterValue} from "@/types/club-types";
-import {Heading} from "@/components/frontend-ui/Heading";
-import GridNavi from "@/components/frontend-ui/GridNavi";
-import {ClubTag, ClubTagArray} from "./ClubTag";
-import LocationButton from './LocationButton';
+'use client';
+
+import React, { memo } from 'react';
 import Link from 'next/link';
-import {LikesCounter} from "@/components/clubs/LikesCounter";
-import {LikeButton} from './LikeButton';
+import type { ClubCardProps } from '@/types/ClubComponentTypes';
+import { Heading } from '@/components/frontend-ui/Heading';
+import ClubCardImage from './ClubCardImage';
+import ClubTagSection from './ClubTagSection';
+import ClubTagArray from './ClubTagArray';
+import ClubActions from './ClubActions';
+import LocationButton from './LocationButton';
+import { LikesCounter } from './LikesCounter';
 
-type ClubCardProps = {
-    club: GolfClub;
-    layout: "large" | "compact";
-    onTagClick: (fieldName: string, value: FilterValue) => void;
-};
+export const ClubCard = memo(function ClubCard({
+                                                   club,
+                                                   layout,
+                                                   onTagClick
+                                               }: ClubCardProps) {
+    const isLargeLayout = layout === 'large';
 
-export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
-    const isLargeLayout = layout === "large";
-
-    // Rendere einen Tag nur, wenn der Wert existiert
-    const renderTag = (
-        fieldName: string,
-        value: string | number | undefined,
-        colorScheme: "dark-green" | "cta-green",
-        prefix?: string,
-        suffix?: string
-    ) => {
-        if (value === undefined || value === null) return null;
-
-        return (
-            <ClubTag
-                fieldName={fieldName}
-                value={value}
-                colorScheme={colorScheme}
-                prefix={prefix}
-                suffix={suffix}
-                onClick={onTagClick}
-            />
-        );
-    };
-
+    // Compact Layout
     if (!isLargeLayout) {
-        const city = club.adresse?.city || club.city || "Unbekannt";
+        const city = club.adresse?.city || club.city || 'Unbekannt';
         const lat = club.adresse?.location?.lat || 0;
         const lng = club.adresse?.location?.lng || 0;
 
         return (
             <div className="flex gap-6">
-                <Link
-                    href={`/clubs/${club.slug}`}
-                    className="block shrink-0 w-[120px] h-[120px] relative rounded-lg overflow-hidden"
-                >
-                    <img
-                        src={club.image || "/gcl-hero.jpg"}
-                        alt={club.title || "Standard Club"}
-                        className="w-full h-full object-cover"
-                    />
-                </Link>
+                <ClubCardImage
+                    slug={club.slug}
+                    image={club.image}
+                    title={club.title}
+                    isLarge={false}
+                />
 
                 <div className="flex-1">
                     <Link href={`/clubs/${club.slug}`} className="block mb-3">
@@ -64,19 +40,17 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
                             level={2}
                             className="text-dark-green font-semibold hover:text-cta-green transition-colors"
                         >
-                            {club.title || "Standard Club"}
+                            {club.title || 'Golf Club'}
                         </Heading>
                     </Link>
 
                     <div className="space-y-2">
                         <div className="flex flex-wrap gap-2">
-                            {renderTag("anzahlLoecher", club.anzahlLoecher, "dark-green", undefined, " Loch")}
-                            {renderTag("parGesamt", club.parGesamt, "dark-green", "Par")}
-                            {renderTag("laengeMeter", club.laengeMeter, "dark-green", undefined, "m")}
-                            {renderTag("handicapBeschraenkung", club.handicapBeschraenkung, "dark-green", "HCP")}
-                            {renderTag("courseRating", club.courseRating, "dark-green", "CR")}
-                            {renderTag("slope", club.slope, "dark-green", "Slope")}
-                            {renderTag("platztyp", club.platztyp, "cta-green")}
+                            <ClubTagSection
+                                club={club}
+                                colorScheme="dark-green"
+                                onTagClick={onTagClick}
+                            />
                             {club.besonderheiten && club.besonderheiten.length > 0 && (
                                 <ClubTagArray
                                     fieldName="besonderheiten"
@@ -86,14 +60,14 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
                                 />
                             )}
                         </div>
-                        <LocationButton
-                            city={city}
-                            coordinates={{ lat, lng }}
-                            colorScheme="dark-green"
-                            onClick={onTagClick}
-                        />
-                        <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
-                            <GridNavi clubId={club._id} />
+
+                        <div className="flex items-center gap-2">
+                            <LocationButton
+                                city={city}
+                                coordinates={{ lat, lng }}
+                                colorScheme="dark-green"
+                                onClick={onTagClick}
+                            />
                         </div>
                     </div>
                 </div>
@@ -101,23 +75,17 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
         );
     }
 
-    // Großes Layout (original)
+    // Large Layout
     return (
         <div className="bg-white">
             <div className="relative rounded-2xl overflow-visible hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] transition-shadow duration-200">
-                {/* Bild-Container mit Link */}
-                <Link
-                    href={`/clubs/${club.slug}`}
-                    className="block relative w-full aspect-[16/9] lg:aspect-[32/9] overflow-hidden rounded-2xl"
-                >
-                    <img
-                        src={club.image || "/gcl-hero.jpg"}
-                        alt={club.title || "Standard Club"}
-                        className="w-full h-full object-cover"
-                    />
-                </Link>
+                <ClubCardImage
+                    slug={club.slug}
+                    image={club.image}
+                    title={club.title}
+                    isLarge={true}
+                />
 
-                {/* LocationButton mit Koordinaten */}
                 <div className="absolute top-3 right-3">
                     <LocationButton
                         city={club.city}
@@ -130,23 +98,13 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
                     />
                 </div>
 
-                {/* Aktionen unten rechts */}
-                <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <button className="flex items-center justify-center h-9 w-9 rounded-full bg-black/30 hover:bg-black/40 transition-colors">
-                        <img src="/icons/iconShareWithe.svg" alt="Teilen" className="h-5 w-5"/>
-                    </button>
-                    <LikeButton
-                        clubId={club._id}
-                        className="bg-black/30 hover:bg-black/40"
-                    />
-                    <div className="relative flex items-center justify-center h-9 w-9 rounded-full overflow-visible z-10">
-                        <GridNavi clubId={club._id} />
-                    </div>
-                </div>
+                <ClubActions
+                    clubId={club._id}
+                    className="absolute bottom-3 right-3"
+                />
 
-                {/* Likes Counter unten links */}
                 <div className="absolute bottom-3 left-3">
-                    <LikesCounter clubId={club._id}/>
+                    <LikesCounter clubId={club._id} />
                 </div>
             </div>
 
@@ -161,21 +119,18 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
                         </Heading>
                     </Link>
                     <span className="text-xs uppercase tracking-wider text-dark-20">
-                        {club.aktuellesModell?.name || "FREE"}
+                        {club.aktuellesModell?.name || 'FREE'}
                     </span>
                 </div>
 
-                {/* Tags Container */}
                 <div className="mb-4">
-                    {/* Mobile: Eine Reihe */}
+                    {/* Mobile Tags */}
                     <div className="flex flex-wrap gap-2 lg:hidden">
-                        {renderTag("anzahlLoecher", club.anzahlLoecher, "dark-green", undefined, " Loch")}
-                        {renderTag("parGesamt", club.parGesamt, "dark-green", "Par")}
-                        {renderTag("laengeMeter", club.laengeMeter, "dark-green", undefined, "m")}
-                        {renderTag("handicapBeschraenkung", club.handicapBeschraenkung, "dark-green", "HCP")}
-                        {renderTag("courseRating", club.courseRating, "dark-green", "CR")}
-                        {renderTag("slope", club.slope, "dark-green", "Slope")}
-                        {renderTag("platztyp", club.platztyp, "cta-green")}
+                        <ClubTagSection
+                            club={club}
+                            colorScheme="dark-green"
+                            onTagClick={onTagClick}
+                        />
                         {club.besonderheiten && club.besonderheiten.length > 0 && (
                             <ClubTagArray
                                 fieldName="besonderheiten"
@@ -186,21 +141,16 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
                         )}
                     </div>
 
-                    {/* Desktop: Zwei Reihen */}
+                    {/* Desktop Tags */}
                     <div className="hidden lg:block space-y-2">
-                        {/* Erste Reihe - Helle Tags */}
                         <div className="flex flex-wrap gap-2">
-                            {renderTag("anzahlLoecher", club.anzahlLoecher, "dark-green", undefined, " Loch")}
-                            {renderTag("parGesamt", club.parGesamt, "dark-green", "Par")}
-                            {renderTag("laengeMeter", club.laengeMeter, "dark-green", undefined, "m")}
-                            {renderTag("handicapBeschraenkung", club.handicapBeschraenkung, "dark-green", "HCP")}
-                            {renderTag("courseRating", club.courseRating, "dark-green", "CR")}
-                            {renderTag("slope", club.slope, "dark-green", "Slope")}
+                            <ClubTagSection
+                                club={club}
+                                colorScheme="dark-green"
+                                onTagClick={onTagClick}
+                            />
                         </div>
-
-                        {/* Zweite Reihe - Grüne Tags */}
                         <div className="flex flex-wrap gap-2">
-                            {renderTag("platztyp", club.platztyp, "cta-green")}
                             {club.besonderheiten && club.besonderheiten.length > 0 && (
                                 <ClubTagArray
                                     fieldName="besonderheiten"
@@ -215,4 +165,6 @@ export const ClubCard = ({club, layout, onTagClick}: ClubCardProps) => {
             </div>
         </div>
     );
-};
+});
+
+export default ClubCard;
