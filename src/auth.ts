@@ -71,10 +71,10 @@ export const {
         error: "/auth/error"
     },
     providers: [
-        Google({
+    /*    Google({
             clientId: process.env.GOOGLE_CLIENT_ID ?? "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
-        }),
+        }), */
         Credentials({
             async authorize(credentials): Promise<SanityAdapterUser | null> {
                 try {
@@ -129,6 +129,8 @@ export const {
             }
         })
     ],
+
+
     session: { strategy: "jwt" },
     adapter: SanityAdapter(sanityClient) as Adapter,
     callbacks: {

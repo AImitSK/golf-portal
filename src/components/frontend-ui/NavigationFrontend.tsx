@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Menu } from "@headlessui/react";
 import { Bars3Icon, UserCircleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Avatar } from "../catalyst-ui-kit/avatar";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function NavigationWithHamburger() {
     const [isSticky, setIsSticky] = useState(false);
-    const { data: session, status } = useSession(); // Status hinzufügen
+    const { data: session, status } = useSession();
+    const router = useRouter();
 
+    // Scroll Handler
     useEffect(() => {
         const handleScroll = () => {
             setIsSticky(window.scrollY > 0);
@@ -22,9 +25,17 @@ export default function NavigationWithHamburger() {
         };
     }, []);
 
-    const handleLogout = async () => {
-        await signOut({ callbackUrl: '/' });
-    };
+    // Optimiertes Logout-Handling
+    const handleLogout = useCallback(async () => {
+        try {
+            await signOut({
+                callbackUrl: '/',
+                redirect: true
+            });
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+    }, []);
 
     const isAdmin = session?.user?.role === 'admin';
 

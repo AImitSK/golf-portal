@@ -42,6 +42,7 @@
     "shadcn-ui": "^0.9.4",
     "sonner": "^1.7.2",
     "styled-components": "^6.1.13",
+    "swr": "^2.3.0",
     "twilio": "^5.4.0",
     "yet-another-react-lightbox": "^3.12.3"
   },
