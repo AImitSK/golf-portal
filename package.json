@@ -37,6 +37,7 @@
     "react-is": "^19.0.0",
     "react-spinners": "^0.15.0",
     "sanity": "^3.71.0",
+    "@sanity/vision": "^3.0.0",
     "shadcn-ui": "^0.9.4",
     "sonner": "^1.7.2",
     "stripe": "^17.5.0",
