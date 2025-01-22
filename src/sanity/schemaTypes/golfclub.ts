@@ -1,16 +1,15 @@
-import { ValidationRule, ZahlungsStatus, DocumentStatus } from '@/types/sanity'
-
+// src/sanity/schemaTypes/golfclub.ts
 export default {
     name: 'golfclub',
     title: 'Golfclub',
     type: 'document',
     groups: [
-        {name: 'basis', title: 'Basis-Informationen'},
-        {name: 'bilder', title: 'Bilder'},
-        {name: 'administration', title: 'Administration'},
-        {name: 'platz', title: 'Platz-Details'},
-        {name: 'einrichtungen', title: 'Einrichtungen'},
-        {name: 'club', title: 'Club-Informationen'}
+        { name: 'basis', title: 'Basis-Informationen' },
+        { name: 'bilder', title: 'Bilder' },
+        { name: 'administration', title: 'Administration' },
+        { name: 'platz', title: 'Platz-Details' },
+        { name: 'einrichtungen', title: 'Einrichtungen' },
+        { name: 'club', title: 'Club-Informationen' }
     ],
     fields: [
         // Basis-Informationen
@@ -95,7 +94,7 @@ export default {
                     name: 'keywords',
                     type: 'array',
                     title: 'Keywords',
-                    of: [{type: 'string'}]
+                    of: [{ type: 'string' }]
                 }
             ]
         },
@@ -175,7 +174,7 @@ export default {
                 {
                     name: 'land',
                     type: 'reference',
-                    to: [{type: 'land'}]
+                    to: [{ type: 'land' }]
                 },
                 {
                     name: 'location',
@@ -191,21 +190,36 @@ export default {
             name: 'hauptAdmin',
             title: 'Hauptadministrator',
             type: 'reference',
-            to: [{type: 'administrator'}],
+            to: [{ type: 'administrator' }],
             group: 'administration'
         },
         {
             name: 'weitereAdmins',
             title: 'Weitere Administratoren',
             type: 'array',
-            of: [{type: 'reference', to: [{type: 'administrator'}]}],
+            of: [{ type: 'reference', to: [{ type: 'administrator' }] }],
             group: 'administration'
         },
         {
             name: 'aktuellesModell',
             title: 'Aktuelles Vertragsmodell',
             type: 'reference',
-            to: [{type: 'vertragsmodell'}],
+            to: [{ type: 'vertragsmodell' }],
+            group: 'administration'
+        },
+        {
+            name: 'stripeCustomerId',
+            title: 'Stripe Customer ID',
+            type: 'string',
+            group: 'administration'
+        },
+        {
+            name: 'subscriptionStatus',
+            title: 'Subscription Status',
+            type: 'string',
+            options: {
+                list: ['active', 'trialing', 'past_due', 'canceled', 'incomplete']
+            },
             group: 'administration'
         },
         {
@@ -236,6 +250,19 @@ export default {
                 }),
             group: 'administration'
         },
+        {
+            name: 'claimToken',
+            title: 'Claim Token',
+            type: 'string',
+            group: 'administration'
+        },
+        {
+            name: 'isClaimed',
+            title: 'Ist beansprucht',
+            type: 'boolean',
+            initialValue: false,
+            group: 'administration'
+        },
         // Platz-Details
         {
             name: 'anzahlLoecher',
@@ -251,7 +278,7 @@ export default {
             name: 'parGesamt',
             title: 'Par Gesamt',
             type: 'number',
-             group: 'platz'
+            group: 'platz'
         },
         {
             name: 'laengeMeter',
@@ -341,13 +368,13 @@ export default {
             type: 'object',
             group: 'einrichtungen',
             fields: [
-                {name: 'golfschule', title: 'Golfschule', type: 'boolean'},
-                {name: 'proShop', title: 'Pro-Shop', type: 'boolean'},
-                {name: 'restaurant', title: 'Restaurant', type: 'boolean'},
-                {name: 'umkleide', title: 'Umkleide', type: 'boolean'},
-                {name: 'sanitaeranlagen', title: 'Sanitäranlagen', type: 'boolean'},
-                {name: 'leihausruestung', title: 'Leihausrüstung', type: 'boolean'},
-                {name: 'cartVermietung', title: 'Cart-Vermietung', type: 'boolean'}
+                { name: 'golfschule', title: 'Golfschule', type: 'boolean' },
+                { name: 'proShop', title: 'Pro-Shop', type: 'boolean' },
+                { name: 'restaurant', title: 'Restaurant', type: 'boolean' },
+                { name: 'umkleide', title: 'Umkleide', type: 'boolean' },
+                { name: 'sanitaeranlagen', title: 'Sanitäranlagen', type: 'boolean' },
+                { name: 'leihausruestung', title: 'Leihausrüstung', type: 'boolean' },
+                { name: 'cartVermietung', title: 'Cart-Vermietung', type: 'boolean' }
             ]
         },
         // Club-Informationen
@@ -357,10 +384,10 @@ export default {
             type: 'object',
             group: 'club',
             fields: [
-                {name: 'moeglich', title: 'Mitgliedschaft möglich', type: 'boolean'},
-                {name: 'aufnahmegebuehr', title: 'Aufnahmegebühr', type: 'boolean'},
-                {name: 'warteliste', title: 'Warteliste', type: 'boolean'},
-                {name: 'schnuppermitgliedschaft', title: 'Schnuppermitgliedschaft', type: 'boolean'}
+                { name: 'moeglich', title: 'Mitgliedschaft möglich', type: 'boolean' },
+                { name: 'aufnahmegebuehr', title: 'Aufnahmegebühr', type: 'boolean' },
+                { name: 'warteliste', title: 'Warteliste', type: 'boolean' },
+                { name: 'schnuppermitgliedschaft', title: 'Schnuppermitgliedschaft', type: 'boolean' }
             ]
         },
         {
@@ -369,9 +396,9 @@ export default {
             type: 'object',
             group: 'club',
             fields: [
-                {name: 'gaeste', title: 'Turniere für Gäste', type: 'boolean'},
-                {name: 'club', title: 'Clubturniere', type: 'boolean'},
-                {name: 'rangliste', title: 'Ranglistenturniere', type: 'boolean'}
+                { name: 'gaeste', title: 'Turniere für Gäste', type: 'boolean' },
+                { name: 'club', title: 'Clubturniere', type: 'boolean' },
+                { name: 'rangliste', title: 'Ranglistenturniere', type: 'boolean' }
             ]
         },
         {
@@ -380,9 +407,9 @@ export default {
             type: 'array',
             of: [{
                 type: 'reference',
-                to: [{type: 'kooperation'}]
+                to: [{ type: 'kooperation' }]
             }],
             group: 'club'
         }
     ]
-}
+};
