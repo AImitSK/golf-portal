@@ -1,46 +1,21 @@
 // src/app/api/clubs/search/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import sanityClient from "@/lib/sanityClient";
+import { searchGolfClubs } from "@/lib/sanity/getGolfClubs";
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
     try {
-        const searchParams = req.nextUrl.searchParams;
+        const searchParams = request.nextUrl.searchParams;
         const term = searchParams.get("term");
 
-        if (!term) {
+        if (!term || term.length < 2) {
             return NextResponse.json({ clubs: [] });
         }
 
-        // Suche nach Clubs die:
-        // - nicht beansprucht sind (isClaimed: false)
-        // - Namen ähnlich dem Suchbegriff haben
-        // - oder die Stadt/PLZ ähnlich dem Suchbegriff haben
-        const query = `*[_type == "golfclub" && !isClaimed && (
-            title match $term + "*" || 
-            adresse.ort match $term + "*" ||
-            adresse.plz match $term + "*"
-        )] {
-            _id,
-            title,
-            clubEmail,
-            adresse,
-            claimToken
-        }`;
+        const clubs = await searchGolfClubs(term);
+        console.log("Search results:", clubs); // Debug-Log
 
-        const clubs = await sanityClient.fetch(query, {
-            term: term
-        });
-
-        return NextResponse.json({
-            clubs: clubs.map((club: any) => ({
-                _id: club._id,
-                title: club.title,
-                clubEmail: club.clubEmail,
-                adresse: {
-                    ort: club.adresse?.ort || ''
-                }
-            }))
-        });
+        return NextResponse.json({ clubs });
 
     } catch (error) {
         console.error("Club search error:", error);

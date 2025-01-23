@@ -11,18 +11,15 @@ import * as z from "zod";
 
 // Schema für Club-Claiming
 const ClaimClubSchema = z.object({
-    // Admin Details
     admin: z.object({
         email: z.string().email("Gültige E-Mail-Adresse erforderlich"),
         password: z.string().min(8, "Mindestens 8 Zeichen"),
         name: z.string().min(2, "Name erforderlich"),
         position: z.string().min(2, "Position erforderlich"),
     }),
-
-    // Claim Details
     claim: z.object({
         clubId: z.string().min(1, "Bitte wählen Sie einen Club aus"),
-        verificationCode: z.string().optional(), // Wird später benötigt
+        verificationCode: z.string().optional(),
     })
 });
 
@@ -90,28 +87,29 @@ export const ClaimClubForm = () => {
         setError("");
         setSuccess("");
 
-        startTransition(() => {
-            fetch("/api/auth/claim-club", {
+        try {
+            const res = await fetch("/api/auth/claim-club", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
-            })
-                .then(async (res) => {
-                    if (!res.ok) {
-                        const error = await res.json();
-                        throw new Error(error.message);
-                    }
-                    return res.json();
-                })
-                .then(() => {
-                    setSuccess("Anfrage erfolgreich gesendet!");
-                    // Optional: Weiterleitung zum Club-Backend
-                    window.location.href = "/club-backend";
-                })
-                .catch((error) => {
-                    setError(error.message);
-                });
-        });
+            });
+
+            const responseData = await res.json();
+
+            if (!res.ok) {
+                setError(responseData.error || "Ein Fehler ist aufgetreten");
+                return;
+            }
+
+            setSuccess("Club wird übernommen...");
+
+            // Kurz warten, damit User die Erfolgsmeldung sieht
+            setTimeout(() => {
+                window.location.href = "/club-backend";
+            }, 2000);
+        } catch (error) {
+            setError("Verbindungsfehler beim Absenden der Anfrage");
+        }
     };
 
     return (
