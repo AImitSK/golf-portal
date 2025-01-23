@@ -1,7 +1,8 @@
+// src/routes.ts
+import { UserRole } from "@/types/schemas/auth";
+
 /**
- * An array of routes that are accessible to the public
- * These routes do not require authentication
- * @type {string[]}
+ * Öffentliche Routen die keine Auth benötigen
  */
 export const publicRoutes = [
     "/",
@@ -15,21 +16,18 @@ export const publicRoutes = [
     "/file.svg",
     "/window.svg",
     "/public/(.*)",
-    // Hauptseiten
+    "/public",
     "/clubs",
     "/kooperationen",
     "/stadt",
     "/pricing",
-    // Dynamische Unterseiten
-    "/clubs/[^/]+",     // Matcht /clubs/irgendwas
-    "/kooperationen/[^/]+",  // Matcht /kooperationen/irgendwas
-    "/stadt/[^/]+"      // Matcht /stadt/irgendwas
+    "/clubs/[^/]+",
+    "/kooperationen/[^/]+",
+    "/stadt/[^/]+"
 ];
 
 /**
- * An array of routes that are used for authentication
- * These routes will redirect logged in users to /settings
- * @type {string[]}
+ * Auth Routen - Redirect für eingeloggte User
  */
 export const authRoutes = [
     "/auth/login",
@@ -41,8 +39,7 @@ export const authRoutes = [
 ];
 
 /**
- * An array of routes that require user authentication
- * @type {string[]}
+ * User spezifische Routen
  */
 export const USER_ROUTES = [
     "/wunschliste",
@@ -50,41 +47,41 @@ export const USER_ROUTES = [
 ];
 
 /**
- * The prefix for API authentication routes
- * Routes that start with this prefix are used for API authentication purposes
- * @type {string}
+ * Club Admin spezifische Routen
  */
+export const CLUB_ADMIN_ROUTES = [
+    "/club-verwaltung",
+    "/club-verwaltung/profil",
+    "/club-verwaltung/mitglieder",
+    "/club-verwaltung/statistiken"
+];
+
+/**
+ * Developer spezifische Routen
+ */
+export const DEVELOPER_ROUTES = [
+    "/studio",
+    "/system-verwaltung",
+    "/benutzer-verwaltung",
+    "/vertrags-verwaltung"
+];
+
 export const apiAuthPrefix = "/api/auth";
-
-/**
- * The club backend route for administrators
- * @type {string}
- */
-export const CLUB_BACKEND = "/club-backend";
-
-/**
- * The clubs route for normal users
- * @type {string}
- */
-export const USER_CLUBS = "/clubs";
-
-/**
- * The default redirect path after logging in
- * @type {string}
- */
+export const CLUB_BACKEND = "/club-verwaltung";
+export const USER_DASHBOARD = "/dashboard";
 export const DEFAULT_LOGIN_REDIRECT = "/";
 
 /**
- * Gets the redirect path based on user role
- * @param {string} role - The user's role (admin or user)
- * @returns {string} The appropriate redirect path
+ * Bestimmt die Redirect-URL basierend auf der Benutzerrolle
  */
-export const getRedirectPath = (role?: string) => {
+export const getRedirectPath = (role?: UserRole) => {
     switch(role) {
-        case "admin":
-            return CLUB_BACKEND;
+        case "developer":
+            return "/studio";
+        case "club_admin":
+            return "/club-backend";
         case "user":
-            return USER_CLUBS;
+            return "/";
         default:
             return DEFAULT_LOGIN_REDIRECT;
     }

@@ -1,6 +1,8 @@
-import { ValidationRule } from '@/types/sanity'
+// src/sanity/schemaTypes/administrator.ts
+import { type Rule, type ValidationContext } from '@sanity/types'
+import { type AdminPermissions, type UserRole } from '@/types/schemas/auth'
 
-export default {
+const administratorSchema = {
   name: 'administrator',
   title: 'Administrator',
   type: 'document',
@@ -9,13 +11,13 @@ export default {
       name: 'name',
       title: 'Name',
       type: 'string',
-      validation: (Rule: ValidationRule) => Rule.required()
+      validation: (rule: Rule) => rule.required()
     },
     {
       name: 'email',
       title: 'Email',
       type: 'string',
-      validation: (Rule: ValidationRule) => Rule.required().email()
+      validation: (rule: Rule) => rule.required().email()
     },
     {
       name: 'emailVerified',
@@ -34,10 +36,59 @@ export default {
       type: 'string',
       options: {
         list: [
-          { title: 'User', value: 'user' },
-          { title: 'Admin', value: 'admin' },
+          { title: 'Club Administrator', value: 'club_admin' },
+          { title: 'Developer', value: 'developer' },
         ],
       },
+      validation: (rule: Rule) => rule.required(),
+    },
+    {
+      name: 'permissions',
+      title: 'Berechtigungen',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        list: [
+          {title: 'Benutzer verwalten', value: 'manage_users'},
+          {title: 'Clubs verwalten', value: 'manage_clubs'},
+          {title: 'Verträge verwalten', value: 'manage_contracts'},
+          {title: 'Statistiken einsehen', value: 'view_statistics'},
+          {title: 'Club-Profil bearbeiten', value: 'edit_club_profile'},
+          {title: 'Mitglieder verwalten', value: 'manage_members'},
+          {title: 'Analytics einsehen', value: 'view_analytics'}
+        ]
+      },
+      validation: (rule: Rule) =>
+          rule.custom((permissions: AdminPermissions[], context: ValidationContext) => {
+            const doc = context.document as { role?: UserRole };
+            const role = doc?.role;
+
+            if (role === 'developer') {
+              const requiredPermissions: AdminPermissions[] = [
+                'manage_users',
+                'manage_clubs',
+                'manage_contracts',
+                'view_statistics'
+              ];
+              return requiredPermissions.every(p => permissions?.includes(p))
+                  ? true
+                  : 'Developer benötigen alle Administrator-Berechtigungen';
+            }
+
+            if (role === 'club_admin') {
+              const allowedPermissions: AdminPermissions[] = [
+                'edit_club_profile',
+                'manage_members',
+                'view_analytics',
+                'view_statistics'
+              ];
+              return permissions?.every(p => allowedPermissions.includes(p))
+                  ? true
+                  : 'Club Administratoren können nur Club-bezogene Berechtigungen haben';
+            }
+
+            return true;
+          })
     },
     {
       name: 'aktiv',
@@ -61,24 +112,13 @@ export default {
       name: 'password',
       title: 'Passwort',
       type: 'string',
-      hidden: false, // Versteckt im Sanity Studio
-      // Kein required hier, da wir das später programmatisch setzen
+      hidden: false,
     },
-/*     {
-      name: 'accounts',
-      title: 'Verbundene Konten',
-      type: 'array',
-      hidden: true,
-      of: [{
-        type: 'reference',
-        to: [{ type: 'account' }]
-      }]
-    }, */
     {
       name: 'telefon',
       title: 'Telefon',
       type: 'string',
-      validation: (Rule: ValidationRule) => Rule.regex(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
+      validation: (rule: Rule) => rule.regex(/^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/)
     },
     {
       name: 'position',
@@ -103,21 +143,6 @@ export default {
       title: 'Password Reset Ablaufdatum',
       type: 'datetime',
       hidden: true
-    },
-    {
-      name: 'permissions',
-      title: 'Berechtigungen',
-      type: 'array',
-      of: [{type: 'string'}],
-      options: {
-        list: [
-          {title: 'Benutzer verwalten', value: 'manage_users'},
-          {title: 'Clubs verwalten', value: 'manage_clubs'},
-          {title: 'Verträge verwalten', value: 'manage_contracts'},
-          {title: 'Statistiken einsehen', value: 'view_statistics'}
-        ]
-      },
-      initialValue: []
     }
   ],
   preview: {
@@ -126,4 +151,6 @@ export default {
       subtitle: 'email'
     }
   }
-}
+};
+
+export default administratorSchema;
