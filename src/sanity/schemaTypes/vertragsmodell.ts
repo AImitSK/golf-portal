@@ -1,5 +1,5 @@
-// vertragsmodell.ts
-import { ValidationRule, SupportLevel, ZahlungsIntervall } from '@/types/sanity'
+// src/sanity/schemaTypes/vertragsmodell.ts
+import { ValidationRule } from '@/types/sanity';
 
 export default {
     name: 'vertragsmodell',
@@ -66,9 +66,19 @@ export default {
             type: 'array',
             of: [{
                 type: 'reference',
-                to: [{type: 'feature'}]
+                to: [{ type: 'feature' }]
             }],
             validation: (Rule: ValidationRule) => Rule.required()
+        },
+        {
+            name: 'stripeProductId',
+            title: 'Stripe Product ID',
+            type: 'string'
+        },
+        {
+            name: 'stripePriceId',
+            title: 'Stripe Price ID',
+            type: 'string'
         },
         {
             name: 'supportLevel',
@@ -76,9 +86,9 @@ export default {
             type: 'string',
             options: {
                 list: [
-                    {title: 'Basic Support', value: 'basic'},
-                    {title: 'Premium Support', value: 'premium'},
-                    {title: 'Premium Plus Support', value: 'premium_plus'}
+                    { title: 'Basic Support', value: 'basic' },
+                    { title: 'Premium Support', value: 'premium' },
+                    { title: 'Premium Plus Support', value: 'premium_plus' }
                 ]
             },
             validation: (Rule: ValidationRule) =>
@@ -96,4 +106,4 @@ export default {
             subtitle: 'preis'
         }
     }
-}
+};

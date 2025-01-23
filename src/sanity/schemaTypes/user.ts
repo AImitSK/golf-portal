@@ -58,8 +58,15 @@ const schema: SchemaTypeDefinition = {
             name: 'password',
             title: 'Passwort',
             type: 'string',
-            hidden: false, 
+            hidden: false,
         },
+        {
+            name: 'heimatclub',
+            title: 'Heimatclub',
+            type: 'reference',
+            to: [{ type: 'golfclub' }],
+            description: 'Der Golfclub, in dem der User Mitglied ist'
+        }
     ]
 }
 

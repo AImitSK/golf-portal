@@ -9,6 +9,7 @@ import user from './user'
 import like from './like'
 import wishlist from './wishlist'
 import coursePlayed from './coursePlayed'
+import claimLog from './claimLog'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -21,6 +22,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     user,
     like,
     wishlist,
+    claimLog,
     coursePlayed
   ],
 }

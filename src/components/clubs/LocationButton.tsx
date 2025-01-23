@@ -1,23 +1,14 @@
-import React from 'react';
+// src/components/clubs/LocationButton.tsx
+import { memo } from 'react';
 import { MapPinIcon } from '@heroicons/react/24/outline';
-import { FilterValue } from '@/types/club-types';
+import type { LocationButtonProps } from '@/types/ClubComponentTypes';
 
-interface LocationButtonProps {
-    city: string;
-    coordinates: {
-        lat: number;
-        lng: number;
-    };
-    colorScheme: 'dark-green';
-    onClick: (fieldName: string, value: FilterValue) => void;
-}
-
-const LocationButton: React.FC<LocationButtonProps> = ({
-                                                           city,
-                                                           coordinates,
-                                                           colorScheme,
-                                                           onClick
-                                                       }) => {
+const LocationButton = memo(function LocationButton({
+                                                        city,
+                                                        coordinates,
+                                                        colorScheme,
+                                                        onClick
+                                                    }: LocationButtonProps) {
     const colorConfigs = {
         'dark-green': {
             background: 'bg-white',
@@ -64,14 +55,12 @@ const LocationButton: React.FC<LocationButtonProps> = ({
                     ${colors.text}
                     group-hover:text-white
                 `}
-
             />
-            <span className="transition-colors group-hover:text-white">{city}</span>
+            <span className="transition-colors group-hover:text-white">
+                {city}
+            </span>
         </button>
-
     );
-
-};
-
+});
 
 export default LocationButton;

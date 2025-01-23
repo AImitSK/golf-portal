@@ -108,12 +108,13 @@ export interface Kooperation {
 // Golf Club Typ
 export interface GolfClub {
     _id: string;   // Sanity Document ID hinzufügen
-    _type: string; // Optional auch den Type
+    _type: string; // optional gemacht
     title: string;
     slug: string; // URL-Slug des Clubs
     image?: string; // Optional: Bild-URL des Clubs
     city: string; // Stadt des Clubs
     logo?: string;  // URL des Club-Logos
+
 
 
 

@@ -1,247 +1,128 @@
-import { Fragment } from 'react'
-import { CheckIcon, MinusIcon } from '@heroicons/react/20/solid'
+// src/components/frontend-ui/PricingTable.tsx
+"use client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-// Typen für die Tiers und Features
-type TierName = 'Starter' | 'Growth' | 'Scale'
-
-// Typ für die Features in der Sektion
-interface Feature {
-    name: string;
-    tiers: Record<TierName, boolean | string>;
-}
-
-// Typ für die Sektionen
-interface Section {
-    name: string;
-    features: Feature[];
-}
-
-// Typ für die Tiers
-interface Tier {
-    name: TierName;
-    id: string;
-    href: string;
-    priceMonthly: string;
-    mostPopular: boolean;
-}
-
-// Daten
-const tiers: Tier[] = [
-    { name: 'Starter', id: 'tier-starter', href: '#', priceMonthly: '€0', mostPopular: false },
-    { name: 'Growth', id: 'tier-growth', href: '#', priceMonthly: '€24', mostPopular: true },
-    { name: 'Scale', id: 'tier-scale', href: '#', priceMonthly: '€34', mostPopular: false },
-]
-
-const sections: Section[] = [
+const tiers = [
     {
-        name: 'Features',
-        features: [
-            { name: 'Basis-Clubprofil', tiers: { Starter: true, Growth: true, Scale: true } },
-            { name: 'Platz-Informationen', tiers: { Starter: 'basis', Growth: 'komplett', Scale: 'komplett' } },
-            { name: 'Top 5 mit Bild', tiers: { Starter: false, Growth: true, Scale: true } },
-            { name: 'Top 1 Position', tiers: { Starter: false, Growth: false, Scale: true } },
-            { name: 'Bildergalerie', tiers: { Starter: false, Growth: true, Scale: true } },
-            { name: 'Video', tiers: { Starter: false, Growth: true, Scale: true } },
-            { name: 'KI Chat Link', tiers: { Starter: false, Growth: true, Scale: true } },
-        ],
+        name: "Starter",
+        id: "tier-starter",
+        priceMonthly: "€0",
+        features: ["5 Golfclub-Einträge", "Basis Support", "Standard Listing"],
+        mostPopular: false
     },
     {
-        name: 'SEO',
-        features: [
-            { name: 'Advanced analytics', tiers: { Starter: true, Growth: true, Scale: true } },
-            { name: 'Basic reports', tiers: { Starter: false, Growth: true, Scale: true } },
-            { name: 'Professional reports', tiers: { Starter: false, Growth: false, Scale: true } },
-            { name: 'Custom report builder', tiers: { Starter: false, Growth: false, Scale: true } },
-        ],
+        name: "Growth",
+        id: "tier-growth",
+        priceMonthly: "€24",
+        features: ["Unbegrenzte Einträge", "Priority Support", "Featured Listing"],
+        mostPopular: true
     },
     {
-        name: 'Support',
-        features: [
-            { name: '24/7 online support', tiers: { Starter: true, Growth: true, Scale: true } },
-            { name: 'Quarterly workshops', tiers: { Starter: false, Growth: true, Scale: true } },
-            { name: 'Priority phone support', tiers: { Starter: false, Growth: false, Scale: true } },
-            { name: '1:1 onboarding tour', tiers: { Starter: false, Growth: false, Scale: true } },
-        ],
-    },
-]
+        name: "Scale",
+        id: "tier-scale",
+        priceMonthly: "€34",
+        features: ["Alles aus Growth", "24/7 Support", "Premium Listing", "API Zugang"],
+        mostPopular: false
+    }
+];
 
-// Hilfsfunktion für Klassen
-function classNames(...classes: (string | false | undefined)[]) {
-    return classes.filter(Boolean).join(' ')
-}
+export default function PricingTable() {
+    const { data: session  } = useSession();
+    const router = useRouter();
+    const [loading, setLoading] = useState<string | null>(null);
 
+    async function handleCheckout(productName: string) {
+        if (!session) {
+            router.push("/auth/login?callbackUrl=/pricing");
+            return;
+        }
 
+        setLoading(productName);
 
+        try {
+            const res = await fetch("/api/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productName }),
+            });
 
-export default function Example() {
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || "Checkout fehlgeschlagen");
+            }
+
+            const { url } = await res.json();
+            if (url) window.location.href = url;
+        } catch (error) {
+            console.error("Checkout error:", error);
+            alert("Checkout fehlgeschlagen. Bitte versuchen Sie es später erneut.");
+        } finally {
+            setLoading(null);
+        }
+    }
+
     return (
         <div className="bg-white py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-4xl text-center">
-                    <h2 className="text-base/7 font-semibold text-dark-green">Pricing</h2>
-                    <p className="mt-2 text-balance text-5xl font-semibold tracking-tight text-dark sm:text-6xl">
-                        Pricing that grows with you
+                    <h2 className="text-base font-semibold text-dark-green">Pricing</h2>
+                    <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                        Passend für jeden Club
                     </p>
                 </div>
-                <p className="mx-auto mt-6 max-w-2xl text-center text-lg font-medium text-dark sm:text-xl/8">
-                    Choose an affordable plan that’s packed with the best features for engaging your audience, creating customer loyalty, and driving sales.
-                </p>
 
-                {/* xs to lg */}
-                <div className="mx-auto mt-12 max-w-md space-y-8 sm:mt-16 lg:hidden">
+                <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 sm:mt-20 lg:grid-cols-3 lg:gap-8">
                     {tiers.map((tier) => (
-                        <section
+                        <div
                             key={tier.id}
-                            className={classNames(
-                                tier.mostPopular
-                                    ? 'rounded-xl bg-dark-green-10 ring-1 ring-inset ring-dark-6'
-                                    : '',
-                                'p-8',
-                            )}
+                            className={`flex flex-col rounded-3xl p-8 ring-1 ring-gray-200 ${
+                                tier.mostPopular ? "bg-gray-100" : ""
+                            }`}
                         >
-                            <h3 id={tier.id} className="text-sm/6 font-semibold text-dark">
-                                {tier.name}
-                            </h3>
-                            <p className="mt-2 flex items-baseline gap-x-1 text-dark">
-                                <span className="text-4xl font-semibold">{tier.priceMonthly}</span>
-                                <span className="text-sm font-semibold">/month</span>
-                            </p>
-                            <a
-                                href={tier.href}
-                                aria-describedby={tier.id}
-                                className={classNames(
-                                    'bg-cta-green text-white hover:bg-dark-green',
-                                    'mt-8 block rounded-md px-3 py-2 text-center text-sm/6 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dark-green',
-                                )}
-                            >
-                                Buy plan
-                            </a>
-                            <ul role="list" className="mt-10 space-y-4 text-sm/6 text-dark">
-                                {sections.map((section) => (
-                                    <li key={section.name}>
-                                        <ul role="list" className="space-y-4">
-                                            {section.features.map((feature) =>
-                                                    feature.tiers[tier.name] ? (
-                                                        <li key={feature.name} className="flex gap-x-3">
-                                                            <CheckIcon aria-hidden="true" className="h-6 w-5 flex-none text-dark-green" />
-                                                            <span>
-                              {feature.name}{' '}
-                                                                {typeof feature.tiers[tier.name] === 'string' ? (
-                                                                    <span className="text-sm/6 text-dark">({feature.tiers[tier.name]})</span>
-                                                                ) : null}
-                            </span>
-                                                        </li>
-                                                    ) : null,
-                                            )}
-                                        </ul>
+                            <div className="mb-8">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    {tier.name}
+                                </h3>
+                                <p className="mt-4 text-3xl font-bold text-gray-900">
+                                    {tier.priceMonthly}
+                                </p>
+                                <p className="mt-2 text-sm text-gray-500">pro Monat</p>
+                            </div>
+
+                            <ul className="mb-8 space-y-4 text-sm">
+                                {tier.features.map((feature) => (
+                                    <li key={feature} className="flex items-center">
+                                        <svg
+                                            className="h-5 w-5 text-green-500"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M5 13l4 4L19 7"
+                                            />
+                                        </svg>
+                                        <span className="ml-3">{feature}</span>
                                     </li>
                                 ))}
                             </ul>
-                        </section>
-                    ))}
-                </div>
 
-                {/* lg+ */}
-                <div className="isolate mt-20 hidden lg:block">
-                    <div className="relative -mx-8">
-                        {tiers.some((tier) => tier.mostPopular) ? (
-                            <div className="absolute inset-x-4 inset-y-0 -z-10 flex">
-                                <div
-                                    style={{ marginLeft: `${(tiers.findIndex((tier) => tier.mostPopular) + 1) * 25}%` }}
-                                    aria-hidden="true"
-                                    className="flex w-1/4 px-4"
-                                >
-                                    <div className="w-full rounded-t-xl border-x border-t border-dark/10 bg-dark-green-10" />
-                                </div>
-                            </div>
-                        ) : null}
-                        <table className="w-full table-fixed border-separate border-spacing-x-8 text-left">
-                            <caption className="sr-only">Pricing plan comparison</caption>
-                            <colgroup>
-                                <col className="w-1/4" />
-                                <col className="w-1/4" />
-                                <col className="w-1/4" />
-                                <col className="w-1/4" />
-                            </colgroup>
-                            <thead>
-                            <tr>
-                                <td />
-                                {tiers.map((tier) => (
-                                    <th key={tier.id} scope="col" className="px-6 pt-6 xl:px-8">
-                                        <div className="text-sm/7 font-semibold text-dark">{tier.name}</div>
-                                    </th>
-                                ))}
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <th scope="row">
-                                    <span className="sr-only">Price</span>
-                                </th>
-                                {tiers.map((tier) => (
-                                    <td key={tier.id} className="px-6 pt-2 xl:px-8">
-                                        <div className="flex items-baseline gap-x-1 text-dark">
-                                            <span className="text-4xl font-semibold">{tier.priceMonthly}</span>
-                                            <span className="text-sm/6 font-semibold">/month</span>
-                                        </div>
-                                        <a
-                                            href={tier.href}
-                                            className={classNames(
-                                                'bg-cta-green text-white hover:bg-dark-green',
-                                                'mt-8 block rounded-md px-3 py-2 text-center text-sm/6 font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dark-green',
-                                            )}
-                                        >
-                                            Buy plan
-                                        </a>
-                                    </td>
-                                ))}
-                            </tr>
-                            {sections.map((section, sectionIdx) => (
-                                <Fragment key={section.name}>
-                                    <tr>
-                                        <th
-                                            scope="colgroup"
-                                            colSpan={4}
-                                            className={classNames(
-                                                sectionIdx === 0 ? 'pt-8' : 'pt-16',
-                                                'pb-4 text-sm/6 font-semibold text-dark',
-                                            )}
-                                        >
-                                            {section.name}
-                                            <div className="absolute inset-x-8 mt-4 h-px bg-dark/10" />
-                                        </th>
-                                    </tr>
-                                    {section.features.map((feature) => (
-                                        <tr key={feature.name}>
-                                            <th scope="row" className="py-4 text-sm/6 font-normal text-dark"> {/* dunkler Text */}
-                                                {feature.name}
-                                                <div className="absolute inset-x-8 mt-4 h-px bg-dark-6" />
-                                            </th>
-                                            {tiers.map((tier) => (
-                                                <td key={tier.id} className="px-6 py-4 xl:px-8">
-                                                    {typeof feature.tiers[tier.name] === 'string' ? (
-                                                        <div className="text-center text-sm/6 text-dark">{feature.tiers[tier.name]}</div>
-                                                    ) : (
-                                                        <>
-                                                            {feature.tiers[tier.name] === true ? (
-                                                                <CheckIcon aria-hidden="true" className="mx-auto size-5 text-dark-green" />
-                                                            ) : (
-                                                                <MinusIcon aria-hidden="true" className="mx-auto size-5 text-dark" />
-                                                            )}
-                                                            <span className="sr-only">
-                                  {feature.tiers[tier.name] === true ? 'Included' : 'Not included'} in {tier.name}
-                                </span>
-                                                        </>
-                                                    )}
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </Fragment>
-                            ))}
-                            </tbody>
-                        </table>
-                    </div>
+                            <button
+                                onClick={() => handleCheckout(tier.name)}
+                                disabled={loading === tier.name}
+                                className={`mt-auto rounded-md bg-[#006633] px-3.5 py-2 text-sm font-semibold text-white hover:bg-[#2CDB48] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#006633] ${
+                                    loading === tier.name ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
+                            >
+                                {loading === tier.name ? "Wird geladen..." : "Auswählen"}
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
