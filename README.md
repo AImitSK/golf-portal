@@ -1,6 +1,82 @@
-# Golf Portal
 
-Ein zentrales Verzeichnis für deutsche Golfclubs mit Freemium-Modell.
+# Golf-Portal
+
+Ein zentrales Verzeichnis für deutsche Golfclubs mit Freemium-Geschäftsmodell.
+
+**Kernfunktionen**
+
+1.  **Golfclub-Verzeichnis**
+
+- Umfassende Datenbank aller deutschen Golfclubs
+
+- Detaillierte Club Profile mit:
+
+  * Basis-Informationen (Name, Kontakt, SEO)
+
+  *  Platz-Details (Löcher, Par, Rating, Slope)
+
+  * Einrichtungen (Übungsanlagen, Services)
+
+  * Bildergalerie
+  
+  * Standort via Google Maps Integration
+        
+
+
+2.  **Standort-basierte Features**
+
+   *   Golfclub-Suche nach Städten/Regionen
+
+   *   Radius-Suche (50km Umkreis)
+
+   *   Vordefinierte Stadt-Seiten für:
+
+       *   Berlin
+
+       *   Hamburg
+
+       *   München
+
+       *   Köln
+
+       *   Frankfurt
+
+       *   Hannover
+
+       *   Bielefeld
+
+       *   Sylt
+       
+
+
+3.  **Kooperationen & Partnerschaften**
+
+   *   Verwaltung von Club-Kooperationen
+
+   *   Verschiedene Kooperationstypen:
+
+     *   Verbundmitgliedschaften
+
+     *   Greenfee-Ermäßigungen
+
+   *   Partnerclub-Übersicht mit Kartendarstellung
+
+
+
+4.  **Benutzer-Features**
+
+   *   Persönliche Wunschliste
+
+   *   Club-Bewertungen & Likes
+
+   *   Profilbereich für:
+
+     *   Gespielte Plätze
+
+     *   Favoriten
+
+     *   Einstellungen
+
 
 ## Projektstruktur
 
