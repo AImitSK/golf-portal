@@ -1,10 +1,12 @@
 // src/types/email.ts
-export enum SendGridTemplate {
-    CLAIM_CONFIRMATION = 'd-f51149010d2646cdb5ea014644a66c03', // Hier Template-ID einfügen
-}
+export const SendGridTemplate = {
+    INVOICE_NOTIFICATION: 'd-82a9eef2929a440ebd073f0424143d5b'
+} as const;
+
+export type SendGridTemplateType = keyof typeof SendGridTemplate;
 
 export interface EmailData {
     to: string;
-    templateId: SendGridTemplate;
+    templateId: typeof SendGridTemplate[keyof typeof SendGridTemplate];
     dynamicTemplateData: Record<string, string>;
 }

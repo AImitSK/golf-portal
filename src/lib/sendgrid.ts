@@ -3,6 +3,7 @@ import sgMail from "@sendgrid/mail";
 import { SendGridTemplate } from "@/types/email";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+export default sgMail;
 
 export async function sendClaimConfirmationEmail({
                                                      to,
@@ -16,7 +17,7 @@ export async function sendClaimConfirmationEmail({
     const msg = {
         to,
         from: process.env.SENDGRID_FROM_EMAIL!,
-        templateId: SendGridTemplate.CLAIM_CONFIRMATION,
+        templateId: SendGridTemplate.INVOICE_NOTIFICATION, // Ersetzen Sie CLAIM_CONFIRMATION mit einem gültigen Wert aus SendGridTemplate
         dynamicTemplateData: {
             clubName,
             adminName,

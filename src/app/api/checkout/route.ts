@@ -1,82 +1,81 @@
-import Stripe from "stripe";
-import { NextResponse } from "next/server";
+// src/app/api/checkout/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { stripe } from "@/lib/stripe";
+import { auth } from "@/auth";
+import sanityClient from "@/lib/sanityClient";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-    apiVersion: "2022-11-15",
-});
-
-// Produkte und Preise
-const predefinedProducts = {
+// Die validierten Preise aus dem Live-Stripe
+const plans = {
     Scale: {
-        productId: "prod_RcvoMYvEBCuoWy",
-        priceId: "price_1QjfwjEKuPyZVNsC0nnlUlRz",
+        productId: "prod_Rdyij4rPzbM814",
+        priceId: "price_1QkgkzCrzNkrNAuisLkpgvLj"
     },
     Growth: {
-        productId: "prod_RcvnS9aoEqjYGf",
-        priceId: "price_1QjfvdEKuPyZVNsCPuepp5XO",
+        productId: "prod_RdyfUwm5N7cHVQ",
+        priceId: "price_1QkghhCrzNkrNAuiMW8vsZTs"
     },
     Starter: {
-        productId: "prod_RcvlKL3uGlXKji",
-        priceId: "price_1QjfuHEKuPyZVNsCE2JUAYmk",
-    },
-};
-
-// Funktion zum Erstellen der Checkout-Session
-async function createCheckoutSession(productName: "Scale" | "Growth" | "Starter") {
-    const productInfo = predefinedProducts[productName];
-
-    if (!productInfo) {
-        console.error(`Ungültiger Produktname: ${productName}`);
-        throw new Error(`Ungültiger Produktname: ${productName}`);
+        productId: "prod_RdybuBmxa6bmA6",
+        priceId: "price_1Qkge7CrzNkrNAuiKn7vsnIV"
     }
+} as const;
 
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [
-            {
-                price: productInfo.priceId,
-                quantity: 1,
-            },
-        ],
-        mode: "subscription",
-        success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
-        cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,
-    });
+type PlanType = keyof typeof plans;
 
-    console.log(`Stripe Session URL erstellt: ${session.url}`); // Debugging
-    return session.url;
-}
-
-// Endpunkt für die API-Route
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
     try {
-        const body = await request.json(); // JSON-Daten parsen
-        const productName = body.productName as "Scale" | "Growth" | "Starter";
-
-        if (!productName || !predefinedProducts[productName]) {
-            return NextResponse.json(
-                { error: "Produktname fehlt oder ist ungültig" },
-                { status: 400 }
-            );
+        const session = await auth();
+        if (!session?.user) {
+            return NextResponse.json({ error: "Nicht autorisiert" }, { status: 401 });
         }
 
-        const sessionUrl = await createCheckoutSession(productName);
+        const body = await req.json();
+        const planName = body.productName as PlanType;
 
-        if (!sessionUrl) {
-            throw new Error("Checkout-Session konnte nicht erstellt werden.");
+        if (!planName || !plans[planName]) {
+            return NextResponse.json({ error: "Ungültiger Plan" }, { status: 400 });
         }
 
-        return NextResponse.json({ url: sessionUrl });
-    } catch (error: any) {
-        console.error("Fehler beim Erstellen der Checkout-Session:", error);
+        const club = await sanityClient.fetch(
+            `*[_type == "golfclub" && hauptAdmin->email == $email][0]{
+                _id,
+                title,
+                stripeCustomerId
+            }`,
+            { email: session.user.email }
+        );
 
-        if (error instanceof SyntaxError) {
-            return NextResponse.json(
-                { error: "Ungültiger oder fehlender Request-Body. JSON erwartet." },
-                { status: 400 }
-            );
+        const checkoutSession = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price: plans[planName].priceId,
+                    quantity: 1
+                }
+            ],
+            mode: "subscription",
+            success_url: `${process.env.NEXT_PUBLIC_URL}/club-backend?success=true`,
+            cancel_url: `${process.env.NEXT_PUBLIC_URL}/pricing?canceled=true`,
+            customer: club?.stripeCustomerId || undefined,
+            metadata: {
+                clubId: club?._id,
+                planId: plans[planName].productId,
+                planName
+            },
+            subscription_data: {
+                metadata: {
+                    clubId: club?._id,
+                    planName
+                }
+            }
+        });
+
+        if (!checkoutSession.url) {
+            throw new Error("Keine Checkout URL erhalten");
         }
 
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        return NextResponse.json({ url: checkoutSession.url });
+    } catch (error) {
+        console.error("Checkout error:", error);
+        return NextResponse.json({ error: "Checkout fehlgeschlagen" }, { status: 500 });
     }
 }
