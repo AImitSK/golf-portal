@@ -1,11 +1,7 @@
-// feature.ts
-import { ValidationRule } from '@/types/sanity'
+// schemaTypes/feature.ts
+import type { SanityRule } from '@/types/sanity-types';
 
-interface LimitParent {
-    hat_limit?: boolean;
-}
-
-export default {
+const featureSchema = {
     name: 'feature',
     title: 'Feature',
     type: 'document',
@@ -14,7 +10,13 @@ export default {
             name: 'name',
             title: 'Name',
             type: 'string',
-            validation: (Rule: ValidationRule) => Rule.required()
+            validation: (rule: SanityRule) => rule.required()
+        },
+        {
+            name: 'key',
+            title: 'Technischer Schlüssel',
+            type: 'string',
+            validation: (rule: SanityRule) => rule.required().regex(/^[a-z_]+$/)
         },
         {
             name: 'beschreibung',
@@ -28,29 +30,19 @@ export default {
             description: 'Icon-Name aus der Lucide Icon Library'
         },
         {
-            name: 'limitierung',
-            title: 'Limitierung',
-            type: 'object',
-            fields: [
-                {
-                    name: 'hat_limit',
-                    title: 'Hat Limitierung',
-                    type: 'boolean',
-                    initialValue: false
-                },
-                {
-                    name: 'limit_wert',
-                    title: 'Limit-Wert',
-                    type: 'number',
-                    hidden: ({parent}: {parent: LimitParent}) => !parent?.hat_limit
-                },
-                {
-                    name: 'limit_einheit',
-                    title: 'Limit-Einheit',
-                    type: 'string',
-                    hidden: ({parent}: {parent: LimitParent}) => !parent?.hat_limit
-                }
-            ]
+            name: 'typ',
+            title: 'Typ',
+            type: 'string',
+            options: {
+                list: [
+                    { title: 'Zähler', value: 'counter' },
+                    { title: 'Boolean', value: 'boolean' }
+                ]
+            },
+            validation: (rule: SanityRule) => rule.required()
         }
     ]
-}
+};
+
+export default featureSchema;
+

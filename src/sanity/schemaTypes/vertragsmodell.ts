@@ -1,7 +1,6 @@
-// src/sanity/schemaTypes/vertragsmodell.ts
-import { ValidationRule } from '@/types/sanity';
+import type { SanityRule } from '@/types/sanity-types';
 
-export default {
+const vertragsmodellSchema = {
     name: 'vertragsmodell',
     title: 'Vertragsmodell',
     type: 'document',
@@ -10,7 +9,7 @@ export default {
             name: 'name',
             title: 'Name',
             type: 'string',
-            validation: (Rule: ValidationRule) => Rule.required()
+            validation: (rule: SanityRule) => rule.required()
         },
         {
             name: 'slug',
@@ -27,9 +26,36 @@ export default {
             type: 'text'
         },
         {
+            name: 'grafik',
+            title: 'Grafik',
+            type: 'image',
+            options: {
+                hotspot: true
+            }
+        },
+        {
+            name: 'stripeProductId',
+            title: 'Stripe Product ID',
+            type: 'string',
+            validation: (rule: SanityRule) => rule.required()
+        },
+        {
+            name: 'stripePriceId',
+            title: 'Stripe Price ID',
+            type: 'string',
+            validation: (rule: SanityRule) => rule.required()
+        },
+        {
             name: 'preis',
             title: 'Preis',
-            type: 'number'
+            type: 'number',
+            readOnly: true
+        },
+        {
+            name: 'waehrung',
+            title: 'Währung',
+            type: 'string',
+            readOnly: true
         },
         {
             name: 'zahlungsintervall',
@@ -37,48 +63,13 @@ export default {
             type: 'string',
             options: {
                 list: ['monatlich', 'jährlich']
-            },
-            validation: (Rule: ValidationRule) =>
-                Rule.custom((interval: ZahlungsIntervall) => {
-                    if (!['monatlich', 'jährlich'].includes(interval)) {
-                        return 'Invalid interval'
-                    }
-                    return true
-                })
+            }
         },
         {
             name: 'isTopPosition',
             title: 'TOP Position',
             type: 'boolean',
-            description: 'Aktivieren für bevorzugte Positionierung',
             initialValue: false
-        },
-        {
-            name: 'topPositionRank',
-            title: 'TOP Position Rang',
-            type: 'number',
-            description: 'Wird automatisch basierend auf anderen TOP Positionen gesetzt',
-            readOnly: true
-        },
-        {
-            name: 'features',
-            title: 'Features',
-            type: 'array',
-            of: [{
-                type: 'reference',
-                to: [{ type: 'feature' }]
-            }],
-            validation: (Rule: ValidationRule) => Rule.required()
-        },
-        {
-            name: 'stripeProductId',
-            title: 'Stripe Product ID',
-            type: 'string'
-        },
-        {
-            name: 'stripePriceId',
-            title: 'Stripe Price ID',
-            type: 'string'
         },
         {
             name: 'supportLevel',
@@ -90,20 +81,44 @@ export default {
                     { title: 'Premium Support', value: 'premium' },
                     { title: 'Premium Plus Support', value: 'premium_plus' }
                 ]
-            },
-            validation: (Rule: ValidationRule) =>
-                Rule.custom((level: SupportLevel) => {
-                    if (!['basic', 'premium', 'premium_plus'].includes(level)) {
-                        return 'Invalid support level'
+            }
+        },
+        {
+            name: 'features',
+            title: 'Features',
+            type: 'array',
+            of: [{
+                type: 'object',
+                fields: [
+                    {
+                        name: 'feature',
+                        title: 'Feature',
+                        type: 'reference',
+                        to: [{ type: 'feature' }],
+                        validation: (rule: SanityRule) => rule.required()
+                    },
+                    {
+                        name: 'limit',
+                        title: 'Limit',
+                        type: 'number',
+                        initialValue: 0,
+                        validation: (rule: SanityRule) => rule.required(),
+                        description: '0 = deaktiviert, 1 = aktiviert (bei boolean), Anzahl (bei counter)'
                     }
-                    return true
-                })
+                ],
+                preview: {
+                    select: {
+                        featureName: 'feature.name',
+                        limit: 'limit'
+                    },
+                    prepare: ({ featureName, limit }: { featureName: string; limit: number }) => ({
+                        title: featureName,
+                        subtitle: `Limit: ${limit}`
+                    })
+                }
+            }]
         }
-    ],
-    preview: {
-        select: {
-            title: 'name',
-            subtitle: 'preis'
-        }
-    }
+    ]
 };
+
+export default vertragsmodellSchema;
