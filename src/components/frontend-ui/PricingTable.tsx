@@ -14,7 +14,6 @@ export default function PricingTable() {
     const [vertragsmodelle, setVertragsmodelle] = useState<Vertragsmodell[]>([]);
     const [sortedFeatures, setSortedFeatures] = useState<SortedFeature[]>([]);
 
-// Präzisere Type-Guards und Error-Handling
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -57,8 +56,6 @@ export default function PricingTable() {
         void fetchData();
     }, []);
 
-    // Rest des Codes bleibt gleich...
-
     const handleUpgrade = async (planName: string) => {
         setLoading(planName);
         try {
@@ -77,18 +74,25 @@ export default function PricingTable() {
         }
     };
 
+    const formatPrice = (price: number | null | undefined): string => {
+        if (price === null || price === undefined || price === 0) {
+            return '0';
+        }
+        return price.toString();
+    };
+
     const renderFeatureValue = (value: number, typ: string) => {
         if (typ === 'counter') {
             return value > 0 ? (
-                <div className="text-center text-sm text-green-600 font-medium">{value}</div>
+                <div className="text-center text-sm text-dark-green font-medium">{value}</div>
             ) : (
-                <XMarkIcon className="mx-auto h-5 w-5 text-gray-400" />
+                <XMarkIcon className="mx-auto h-5 w-5 text-aktion-red" />
             );
         }
         return value === 1 ? (
-            <CheckIcon className="mx-auto h-5 w-5 text-green-600" />
+            <CheckIcon className="mx-auto h-5 w-5 text-dark-green" />
         ) : (
-            <XMarkIcon className="mx-auto h-5 w-5 text-gray-400" />
+            <XMarkIcon className="mx-auto h-5 w-5 text-aktion-red" />
         );
     };
 
@@ -96,12 +100,12 @@ export default function PricingTable() {
         <div className="bg-white py-24 sm:py-32">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-4xl text-center">
-                    <h2 className="text-base font-semibold text-green-600">Pricing</h2>
-                    <p className="mt-2 text-5xl font-semibold tracking-tight text-gray-900 sm:text-6xl">
+                    <h2 className="text-base font-semibold text-dark-green">Pricing</h2>
+                    <p className="mt-2 text-5xl font-semibold tracking-tight text-dark sm:text-6xl">
                         Wählen Sie Ihren Plan
                     </p>
                 </div>
-                <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-gray-600">
+                <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-dark">
                     Alle Pläne beinhalten unsere Kernfunktionen
                 </p>
 
@@ -111,41 +115,37 @@ export default function PricingTable() {
                         <section
                             key={tier.name}
                             className={classNames(
-                                tier.name === "Growth" ? 'rounded-xl bg-gray-400/5 ring-1 ring-inset ring-gray-200' : '',
+                                tier.name === "Growth" ? 'rounded-xl bg-dark-6 ring-1 ring-inset ring-dark/20' : '',
                                 'p-8'
                             )}
                         >
-                            <h3 className="text-sm font-semibold text-gray-900">
+                            <h3 className="text-sm font-semibold text-dark">
                                 {tier.name}
                             </h3>
                             <p className="mt-2 flex items-baseline gap-x-1">
-                                <span className="text-4xl font-semibold text-gray-900">€{tier.preis}</span>
-                                <span className="text-sm font-semibold text-gray-900">/month</span>
+                                <span className="text-4xl font-semibold text-dark">€{formatPrice(tier.preis)}</span>
+                                <span className="text-sm font-semibold text-dark">/month</span>
                             </p>
                             <button
                                 onClick={() => handleUpgrade(tier.name)}
                                 disabled={loading === tier.name}
                                 className={classNames(
                                     tier.name === "Growth"
-                                        ? 'bg-green-600 text-white hover:bg-green-500'
-                                        : 'text-green-600 ring-1 ring-inset ring-green-200 hover:ring-green-300',
-                                    'mt-8 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold'
+                                        ? 'bg-cta-green text-white hover:bg-dark-green'
+                                        : 'text-dark-green ring-1 ring-inset ring-dark-green hover:bg-dark-green hover:text-white',
+                                    'mt-8 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold transition-colors'
                                 )}
                             >
                                 {loading === tier.name ? "Wird verarbeitet..." : "Jetzt wählen"}
                             </button>
-                            <ul role="list" className="mt-10 space-y-4 text-sm text-gray-900">
+                            {/* Mobile Features List */}
+                            <ul role="list" className="mt-10 space-y-4 text-sm text-dark">
                                 {sortedFeatures.map((feature) => (
-                                    <li key={feature.id} className="flex gap-x-3">
-                                        {renderFeatureValue(feature.tiers[tier.name], feature.typ)}
-                                        <span className="group relative">
-                      {feature.name}
-                                            {feature.beschreibung && (
-                                                <span className="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-48 bg-gray-900 text-white text-xs rounded p-2">
-                          {feature.beschreibung}
-                        </span>
-                                            )}
-                    </span>
+                                    <li key={feature.id} className="flex items-center justify-between gap-x-3">
+                                        <span className="flex-1">{feature.name}</span>
+                                        <div className="text-right">
+                                            {renderFeatureValue(feature.tiers[tier.name], feature.typ)}
+                                        </div>
                                     </li>
                                 ))}
                             </ul>
@@ -162,7 +162,7 @@ export default function PricingTable() {
                                     className="flex w-1/4 px-4"
                                     style={{ marginLeft: `${(vertragsmodelle.findIndex((tier) => tier.name === "Growth") + 1) * 25}%` }}
                                 >
-                                    <div className="w-full rounded-t-xl border-x border-t border-gray-900/10 bg-gray-400/5" />
+                                    <div className="w-full rounded-t-xl border-x border-t border-dark/10 bg-dark-6" />
                                 </div>
                             </div>
                         )}
@@ -178,19 +178,19 @@ export default function PricingTable() {
                                 <td />
                                 {vertragsmodelle.map((tier) => (
                                     <th key={tier.name} scope="col" className="px-6 pt-6 xl:px-8 xl:pt-8">
-                                        <div className="text-sm font-semibold text-gray-900">{tier.name}</div>
+                                        <div className="text-sm font-semibold text-dark">{tier.name}</div>
                                         <div className="mt-4 flex items-baseline gap-x-1">
-                                            <span className="text-4xl font-semibold text-gray-900">€{tier.preis}</span>
-                                            <span className="text-sm font-semibold text-gray-900">/month</span>
+                                            <span className="text-4xl font-semibold text-dark">€{formatPrice(tier.preis)}</span>
+                                            <span className="text-sm font-semibold text-dark">/month</span>
                                         </div>
                                         <button
                                             onClick={() => handleUpgrade(tier.name)}
                                             disabled={loading === tier.name}
                                             className={classNames(
                                                 tier.name === "Growth"
-                                                    ? 'bg-green-600 text-white hover:bg-green-500'
-                                                    : 'text-green-600 ring-1 ring-inset ring-green-200 hover:ring-green-300',
-                                                'mt-8 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold'
+                                                    ? 'bg-cta-green text-white hover:bg-dark-green'
+                                                    : 'text-dark-green ring-1 ring-inset ring-dark-green hover:bg-dark-green hover:text-white',
+                                                'mt-8 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold transition-colors'
                                             )}
                                         >
                                             {loading === tier.name ? "Wird verarbeitet..." : "Jetzt wählen"}
@@ -202,14 +202,14 @@ export default function PricingTable() {
                             <tbody>
                             {sortedFeatures.map((feature) => (
                                 <tr key={feature.id}>
-                                    <th scope="row" className="py-4 text-sm font-normal text-gray-900 group relative">
+                                    <th scope="row" className="py-4 text-sm font-normal text-dark group relative">
                                         {feature.name}
                                         {feature.beschreibung && (
-                                            <span className="invisible group-hover:visible absolute left-0 top-full mt-2 w-48 bg-gray-900 text-white text-xs rounded p-2 z-10">
-                          {feature.beschreibung}
-                        </span>
+                                            <span className="invisible group-hover:visible absolute left-0 top-full mt-2 w-48 bg-dark text-white text-xs rounded p-2 z-10">
+                                                {feature.beschreibung}
+                                            </span>
                                         )}
-                                        <div className="absolute inset-x-8 mt-4 h-px bg-gray-900/5" />
+                                        <div className="absolute inset-x-8 mt-4 h-px bg-dark/5" />
                                     </th>
                                     {vertragsmodelle.map((tier) => (
                                         <td key={tier.name} className="px-6 py-4 xl:px-8">
