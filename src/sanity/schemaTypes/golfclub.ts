@@ -1,5 +1,7 @@
-// src/sanity/schemaTypes/golfclub.ts
-export default {
+import { defineType } from 'sanity';
+import type { Rule } from 'sanity';
+
+export default defineType({
     name: 'golfclub',
     title: 'Golfclub',
     type: 'document',
@@ -17,7 +19,7 @@ export default {
             name: 'title',
             title: 'Title',
             type: 'string',
-            validation: (Rule: ValidationRule) => Rule.required(),
+            validation: (Rule: Rule) => Rule.required(),
             group: 'basis'
         },
         {
@@ -35,7 +37,7 @@ export default {
                 source: 'title',
                 maxLength: 96
             },
-            validation: (Rule: ValidationRule) => Rule.required(),
+            validation: (Rule: Rule) => Rule.required(),
             group: 'basis'
         },
         {
@@ -45,12 +47,12 @@ export default {
             options: {
                 list: ['draft', 'published']
             },
-            validation: (Rule: ValidationRule) =>
-                Rule.required().custom((status: DocumentStatus) => {
+            validation: (Rule: Rule) =>
+                Rule.required().custom((status: string) => {
                     if (!['draft', 'published'].includes(status)) {
-                        return 'Invalid status'
+                        return 'Invalid status';
                     }
-                    return true
+                    return true;
                 }),
             group: 'basis'
         },
@@ -121,24 +123,26 @@ export default {
             name: 'bildergalerie',
             title: 'Bildergalerie',
             type: 'array',
-            of: [{
-                type: 'image',
-                options: {
-                    hotspot: true
-                },
-                fields: [
-                    {
-                        name: 'beschreibung',
-                        type: 'string',
-                        title: 'Beschreibung'
+            of: [
+                {
+                    type: 'image',
+                    options: {
+                        hotspot: true
                     },
-                    {
-                        name: 'alt',
-                        type: 'string',
-                        title: 'Alt Text'
-                    }
-                ]
-            }],
+                    fields: [
+                        {
+                            name: 'beschreibung',
+                            type: 'string',
+                            title: 'Beschreibung'
+                        },
+                        {
+                            name: 'alt',
+                            type: 'string',
+                            title: 'Alt Text'
+                        }
+                    ]
+                }
+            ],
             group: 'bilder'
         },
         // Adresse
@@ -152,24 +156,24 @@ export default {
                     name: 'strasse',
                     type: 'string',
                     title: 'Straße',
-                    validation: (Rule: ValidationRule) => Rule.required()
+                    validation: (Rule: Rule) => Rule.required()
                 },
                 {
                     name: 'hausnummer',
                     type: 'string',
-                    title: 'Hausnummer',
+                    title: 'Hausnummer'
                 },
                 {
                     name: 'plz',
                     type: 'number',
                     title: 'PLZ',
-                    validation: (Rule: ValidationRule) => Rule.min(10000).max(99999).required()
+                    validation: (Rule: Rule) => Rule.min(10000).max(99999).required()
                 },
                 {
                     name: 'ort',
                     type: 'string',
                     title: 'Ort',
-                    validation: (Rule: ValidationRule) => Rule.required()
+                    validation: (Rule: Rule) => Rule.required()
                 },
                 {
                     name: 'land',
@@ -181,7 +185,7 @@ export default {
                     title: 'Koordinaten',
                     type: 'geopoint',
                     description: 'Koordinaten werden automatisch aus der Adresse ermittelt',
-                    validation: (Rule: ValidationRule) => Rule.required()
+                    validation: (Rule: Rule) => Rule.required()
                 }
             ]
         },
@@ -241,12 +245,12 @@ export default {
             options: {
                 list: ['aktiv', 'ausstehend', 'gekündigt']
             },
-            validation: (Rule: ValidationRule) =>
-                Rule.required().custom((status: ZahlungsStatus) => {
+            validation: (Rule: Rule) =>
+                Rule.required().custom((status: string) => {
                     if (!['aktiv', 'ausstehend', 'gekündigt'].includes(status)) {
-                        return 'Invalid status'
+                        return 'Invalid status';
                     }
-                    return true
+                    return true;
                 }),
             group: 'administration'
         },
@@ -271,7 +275,7 @@ export default {
             options: {
                 list: [9, 18, 27, 36]
             },
-            validation: (Rule: ValidationRule) => Rule.required(),
+            validation: (Rule: Rule) => Rule.required(),
             group: 'platz'
         },
         {
@@ -296,7 +300,7 @@ export default {
             name: 'courseRating',
             title: 'Course Rating',
             type: 'number',
-            validation: (Rule: ValidationRule) => Rule.precision(1),
+            validation: (Rule: Rule) => Rule.precision(1),
             group: 'platz'
         },
         {
@@ -327,19 +331,21 @@ export default {
             name: 'besonderheiten',
             title: 'Besonderheiten',
             type: 'array',
-            of: [{
-                type: 'string',
-                options: {
-                    list: [
-                        'Wasserhindernisse',
-                        'Bunker',
-                        'Doglegs',
-                        'Höhenunterschiede',
-                        'Waldbereiche',
-                        'Out of Bounds'
-                    ]
+            of: [
+                {
+                    type: 'string',
+                    options: {
+                        list: [
+                            'Wasserhindernisse',
+                            'Bunker',
+                            'Doglegs',
+                            'Höhenunterschiede',
+                            'Waldbereiche',
+                            'Out of Bounds'
+                        ]
+                    }
                 }
-            }],
+            ],
             group: 'platz'
         },
         // Einrichtungen
@@ -347,19 +353,21 @@ export default {
             name: 'uebungsanlagen',
             title: 'Übungsanlagen',
             type: 'array',
-            of: [{
-                type: 'string',
-                options: {
-                    list: [
-                        'Driving Range',
-                        'Putting Green',
-                        'Chipping Area',
-                        'Übungsplatz',
-                        'Pitching Area',
-                        'Bunker-Übungsbereich'
-                    ]
+            of: [
+                {
+                    type: 'string',
+                    options: {
+                        list: [
+                            'Driving Range',
+                            'Putting Green',
+                            'Chipping Area',
+                            'Übungsplatz',
+                            'Pitching Area',
+                            'Bunker-Übungsbereich'
+                        ]
+                    }
                 }
-            }],
+            ],
             group: 'einrichtungen'
         },
         {
@@ -405,11 +413,13 @@ export default {
             name: 'kooperationen',
             title: 'Kooperationen',
             type: 'array',
-            of: [{
-                type: 'reference',
-                to: [{ type: 'kooperation' }]
-            }],
+            of: [
+                {
+                    type: 'reference',
+                    to: [{ type: 'kooperation' }]
+                }
+            ],
             group: 'club'
         }
     ]
-};
+});

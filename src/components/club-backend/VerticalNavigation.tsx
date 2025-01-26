@@ -93,7 +93,7 @@ export default function VerticalNavigation() {
                         </a>
 
                         {/* Unterpunkte */}
-                        {item.children?.length > 0 && (
+                        {item.children?.length ? (
                             <ul className="mt-1 space-y-1">
                                 {item.children.map((subItem) => (
                                     <li key={subItem.name}>
@@ -110,7 +110,8 @@ export default function VerticalNavigation() {
                                     </li>
                                 ))}
                             </ul>
-                        )}
+                        ) : null}
+
                     </li>
                 ))}
             </ul>

@@ -46,6 +46,28 @@ export function WishlistTable({ wishlist }: { wishlist: WishlistItem[] }) {
         }
     }
 
+    const addToCourseList = async (clubId: string) => {
+        try {
+            setIsLoading(true)
+            const response = await fetch('/api/course-list', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ clubId }),
+            })
+
+            if (response.ok) {
+                await removeFromWishlist(clubId);
+                router.push('/course-list');
+            }
+        } catch (error) {
+            console.error('Error adding to course list:', error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
         <ul role="list" className="divide-y divide-gray-100">
             {wishlist.map((item) => (
@@ -107,10 +129,12 @@ export function WishlistTable({ wishlist }: { wishlist: WishlistItem[] }) {
                                 <Menu.Item>
                                     {({ active }) => (
                                         <button
-                                            onClick={() => {}}
+                                            onClick={() => addToCourseList(item.club._id)}
+                                            disabled={isLoading}
                                             className={`
                                                 block px-3 py-1 text-sm w-full text-left
                                                 ${active ? 'bg-gray-50' : ''}
+                                                ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
                                             `}
                                         >
                                             Zur Course List

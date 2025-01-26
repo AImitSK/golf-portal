@@ -107,7 +107,7 @@ export default function NavigationWithHamburger() {
                                         <Menu.Item>
                                             {({ active }) => (
                                                 <Link
-                                                    href="/courses"
+                                                    href="/course-list"
                                                     className={`block px-4 py-2 text-sm text-dark-green ${
                                                         active ? "bg-gray-100" : ""
                                                     }`}

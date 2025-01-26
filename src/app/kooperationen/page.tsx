@@ -5,7 +5,6 @@ import FooterFrontend from "@/components/frontend-ui/FooterFrontend";
 import NavigationFrontend from "@/components/frontend-ui/NavigationFrontend";
 import KoopGrid from "@/components/kooperationen/KoopGrid";
 import { Metadata } from "next";
-import Breadcrumbs from "@/components/frontend-ui/Breadcrumbs";
 
 export const metadata: Metadata = {
     title: 'Kooperationen und Partnerschaften',

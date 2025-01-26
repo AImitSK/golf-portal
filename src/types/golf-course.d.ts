@@ -21,19 +21,16 @@ export interface Tee {
     holes: GolfHole[];
 }
 
+export interface Club {
+    _id: string;
+    name: string;
+    slug: string;
+}
+
 export interface GolfCourse {
     _id: string;
     _type: 'golfCourse';
     name: string;
-    club: {
-        _ref: string;
-        _type: 'reference';
-    };
+    club: Club;
     tees: Tee[];
-}
-
-export type GolfCourseDocument = GolfCourse & {
-    _createdAt: string;
-    _updatedAt: string;
-    _rev: string;
 }

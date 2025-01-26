@@ -78,7 +78,7 @@ export const getRedirectPath = (role?: UserRole) => {
         case "developer":
             return "/studio";
         case "club_admin":
-            return B_BACKEND;
+            return CLUB_BACKEND; // Korrigiert
         case "user":
             return "/";
         default:

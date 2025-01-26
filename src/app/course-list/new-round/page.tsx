@@ -1,9 +1,9 @@
-// src/app/course-list/new-round/page.tsx
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getGolfCourseById } from "@/lib/sanity/getGolfCourse";
 import ScoreEntry from "@/components/course-list/ScoreEntry";
 import { getUserById } from "@/lib/sanity/getUser";
+import type { Tee } from "@/types/golf-course"; // Import für Tee
 
 interface NewRoundPageProps {
     searchParams: {
@@ -42,10 +42,15 @@ export default async function NewRoundPage({ searchParams }: NewRoundPageProps) 
             <ScoreEntry
                 course={course}
                 playerHandicap={user.handicapIndex}
-                onSubmit={async (data) => {
+                onSubmitAction={async (data: {
+                    tee: Tee;
+                    scores: number[];
+                    totalGross: number;
+                    totalNet: number;
+                    totalStableford: number;
+                }) => {
                     'use server';
 
-                    // TODO: Implement submission to Sanity
                     const response = await fetch('/api/rounds', {
                         method: 'POST',
                         headers: {

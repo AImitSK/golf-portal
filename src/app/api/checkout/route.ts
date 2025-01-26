@@ -52,40 +52,42 @@ export async function POST(req: NextRequest) {
             line_items: [
                 {
                     price: plans[planName].priceId,
-                    quantity: 1
-                }
+                    quantity: 1,
+                },
             ],
             mode: "subscription",
             success_url: `${process.env.NEXT_PUBLIC_URL}/club-backend?success=true`,
             cancel_url: `${process.env.NEXT_PUBLIC_URL}/pricing?canceled=true`,
-            customer: club?.stripeCustomerId || undefined,
+            customer: club?.stripeCustomerId || "", // Fallback auf leeren String
             metadata: {
-                clubId: club?._id,
+                clubId: club?._id || "unknown", // Fallback für clubId
                 planId: plans[planName].productId,
-                planName
+                planName,
             },
             subscription_data: {
                 metadata: {
-                    clubId: club?._id,
-                    planName
-                }
-            }
+                    clubId: club?._id || "unknown", // Fallback für clubId
+                    planName,
+                },
+            },
         });
+
 
         if (!checkoutSession.url) {
             throw new Error("Keine Checkout URL erhalten");
         }
 
         // Send email notification
-        if (club) {
+        if (club && session.user.email) {
             await sendPlanUpdateEmail({
-                to: session.user.email,
-                clubName: club.title,
+                to: session.user.email || "default@example.com", // Fallback-E-Mail
+                clubName: club.title || "Unbekannter Club", // Fallback für club.title
                 planName,
                 amount: plans[planName].amount,
-                startDate: new Date()
+                startDate: new Date(),
             });
         }
+
 
         return NextResponse.json({ url: checkoutSession.url });
     } catch (error) {

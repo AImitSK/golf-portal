@@ -1,7 +1,7 @@
 "use client";
 
 import { FaUser } from "react-icons/fa";
-import { ExitIcon } from "@radix-ui/react-icons"
+import { ExitIcon } from "@radix-ui/react-icons";
 
 import {
   DropdownMenu,
@@ -21,23 +21,25 @@ export const UserButton = () => {
   const user = useCurrentUser();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Avatar>
-          <AvatarImage src={user?.image || ""} />
-          <AvatarFallback className="bg-orange-500">
-            <FaUser className="text-white" />
-          </AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40" align="end">
-        <LogoutButton>
-          <DropdownMenuItem>
-            <ExitIcon className="h-4 w-4 mr-2" />
-            Logout
-          </DropdownMenuItem>
-        </LogoutButton>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex items-center">
+            <Avatar>
+              <AvatarImage src={user?.image || "/default-avatar.png"} alt="User Avatar" />
+              <AvatarFallback className="bg-orange-500">
+                <FaUser className="text-white" />
+              </AvatarFallback>
+            </Avatar>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-40" align="end">
+          <LogoutButton>
+            <DropdownMenuItem>
+              <ExitIcon className="h-4 w-4 mr-2" />
+              Logout
+            </DropdownMenuItem>
+          </LogoutButton>
+        </DropdownMenuContent>
+      </DropdownMenu>
   );
 };
