@@ -1,7 +1,15 @@
 // lib/sanity/getVertragsmodell.ts
-import sanityClient from "@/lib/sanityClient";
+import { createClient } from '@sanity/client';
 import type { Vertragsmodell } from "@/types/vertragsmodell";
 
+const sanityClient = createClient({
+    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+    apiVersion: '2024-01-26',
+    useCdn: true,
+});
+
+// getVertragsmodell.ts
 export async function getVertragsmodelle(): Promise<Vertragsmodell[]> {
     return sanityClient.fetch(`
        *[_type == "vertragsmodell"] | order(preis asc) {
@@ -9,7 +17,7 @@ export async function getVertragsmodelle(): Promise<Vertragsmodell[]> {
            preis,
            beschreibung,
            isTopPosition,
-           "bild": logo.asset->url,
+           "logoUrl": grafik.asset->url,  // Hier die Änderung
            features[] {
                limit,
                "featureDetails": feature-> {

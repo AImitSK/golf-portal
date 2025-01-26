@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from 'react'
-import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import { useEffect, useState } from 'react';
+import Image from "next/image";
+import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { getVertragsmodelle } from "@/lib/sanity/getVertragsmodell";
 import type { Vertragsmodell, VertragsFeature, SortedFeature } from "@/types/vertragsmodell";
 
 function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(' ')
+    return classes.filter(Boolean).join(' ');
 }
 
 export default function PricingTable() {
@@ -119,9 +120,18 @@ export default function PricingTable() {
                                 'p-8'
                             )}
                         >
-                            <h3 className="text-sm font-semibold text-dark">
-                                {tier.name}
-                            </h3>
+                            {tier.logoUrl ? (
+                                <Image
+                                    src={tier.logoUrl}
+                                    alt={tier.name}
+                                    width={100}
+                                    height={100}
+                                    style={{ width: '80px', height: '80px' }}
+                                    className="mb-4 mx-auto"
+                                />
+                            ) : (
+                                <div className="text-sm font-semibold text-dark mb-4">{tier.name}</div>
+                            )}
                             <p className="mt-2 flex items-baseline gap-x-1">
                                 <span className="text-4xl font-semibold text-dark">€{formatPrice(tier.preis)}</span>
                                 <span className="text-sm font-semibold text-dark">/month</span>
@@ -131,7 +141,7 @@ export default function PricingTable() {
                                 disabled={loading === tier.name}
                                 className={classNames(
                                     tier.name === "Growth"
-                                        ? 'bg-cta-green text-white hover:bg-dark-green'
+                                        ? 'bg-dark-green text-white hover:bg-cta-green'
                                         : 'text-dark-green ring-1 ring-inset ring-dark-green hover:bg-dark-green hover:text-white',
                                     'mt-8 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold transition-colors'
                                 )}
@@ -178,7 +188,18 @@ export default function PricingTable() {
                                 <td />
                                 {vertragsmodelle.map((tier) => (
                                     <th key={tier.name} scope="col" className="px-6 pt-6 xl:px-8 xl:pt-8">
-                                        <div className="text-sm font-semibold text-dark">{tier.name}</div>
+                                        {tier.logoUrl ? (
+                                            <Image
+                                                src={tier.logoUrl}
+                                                alt={tier.name}
+                                                width={100}
+                                                height={100}
+                                                style={{ width: '80px', height: '80px' }}
+                                                className="mb-4 mx-auto"
+                                            />
+                                        ) : (
+                                            <div className="text-sm font-semibold text-dark mb-4">{tier.name}</div>
+                                        )}
                                         <div className="mt-4 flex items-baseline gap-x-1">
                                             <span className="text-4xl font-semibold text-dark">€{formatPrice(tier.preis)}</span>
                                             <span className="text-sm font-semibold text-dark">/month</span>
@@ -188,7 +209,7 @@ export default function PricingTable() {
                                             disabled={loading === tier.name}
                                             className={classNames(
                                                 tier.name === "Growth"
-                                                    ? 'bg-cta-green text-white hover:bg-dark-green'
+                                                    ? 'bg-dark-green text-white hover:bg-cta-green'
                                                     : 'text-dark-green ring-1 ring-inset ring-dark-green hover:bg-dark-green hover:text-white',
                                                 'mt-8 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold transition-colors'
                                             )}
@@ -206,8 +227,8 @@ export default function PricingTable() {
                                         {feature.name}
                                         {feature.beschreibung && (
                                             <span className="invisible group-hover:visible absolute left-0 top-full mt-2 w-48 bg-dark text-white text-xs rounded p-2 z-10">
-                                                {feature.beschreibung}
-                                            </span>
+                                               {feature.beschreibung}
+                                           </span>
                                         )}
                                         <div className="absolute inset-x-8 mt-4 h-px bg-dark/5" />
                                     </th>

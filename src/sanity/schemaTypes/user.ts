@@ -49,6 +49,38 @@ const schema: SchemaTypeDefinition = {
             }
         },
         {
+            name: 'handicapIndex',
+            title: 'Handicap Index',
+            type: 'number',
+            validation: (Rule: ValidationRule) =>
+                Rule.precision(1).min(-54).max(54)
+        },
+        {
+            name: 'handicapHistory',
+            title: 'Handicap Verlauf',
+            type: 'array',
+            of: [{
+                type: 'object',
+                fields: [
+                    {
+                        name: 'date',
+                        title: 'Datum',
+                        type: 'date'
+                    },
+                    {
+                        name: 'handicapIndex',
+                        title: 'Handicap Index',
+                        type: 'number'
+                    },
+                    {
+                        name: 'reason',
+                        title: 'Grund',
+                        type: 'string'
+                    }
+                ]
+            }]
+        },
+        {
             name: 'createdAt',
             title: 'Erstellt am',
             type: 'datetime',

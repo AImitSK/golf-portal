@@ -1,4 +1,5 @@
 // types/vertragsmodell.d.ts
+
 export interface FeatureLimitierung {
     hat_limit: boolean;
     limit_wert?: number;
@@ -26,9 +27,19 @@ export interface Vertragsmodell {
     features: VertragsFeature[];
     supportLevel?: string;
     stripePriceId?: string;
+    logoUrl?: string;
     bild?: {
         asset?: {
-            url?: string; // Die URL ist optional
+            url?: string;
         };
     };
+}
+
+export interface SortedFeature {
+    id: string;
+    name: string;
+    beschreibung: string | null;
+    typ: 'boolean' | 'counter';
+    tiers: Record<string, number>;
+    nonZeroCount: number;
 }

@@ -1,3 +1,4 @@
+// src/sanity/schemaTypes/index.ts
 import { type SchemaTypeDefinition } from 'sanity'
 import golfclub from './golfclub'
 import administrator from './administrator'
@@ -10,6 +11,7 @@ import like from './like'
 import wishlist from './wishlist'
 import coursePlayed from './coursePlayed'
 import claimLog from './claimLog'
+import golfCourse from './golfCourse'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -23,6 +25,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     like,
     wishlist,
     claimLog,
-    coursePlayed
+    coursePlayed,
+    golfCourse
   ],
 }
