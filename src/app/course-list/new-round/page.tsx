@@ -1,3 +1,4 @@
+// src/app/course-list/new-round/page.tsx
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getGolfCourseById } from "@/lib/sanity/getGolfCourse";

@@ -5,30 +5,30 @@ import sanityClient from "@/lib/sanityClient";
 import NewRoundButton from "@/components/course-list/NewRoundButton";
 import StatsDashboard from "@/components/course-list/StatsDashboard";
 import FilteredRoundsList from "@/components/course-list/FilteredRoundsList";
+import React from 'react';
 
-export default async function CourseListPage() {
+export default async function CourseListPage(): Promise<React.JSX.Element> {
     const session = await auth();
     if (!session?.user) {
         redirect('/auth/login');
     }
 
     const rounds = await sanityClient.fetch(`
-*[_type == "coursePlayed" && user._ref == $userId] | order(createdAt desc) {
-  _id,
-  createdAt,
-  club->{
-    _id,
-    name
-  },
-  plays[] {
-    date,
-    score,
-    notiz,
-    wetter
-  }
-}
-`, { userId: session.user._id });
-
+       *[_type == "coursePlayed" && user._ref == $userId] | order(createdAt desc) {
+           _id,
+           club->{
+               _id,
+               name
+           },
+           plays[]{
+               _key,
+               date,
+               score,
+               notiz,
+               wetter
+           }
+       }
+   `, { userId: session.user._id });
 
     return (
         <div className="container mx-auto px-4 py-8">

@@ -2,25 +2,21 @@
 
 import React from 'react';
 import { formatDate } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 import DeleteRoundButton from '@/components/course-list/DeleteRoundButton';
 
 interface Round {
     _id: string;
-    date: string;
-    course: {
+    club: {
         _id: string;
-        name?: string;
+        name: string;
     };
-    playedTee?: {
-        name?: string;
-        color?: string;
-    };
-    totals?: {
-        gross?: number;
-        net?: number;
-        stableford?: number;
-    };
+    plays: {
+        _key: string;
+        date: string;
+        score: number;
+        notiz?: string;
+        wetter?: string;
+    }[];
 }
 
 interface RoundsListProps {
@@ -28,7 +24,17 @@ interface RoundsListProps {
 }
 
 export default function RoundsList({ rounds }: RoundsListProps) {
-    const router = useRouter();
+    const flattenedRounds = rounds.flatMap(round =>
+        round.plays.map(play => ({
+            roundId: round._id,
+            playKey: play._key,
+            clubName: round.club.name,
+            date: play.date,
+            score: play.score,
+            notiz: play.notiz,
+            wetter: play.wetter
+        }))
+    );
 
     return (
         <div className="overflow-x-auto">
@@ -37,36 +43,25 @@ export default function RoundsList({ rounds }: RoundsListProps) {
                 <tr className="border-b">
                     <th className="p-3 text-left">Datum</th>
                     <th className="p-3 text-left">Platz</th>
-                    <th className="p-3 text-left">Abschlag</th>
-                    <th className="p-3 text-right">Brutto</th>
-                    <th className="p-3 text-right">Netto</th>
-                    <th className="p-3 text-right">Stableford</th>
+                    <th className="p-3 text-right">Score</th>
+                    <th className="p-3 text-left">Wetter</th>
+                    <th className="p-3 text-left">Notiz</th>
                     <th className="p-3"></th>
                 </tr>
                 </thead>
                 <tbody>
-                {rounds.map((round) => (
+                {flattenedRounds.map((round) => (
                     <tr
-                        key={round._id}
-                        className="border-b hover:bg-gray-50 cursor-pointer"
-                        onClick={() => router.push(`/course-list/rounds/${round._id}`)}
+                        key={round.playKey}
+                        className="border-b hover:bg-gray-50"
                     >
                         <td className="p-3">{formatDate(round.date)}</td>
-                        <td className="p-3">{round.course?.name || 'Unbekannter Platz'}</td>
+                        <td className="p-3">{round.clubName}</td>
+                        <td className="p-3 text-right">{round.score}</td>
+                        <td className="p-3">{round.wetter || '-'}</td>
+                        <td className="p-3">{round.notiz || '-'}</td>
                         <td className="p-3">
-                            <div className="flex items-center gap-2">
-                                <div
-                                    className="w-3 h-3 rounded-full"
-                                    style={{ backgroundColor: round.playedTee?.color || 'transparent' }}
-                                />
-                                {round.playedTee?.name || 'Unbekannter Abschlag'}
-                            </div>
-                        </td>
-                        <td className="p-3 text-right">{round.totals?.gross ?? '–'}</td>
-                        <td className="p-3 text-right">{round.totals?.net ?? '–'}</td>
-                        <td className="p-3 text-right">{round.totals?.stableford ?? '–'}</td>
-                        <td className="p-3" onClick={(e) => e.stopPropagation()}>
-                            <DeleteRoundButton roundId={round._id} />
+                            <DeleteRoundButton roundId={round.roundId} playKey={round.playKey} />
                         </td>
                     </tr>
                 ))}

@@ -30,15 +30,15 @@ export default function GridNavi({ clubId }: GridNaviProps) {
                 body: JSON.stringify({ clubId }),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                toast.success('Golfclub zur Wunschliste hinzugefügt');
+                toast.success(data.message || 'Golfclub zur Wunschliste hinzugefügt');
                 router.refresh();
             } else {
-                const data = await response.json();
                 toast.error(data.message || 'Ein Fehler ist aufgetreten');
             }
-        } catch (error) {
-            console.error('Error adding to wishlist:', error);
+        } catch {
             toast.error('Ein Fehler ist aufgetreten');
         } finally {
             setIsLoading(false);
@@ -56,15 +56,15 @@ export default function GridNavi({ clubId }: GridNaviProps) {
                 body: JSON.stringify({ clubId }),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                toast.success('Golfclub zur Course List hinzugefügt');
+                toast.success(data.message || 'Golfclub zur Course List hinzugefügt');
                 router.push('/course-list');
             } else {
-                const data = await response.json();
                 toast.error(data.message || 'Ein Fehler ist aufgetreten');
             }
-        } catch (error) {
-            console.error('Error adding to course list:', error);
+        } catch {
             toast.error('Ein Fehler ist aufgetreten');
         } finally {
             setIsLoading(false);
@@ -74,28 +74,22 @@ export default function GridNavi({ clubId }: GridNaviProps) {
     return (
         <Menu as="div" className="relative inline-block text-left z-[1000] mt-0">
             <div>
-                <Menu.Button
-                    className="flex items-center justify-center h-9 w-9 rounded-full bg-white text-dark-green hover:text-dark-green focus:outline-none focus:ring-2 focus:ring-dark-green focus:ring-offset-2 focus:ring-offset-white"
-                >
+                <Menu.Button className="flex items-center justify-center h-9 w-9 rounded-full bg-white text-dark-green hover:text-dark-green focus:outline-none focus:ring-2 focus:ring-dark-green focus:ring-offset-2 focus:ring-offset-white">
                     <span className="sr-only">Menü öffnen</span>
                     <EllipsisVerticalIcon aria-hidden="true" className="h-5 w-5" />
                 </Menu.Button>
             </div>
 
-            <Menu.Items
-                className="absolute right-0 mt-2 w-72 origin-top-right divide-y divide-dark-green-10 overflow-visible z-[1050] rounded-md bg-white shadow-lg focus:outline-none"
-            >
+            <Menu.Items className="absolute right-0 mt-2 w-72 origin-top-right divide-y divide-dark-green-10 overflow-visible z-[1050] rounded-md bg-white shadow-lg focus:outline-none">
                 <div className="py-1">
                     <Menu.Item>
                         {({ active }) => (
                             <button
                                 onClick={addToWishlist}
                                 disabled={isLoading}
-                                className={`
-                                    flex items-center px-4 py-2 text-sm w-full
-                                    ${active ? 'bg-dark-green-10 text-dark-green' : 'text-dark-green'}
-                                    ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                                `}
+                                className={`flex items-center px-4 py-2 text-sm w-full
+                                   ${active ? 'bg-dark-green-10 text-dark-green' : 'text-dark-green'}
+                                   ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 <HeartIcon className="h-5 w-5 text-cta-green mr-2" />
                                 zur Wunschliste hinzufügen
@@ -107,11 +101,9 @@ export default function GridNavi({ clubId }: GridNaviProps) {
                             <button
                                 onClick={addToCourseList}
                                 disabled={isLoading}
-                                className={`
-                                    flex items-center px-4 py-2 text-sm w-full
-                                    ${active ? 'bg-dark-green-10 text-dark-green' : 'text-dark-green'}
-                                    ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                                `}
+                                className={`flex items-center px-4 py-2 text-sm w-full
+                                   ${active ? 'bg-dark-green-10 text-dark-green' : 'text-dark-green'}
+                                   ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 <BookmarkIcon className="h-5 w-5 text-cta-green mr-2" />
                                 zur Course List hinzufügen
@@ -122,10 +114,8 @@ export default function GridNavi({ clubId }: GridNaviProps) {
                         {({ active }) => (
                             <button
                                 onClick={() => router.push(`/course-list/new-round?courseId=${clubId}`)}
-                                className={`
-                                    flex items-center px-4 py-2 text-sm w-full
-                                    ${active ? 'bg-dark-green-10 text-dark-green' : 'text-dark-green'}
-                                `}
+                                className={`flex items-center px-4 py-2 text-sm w-full
+                                   ${active ? 'bg-dark-green-10 text-dark-green' : 'text-dark-green'}`}
                             >
                                 <PencilSquareIcon className="h-5 w-5 text-cta-green mr-2" />
                                 Ergebniss eintragen

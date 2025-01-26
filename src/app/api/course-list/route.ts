@@ -1,5 +1,4 @@
 // src/app/api/course-list/route.ts
-import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import sanityClient from '@/lib/sanityClient';
 
@@ -7,39 +6,42 @@ export async function POST(request: Request) {
     try {
         const session = await auth();
         if (!session?.user) {
-            return new NextResponse('Unauthorized', { status: 401 });
+            return new Response(JSON.stringify({ message: 'Nicht autorisiert' }), {
+                status: 401,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
 
         const { clubId } = await request.json();
-
-        // Prüfen ob der Club bereits in der Course List ist
         const existingEntry = await sanityClient.fetch(
             `*[_type == "coursePlayed" && user._ref == $userId && club._ref == $clubId][0]`,
             { userId: session.user._id, clubId }
         );
 
         if (existingEntry) {
-            return new NextResponse('Club already in course list', { status: 400 });
+            return new Response(JSON.stringify({ message: 'Bereits in der Liste' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' },
+            });
         }
 
-        // Neuen Eintrag erstellen
-        const entry = await sanityClient.create({
+        await sanityClient.create({
             _type: 'coursePlayed',
-            user: {
-                _type: 'reference',
-                _ref: session.user._id
-            },
-            club: {
-                _type: 'reference',
-                _ref: clubId
-            },
+            user: { _type: 'reference', _ref: session.user._id },
+            club: { _type: 'reference', _ref: clubId },
             plays: [],
             createdAt: new Date().toISOString()
         });
 
-        return NextResponse.json(entry);
-    } catch (error) {
-        console.error('Error adding to course list:', error);
-        return new NextResponse('Internal Server Error', { status: 500 });
+        return new Response(JSON.stringify({ message: 'Erfolgreich hinzugefügt' }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+    } catch {
+        return new Response(JSON.stringify({ message: 'Ein Fehler ist aufgetreten' }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 }

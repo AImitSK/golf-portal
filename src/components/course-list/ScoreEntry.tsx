@@ -5,21 +5,19 @@ import TeeSelector from './TeeSelector';
 import Scorecard from './Scorecard';
 import type { Tee, GolfCourse } from '@/types/golf-course';
 
-interface ScoreSubmissionData {
-    tee: Tee;
-    scores: number[];
-    totalGross: number;
-    totalNet: number;
-    totalStableford: number;
-}
-
 interface ScoreEntryProps {
     course: GolfCourse;
     playerHandicap: number;
-    onSubmitAction: (data: ScoreSubmissionData) => void; // Korrekte Typdefinition
+    onSubmit: (data: {
+        tee: Tee;
+        scores: number[];
+        totalGross: number;
+        totalNet: number;
+        totalStableford: number;
+    }) => void;
 }
 
-export default function ScoreEntry({ course, playerHandicap, onSubmitAction }: ScoreEntryProps) {
+export default function ScoreEntry({ course, playerHandicap, onSubmit }: ScoreEntryProps) {
     const [selectedTee, setSelectedTee] = useState<Tee | undefined>();
     const [isReadyToScore, setIsReadyToScore] = useState(false);
 
@@ -40,9 +38,7 @@ export default function ScoreEntry({ course, playerHandicap, onSubmitAction }: S
                 <Scorecard
                     tee={selectedTee}
                     playerHandicap={playerHandicap}
-                    onSubmit={(data: ScoreSubmissionData) => {
-                        onSubmitAction(data); // Aufruf des übergebenen Handlers
-                    }}
+                    onSubmit={onSubmit}
                 />
             )}
         </div>

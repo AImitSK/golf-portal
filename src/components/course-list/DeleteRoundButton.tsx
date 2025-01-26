@@ -1,4 +1,3 @@
-// src/components/course-list/DeleteRoundButton.tsx
 'use client';
 
 import { useState } from 'react';
@@ -6,9 +5,10 @@ import { useRouter } from 'next/navigation';
 
 interface DeleteRoundButtonProps {
     roundId: string;
+    playKey: string;
 }
 
-export default function DeleteRoundButton({ roundId }: DeleteRoundButtonProps) {
+export default function DeleteRoundButton({ roundId, playKey }: DeleteRoundButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const router = useRouter();
 
@@ -19,14 +19,14 @@ export default function DeleteRoundButton({ roundId }: DeleteRoundButtonProps) {
 
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/rounds/${roundId}`, {
+            const response = await fetch(`/api/course-list/${roundId}/plays/${playKey}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 router.refresh();
             } else {
-                alert('Fehler beim Löschen der Runde');
+                throw new Error('Delete failed');
             }
         } catch (error) {
             console.error('Error deleting round:', error);

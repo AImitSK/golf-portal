@@ -1,3 +1,4 @@
+// src/app/api/rounds/route.ts
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import sanityClient from "@/lib/sanityClient";
