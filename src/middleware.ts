@@ -1,13 +1,16 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { auth } from "./auth";
 
-export function middleware(request: NextRequest) {
-  console.log("Anfrage:", request.nextUrl.pathname); // Debugging
+export async function middleware(request: NextRequest) {
+  console.log("Middleware - Anfrage:", request.nextUrl.pathname);
 
-  const url = request.nextUrl;
+  const session = await auth();
+  console.log("Middleware - Session:", session);
 
   // Beispielhafte Blockierung bestimmter Pfade
-  if (url.pathname.startsWith("/private")) {
+  if (request.nextUrl.pathname.startsWith("/private")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

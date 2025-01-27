@@ -12,6 +12,7 @@ import wishlist from './wishlist'
 import coursePlayed from './coursePlayed'
 import claimLog from './claimLog'
 import golfCourse from './golfCourse'
+import playedRound from "@/sanity/schemaTypes/playedRound";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -26,6 +27,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     wishlist,
     claimLog,
     coursePlayed,
-    golfCourse
+    golfCourse,
+    playedRound
   ],
 }

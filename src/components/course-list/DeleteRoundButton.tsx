@@ -6,9 +6,14 @@ import { useRouter } from 'next/navigation';
 interface DeleteRoundButtonProps {
     roundId: string;
     playKey: string;
+    onDelete?: () => void;
 }
 
-export default function DeleteRoundButton({ roundId, playKey }: DeleteRoundButtonProps) {
+export default function DeleteRoundButton({
+                                              roundId,
+                                              playKey,
+                                              onDelete
+                                          }: DeleteRoundButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const router = useRouter();
 
@@ -24,7 +29,8 @@ export default function DeleteRoundButton({ roundId, playKey }: DeleteRoundButto
             });
 
             if (response.ok) {
-                router.refresh();
+                onDelete?.(); // Rufe die Lösch-Callback-Funktion auf
+                router.refresh(); // Zusätzlicher Refresh für Server-Komponenten
             } else {
                 throw new Error('Delete failed');
             }

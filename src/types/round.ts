@@ -16,7 +16,8 @@ export interface Round {
     };
     club: {
         _id: string;
-        name: string;
+        title: string;  // name zu title geändert
+        slug: string;
     };
     plays: RoundPlay[];
     createdAt?: string;

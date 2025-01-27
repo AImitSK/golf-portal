@@ -14,21 +14,23 @@ export default async function CourseListPage(): Promise<React.JSX.Element> {
     }
 
     const rounds = await sanityClient.fetch(`
-       *[_type == "coursePlayed" && user._ref == $userId] | order(createdAt desc) {
-           _id,
-           club->{
-               _id,
-               name
-           },
-           plays[]{
-               _key,
-               date,
-               score,
-               notiz,
-               wetter
-           }
-       }
-   `, { userId: session.user._id });
+    *[_type == "coursePlayed" && user._ref == $userId] {
+        _id,
+        club->{
+            _id,
+            title,
+            slug
+        },
+        plays[]{
+            _key,
+            date,
+            score,
+            notiz,
+            wetter
+        }
+    } | order(plays[0].date desc)
+`, { userId: session.user._id });
+
 
     return (
         <div className="container mx-auto px-4 py-8">

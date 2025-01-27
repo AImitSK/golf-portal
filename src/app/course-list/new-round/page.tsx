@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getGolfCourseById } from "@/lib/sanity/getGolfCourse";
 import ScoreEntry from "@/components/course-list/ScoreEntry";
 import { getUserById } from "@/lib/sanity/getUser";
-import type { Tee } from "@/types/golf-course"; // Import für Tee
+import { type Tee } from "@/types/golf-course";
 
 interface NewRoundPageProps {
     searchParams: {
@@ -32,6 +32,50 @@ export default async function NewRoundPage({ searchParams }: NewRoundPageProps) 
         redirect('/course-list');
     }
 
+    async function handleSubmit(data: {
+        tee: Tee;
+        scores: number[];
+        totalGross: number;
+        totalNet: number;
+        totalStableford: number;
+    }) {
+        'use server';
+
+        const authSession = await auth();
+        if (!authSession?.user) {
+            redirect('/auth/login');
+        }
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/course-list/add-round`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-ID': authSession.user._id,
+                },
+                body: JSON.stringify({
+                    userId: authSession.user._id,
+                    courseId: courseId,
+                    ...data,
+                }),
+            });
+
+            console.log('Response status:', response.status);
+            const responseData = await response.json();
+            console.log('Response data:', responseData);
+
+            if (!response.ok) {
+                console.error('Error response:', responseData);
+                throw new Error(responseData.message || 'Fehler beim Speichern der Runde');
+            }
+
+            redirect('/course-list');
+        } catch (error) {
+            console.error('Detailed error in handleSubmit:', error);
+            throw error;
+        }
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-6">Neue Runde eintragen</h1>
@@ -43,32 +87,7 @@ export default async function NewRoundPage({ searchParams }: NewRoundPageProps) 
             <ScoreEntry
                 course={course}
                 playerHandicap={user.handicapIndex}
-                onSubmitAction={async (data: {
-                    tee: Tee;
-                    scores: number[];
-                    totalGross: number;
-                    totalNet: number;
-                    totalStableford: number;
-                }) => {
-                    'use server';
-
-                    const response = await fetch('/api/rounds', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            userId: session.user._id,
-                            courseId: courseId,
-                            ...data,
-                            date: new Date().toISOString(),
-                        }),
-                    });
-
-                    if (response.ok) {
-                        redirect('/course-list');
-                    }
-                }}
+                onSubmit={handleSubmit}
             />
         </div>
     );

@@ -4,24 +4,29 @@
 import React from 'react';
 import { formatDate } from '@/lib/utils';
 import DeleteRoundButton from '@/components/course-list/DeleteRoundButton';
-import type { Round, RoundPlay } from '@/types/round';
+import type { Round } from '@/types/round';
 
 interface RoundsListProps {
     rounds: Round[];
+    onRoundDelete?: (roundId: string, playKey: string) => void;
 }
 
-export default function RoundsList({ rounds }: RoundsListProps) {
+export default function RoundsList({ rounds, onRoundDelete }: RoundsListProps) {
     const flattenedRounds = rounds.flatMap(round =>
         round.plays.map(play => ({
             roundId: round._id,
             playKey: play._key,
-            clubName: round.club.name,
+            clubName: round.club.title,
             date: play.date,
             score: play.score,
             notiz: play.notiz,
             wetter: play.wetter
         }))
     );
+
+    const handleDelete = (roundId: string, playKey: string) => {
+        onRoundDelete?.(roundId, playKey);
+    };
 
     return (
         <div className="overflow-x-auto">
@@ -48,7 +53,11 @@ export default function RoundsList({ rounds }: RoundsListProps) {
                         <td className="p-3">{round.wetter || '-'}</td>
                         <td className="p-3">{round.notiz || '-'}</td>
                         <td className="p-3">
-                            <DeleteRoundButton roundId={round.roundId} playKey={round.playKey} />
+                            <DeleteRoundButton
+                                roundId={round.roundId}
+                                playKey={round.playKey}
+                                onDelete={() => handleDelete(round.roundId, round.playKey)}
+                            />
                         </td>
                     </tr>
                 ))}

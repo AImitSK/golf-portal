@@ -34,3 +34,11 @@ export interface GolfCourse {
     club: Club;
     tees: Tee[];
 }
+
+export interface Hole {
+    number: number;
+    par: number;
+    length?: number;
+    handicapIndex: number;
+    courseHCP?: number;
+}
