@@ -1,21 +1,21 @@
+// src/components/course-list/RoundsFilter.tsx
 'use client';
 
 import { useState } from 'react';
-import { PlayedRound } from '@/types/played-round';
 import { Card, CardContent } from '@/components/ui/card';
+import { Round } from '@/types/round';
 
 interface RoundsFilterProps {
-    rounds: PlayedRound[];
-    onFilterChangeAction: (filtered: PlayedRound[]) => void;
+    rounds: Round[];
+    onFilterChangeAction: (filtered: Round[]) => void;
 }
 
 export default function RoundsFilter({ rounds, onFilterChangeAction }: RoundsFilterProps) {
     const [dateRange, setDateRange] = useState<{ from?: string; to?: string }>({});
     const [selectedCourse, setSelectedCourse] = useState<string>('');
 
-    // Erstelle eine Liste einzigartiger Kurse basierend auf _ref
     const uniqueCourses = Array.from(
-        new Set(rounds.map(round => round.course?._ref).filter(Boolean))
+        new Set(rounds.map(round => round.club._id))
     );
 
     const applyFilters = () => {
@@ -23,19 +23,19 @@ export default function RoundsFilter({ rounds, onFilterChangeAction }: RoundsFil
 
         if (dateRange.from) {
             filtered = filtered.filter(round =>
-                new Date(round.date) >= new Date(dateRange.from!)
+                round.plays.some(play => new Date(play.date) >= new Date(dateRange.from!))
             );
         }
 
         if (dateRange.to) {
             filtered = filtered.filter(round =>
-                new Date(round.date) <= new Date(dateRange.to!)
+                round.plays.some(play => new Date(play.date) <= new Date(dateRange.to!))
             );
         }
 
         if (selectedCourse) {
             filtered = filtered.filter(round =>
-                round.course?._ref === selectedCourse
+                round.club._id === selectedCourse
             );
         }
 
@@ -89,9 +89,9 @@ export default function RoundsFilter({ rounds, onFilterChangeAction }: RoundsFil
                             className="border rounded-md p-2"
                         >
                             <option value="">Alle Plätze</option>
-                            {uniqueCourses.map(courseRef => (
-                                <option key={courseRef} value={courseRef}>
-                                    {rounds.find(r => r.course?._ref === courseRef)?.course?._ref || 'Unbekannter Golfplatz'}
+                            {uniqueCourses.map(courseId => (
+                                <option key={courseId} value={courseId}>
+                                    {rounds.find(r => r.club._id === courseId)?.club.name || 'Unbekannter Golfplatz'}
                                 </option>
                             ))}
                         </select>

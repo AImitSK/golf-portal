@@ -1,26 +1,11 @@
+// src/components/course-list/FilteredRoundsList.tsx
 'use client';
 
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import RoundsList from "@/components/course-list/RoundsList";
 import RoundsFilter from "@/components/course-list/RoundsFilter";
-
-interface RoundPlay {
-    _key: string;
-    date: string;
-    score: number;
-    notiz?: string;
-    wetter?: string;
-}
-
-interface Round {
-    _id: string;
-    club: {
-        _id: string;
-        name: string;
-    };
-    plays: RoundPlay[];
-}
+import type { Round } from '@/types/round';
 
 interface FilteredRoundsListProps {
     initialRounds: Round[];
@@ -36,11 +21,11 @@ export default function FilteredRoundsList({ initialRounds }: FilteredRoundsList
     return (
         <div>
             <RoundsFilter
-                rounds={initialRounds} // Die Originaldaten für die Filterkomponente
-                onFilterChangeAction={handleFilterChange} // Funktion zum Aktualisieren der gefilterten Daten
+                rounds={initialRounds}
+                onFilterChangeAction={handleFilterChange}
             />
             <Card>
-                <RoundsList rounds={filteredRounds} /> {/* Gefilterte Daten an die Anzeige-Komponente übergeben */}
+                <RoundsList rounds={filteredRounds} />
             </Card>
         </div>
     );

@@ -1,23 +1,10 @@
+// src/components/course-list/RoundsList.tsx
 'use client';
 
 import React from 'react';
 import { formatDate } from '@/lib/utils';
 import DeleteRoundButton from '@/components/course-list/DeleteRoundButton';
-
-interface Round {
-    _id: string;
-    club: {
-        _id: string;
-        name: string;
-    };
-    plays: {
-        _key: string;
-        date: string;
-        score: number;
-        notiz?: string;
-        wetter?: string;
-    }[];
-}
+import type { Round, RoundPlay } from '@/types/round';
 
 interface RoundsListProps {
     rounds: Round[];
