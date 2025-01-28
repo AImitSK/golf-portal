@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import { calculateRoundStats } from '@/utils/golf-calculations';
 import type { PlayedTee } from '@/types/golf-round';
 
 interface StatsDashboardProps {
@@ -11,13 +12,20 @@ interface StatsDashboardProps {
 }
 
 export default function StatsDashboard({ scores, tee, courseHandicap }: StatsDashboardProps) {
-    if (!scores || !scores.length) {
+    // Frühe Rückgabe, wenn keine gültigen Daten vorhanden sind
+    if (!tee || !tee.holes || !Array.isArray(tee.holes)) {
         return null;
     }
 
-    const totalRounds = scores.length;
-    const averageStableford = Math.round(scores.reduce((sum, score) => sum + score, 0) / totalRounds);
-    const bestStableford = Math.max(...scores);
+    const pars = tee.holes.map(hole => hole.par);
+    const holeHandicaps = tee.holes.map(hole => hole.handicapIndex);
+
+    // Sicherstellen, dass alle erforderlichen Daten vorhanden sind
+    if (!pars.length || !holeHandicaps.length || !scores.length) {
+        return null;
+    }
+
+    const stats = calculateRoundStats(scores, pars, courseHandicap, holeHandicaps);
 
     const StatCard = ({ title, value, subtitle }: { title: string; value: number | string; subtitle?: string }) => (
         <div className="bg-white shadow rounded-lg p-4">
@@ -29,27 +37,64 @@ export default function StatsDashboard({ scores, tee, courseHandicap }: StatsDas
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold">Gesamtstatistik</h2>
+            <h2 className="text-2xl font-bold">Rundenstatistik</h2>
+
+            {/* Hauptwerte */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <StatCard
-                    title="Gespielte Runden"
-                    value={totalRounds}
+                    title="Brutto"
+                    value={stats.totalGross}
+                    subtitle={`Über Par: ${stats.totalGross - tee.par}`}
                 />
                 <StatCard
-                    title="Durchschnitt Stableford"
-                    value={averageStableford}
+                    title="Netto"
+                    value={stats.totalNet}
+                    subtitle={`Über Par: ${stats.totalNet - tee.par}`}
+                />
+                <StatCard
+                    title="Stableford"
+                    value={stats.totalStableford}
                     subtitle="Punkte"
                 />
+            </div>
+
+            {/* Detaillierte Statistiken */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
-                    title="Beste Runde"
-                    value={bestStableford}
-                    subtitle="Stableford Punkte"
+                    title="Birdies oder besser"
+                    value={stats.birdiesOrBetter}
+                />
+                <StatCard
+                    title="Pars"
+                    value={stats.pars}
+                />
+                <StatCard
+                    title="Bogeys"
+                    value={stats.bogeys}
+                />
+                <StatCard
+                    title="Double Bogey+"
+                    value={stats.doubleBogeyOrWorse}
                 />
             </div>
-            <div className="p-4 bg-gray-100 rounded-lg shadow">
-                <h2 className="text-lg font-semibold">Details</h2>
-                <p>Tee: {tee.name}</p>
-                <p>Course Handicap: {courseHandicap}</p>
+
+            {/* Zusätzliche Informationen */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white shadow rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-gray-500">Platzdaten</h3>
+                    <div className="mt-2 space-y-1">
+                        <p className="text-sm">Course Rating: {tee.courseRating}</p>
+                        <p className="text-sm">Slope Rating: {tee.slopeRating}</p>
+                        <p className="text-sm">Par: {tee.par}</p>
+                    </div>
+                </div>
+                <div className="bg-white shadow rounded-lg p-4">
+                    <h3 className="text-sm font-medium text-gray-500">Handicap</h3>
+                    <div className="mt-2 space-y-1">
+                        <p className="text-sm">Course Handicap: {courseHandicap}</p>
+                        <p className="text-sm">Playing Handicap: {Math.round(courseHandicap * 0.95)}</p>
+                    </div>
+                </div>
             </div>
         </div>
     );
