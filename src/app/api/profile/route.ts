@@ -66,10 +66,17 @@ export async function PATCH(request: Request) {
             };
         }
 
-        // Profilbild
+// Profilbild - aktualisierte Version
         const image = formData.get('image');
         if (image instanceof File) {
+            // Hochladen als Asset
             const imageAsset = await sanityClient.assets.upload('image', image);
+
+            // Nur die URL speichern, wenn image im Schema ein String ist
+            updates.image = imageAsset.url;
+
+            // Oder als vollständige Referenz, wenn image ein image-Typ ist
+            /*
             updates.image = {
                 _type: 'image',
                 asset: {
@@ -77,6 +84,7 @@ export async function PATCH(request: Request) {
                     _ref: imageAsset._id
                 }
             };
+            */
         }
 
         // Update in Sanity

@@ -26,6 +26,7 @@ export const getUserById = async (id: string) => {
     try {
         console.log("Getting user by id:", id);
 
+        // Aktualisierte Query, die image als String behandelt
         const query = `*[(_type == "user" || _type == "administrator") && _id == $id][0]{
             _id,
             _type,
@@ -33,7 +34,7 @@ export const getUserById = async (id: string) => {
             email,
             role,
             aktiv,
-            "image": image.asset->url
+            image
         }`;
 
         const params = { id };

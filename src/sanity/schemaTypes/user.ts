@@ -25,12 +25,6 @@ const schema: SchemaTypeDefinition = {
             readOnly: true
         },
         {
-            name: 'aktiv',
-            title: 'Aktiv',
-            type: 'boolean',
-            initialValue: true
-        },
-        {
             name: 'image',
             title: 'Profilbild',
             type: 'image',
@@ -46,39 +40,8 @@ const schema: SchemaTypeDefinition = {
                 list: [
                     { title: 'User', value: 'user' },
                 ]
-            }
-        },
-        {
-            name: 'handicapIndex',
-            title: 'Handicap Index',
-            type: 'number',
-            validation: (Rule: ValidationRule) =>
-                Rule.precision(1).min(-54).max(54)
-        },
-        {
-            name: 'handicapHistory',
-            title: 'Handicap Verlauf',
-            type: 'array',
-            of: [{
-                type: 'object',
-                fields: [
-                    {
-                        name: 'date',
-                        title: 'Datum',
-                        type: 'date'
-                    },
-                    {
-                        name: 'handicapIndex',
-                        title: 'Handicap Index',
-                        type: 'number'
-                    },
-                    {
-                        name: 'reason',
-                        title: 'Grund',
-                        type: 'string'
-                    }
-                ]
-            }]
+            },
+            initialValue: 'user'
         },
         {
             name: 'createdAt',
@@ -93,11 +56,10 @@ const schema: SchemaTypeDefinition = {
             hidden: false,
         },
         {
-            name: 'heimatclub',
-            title: 'Heimatclub',
-            type: 'reference',
-            to: [{ type: 'golfclub' }],
-            description: 'Der Golfclub, in dem der User Mitglied ist'
+            name: 'aktiv',
+            title: 'Aktiv',
+            type: 'boolean',
+            initialValue: true
         }
     ]
 }

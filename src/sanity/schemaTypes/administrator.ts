@@ -27,8 +27,11 @@ const administratorSchema = {
     },
     {
       name: 'image',
-      title: 'Image',
-      type: 'string'
+      title: 'Profilbild',
+      type: 'image',
+      options: {
+        hotspot: true
+      }
     },
     {
       name: 'role',
