@@ -9,10 +9,9 @@ import kooperation from './kooperation'
 import user from './user'
 import like from './like'
 import wishlist from './wishlist'
-import coursePlayed from './coursePlayed'
 import claimLog from './claimLog'
 import golfCourse from './golfCourse'
-import playedRound from "@/sanity/schemaTypes/playedRound";
+import golfRound from './golfRound'  // Das neue Schema
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -26,8 +25,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     like,
     wishlist,
     claimLog,
-    coursePlayed,
     golfCourse,
-    playedRound
+    golfRound     // Ersetzen der alten Schemas
   ],
 }

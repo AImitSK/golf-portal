@@ -27,10 +27,19 @@ const schema: SchemaTypeDefinition = {
         {
             name: 'image',
             title: 'Profilbild',
-            type: 'image',
-            options: {
-                hotspot: true
-            }
+            type: 'object',
+            fields: [
+                {
+                    name: 'asset',
+                    title: 'Sanity Bild',
+                    type: 'image'
+                },
+                {
+                    name: 'url',
+                    title: 'Bild-URL (optional)',
+                    type: 'url'
+                }
+            ]
         },
         {
             name: 'role',
