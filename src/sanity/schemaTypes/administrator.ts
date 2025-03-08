@@ -26,12 +26,19 @@ const administratorSchema = {
       readOnly: true
     },
     {
+      name: 'imageUrl',
+      title: 'Profilbild URL',
+      type: 'string',
+      description: 'URL zum Profilbild (für OAuth Provider wie Google)'
+    },
+    {
       name: 'image',
-      title: 'Profilbild',
+      title: 'Profilbild (Upload)',
       type: 'image',
       options: {
         hotspot: true
-      }
+      },
+      description: 'Hochgeladenes Profilbild (hat Vorrang vor der URL)'
     },
     {
       name: 'role',
@@ -154,10 +161,22 @@ const administratorSchema = {
       initialValue: false
     }
   ],
+  // Angepasste Preview-Konfiguration
   preview: {
     select: {
       title: 'name',
-      subtitle: 'email'
+      subtitle: 'email',
+      media: 'image'
+    },
+    prepare(selection) {
+      const {title, subtitle, media} = selection;
+
+      // Nur das Sanity-Bild-Objekt für die Vorschau verwenden
+      return {
+        title,
+        subtitle,
+        media: media // Verwendet nur das Sanity-Bild, nicht die URL
+      }
     }
   }
 };

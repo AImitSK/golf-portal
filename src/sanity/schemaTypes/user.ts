@@ -25,12 +25,19 @@ const schema: SchemaTypeDefinition = {
             readOnly: true
         },
         {
+            name: 'imageUrl',
+            title: 'Profilbild URL',
+            type: 'string',
+            description: 'URL zum Profilbild (für OAuth Provider wie Google)'
+        },
+        {
             name: 'image',
-            title: 'Profilbild',
+            title: 'Profilbild (Upload)',
             type: 'image',
             options: {
                 hotspot: true
-            }
+            },
+            description: 'Hochgeladenes Profilbild (hat Vorrang vor der URL)'
         },
         {
             name: 'role',
@@ -108,7 +115,27 @@ const schema: SchemaTypeDefinition = {
             type: 'reference',
             to: [{ type: 'golfclub' }]
         }
-    ]
+    ],
+    // Custom Preview-Konfiguration für das Sanity Studio
+    preview: {
+        select: {
+            title: 'name',
+            subtitle: 'email',
+            media: 'image',
+            imageUrl: 'imageUrl'
+        },
+        prepare(selection) {
+            const {title, subtitle, media, imageUrl} = selection;
+
+            // Verwende das hochgeladene Bild, wenn vorhanden, sonst zeige keines an
+            // Wichtig: NICHT die URL als media verwenden, da dies den Fehler verursacht
+            return {
+                title,
+                subtitle,
+                media: media // Nur das Sanity-Bild-Objekt verwenden
+            }
+        }
+    }
 }
 
 export default schema

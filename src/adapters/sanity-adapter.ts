@@ -32,6 +32,9 @@ export function SanityAdapter(
                 ? options.schemas.administrator
                 : options.schemas.user;
 
+        // Handle image data properly
+        const imageData = handleUserImage(user.image);
+
         const userToCreate: SanityUserCreate = {
           _type: docType,
           _id: `${docType}.${uuid()}`,
@@ -39,7 +42,9 @@ export function SanityAdapter(
           role: user.role ?? UserRole.USER,
           name: user.name ?? "",
           email: user.email,
-          image: user.image,
+          // Setze die Bildfelder basierend auf dem Typ
+          ...(imageData.imageUrl && { imageUrl: imageData.imageUrl }),
+          ...(imageData.image && { image: imageData.image }),
           emailVerified: user.emailVerified,
           aktiv: true, // Standardwert
         };
@@ -121,6 +126,11 @@ export function SanityAdapter(
           );
         }
 
+        // Verarbeite die Bilddaten korrekt, wenn sie aktualisiert werden
+        const imageData = updatedUser.image
+            ? handleUserImage(updatedUser.image)
+            : { image: existingUser.image, imageUrl: existingUser.imageUrl };
+
         const updatedFields = {
           ...existingUser,
           emailVerified: updatedUser.emailVerified === null
@@ -128,7 +138,11 @@ export function SanityAdapter(
               : updatedUser.emailVerified,
           name: updatedUser.name ?? existingUser.name,
           email: updatedUser.email ?? existingUser.email,
-          image: updatedUser.image ?? existingUser.image,
+          // Aktualisiere Bildfelder korrekt
+          ...((imageData.image || imageData.imageUrl) && {
+            ...(imageData.imageUrl && { imageUrl: imageData.imageUrl }),
+            ...(imageData.image ? { image: imageData.image } : { image: undefined }),
+          }),
         };
 
         const patchedUser = await sanityClient
@@ -149,12 +163,12 @@ export function SanityAdapter(
      * deleteUser – egal ob user oder administrator, wir löschen per _id
      */
     async deleteUser(userId) {
-    try {
-      return await sanityClient.delete(userId);
-    } catch {
-      throw new Error("Could not delete user");
-    }
-  },
+      try {
+        return await sanityClient.delete(userId);
+      } catch {
+        throw new Error("Could not delete user");
+      }
+    },
 
     /**
      * linkAccount – unberührt, da hier _type: "account" benutzt wird
@@ -281,11 +295,11 @@ export function SanityAdapter(
         if (!session) return null;
 
         await sanityClient
-          .patch(session._id)
-          .set({
-            ...session,
-          })
-          .commit();
+            .patch(session._id)
+            .set({
+              ...session,
+            })
+            .commit();
       } catch  {
         throw new Error("Operation Failed");
       }
@@ -334,4 +348,20 @@ export function SanityAdapter(
       };
     },
   };
+}
+
+/**
+ * Hilfsfunktion zur Verarbeitung von Benutzerbildern
+ * Unterscheidet zwischen String-URLs (von OAuth) und Sanity-Bild-Objekten
+ */
+function handleUserImage(image: any): { image?: any; imageUrl?: string } {
+  if (!image) return { image: undefined, imageUrl: undefined };
+
+  // Wenn image ein String ist (URL von OAuth), speichere es als imageUrl
+  if (typeof image === 'string') {
+    return { image: undefined, imageUrl: image };
+  }
+
+  // Ansonsten ist es vermutlich ein Sanity-Bild-Objekt
+  return { image, imageUrl: undefined };
 }

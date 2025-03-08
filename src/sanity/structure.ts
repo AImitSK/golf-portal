@@ -1,15 +1,76 @@
-import type {StructureResolver} from 'sanity/structure'
+// src/sanity/structure.ts
+import type { StructureBuilder } from 'sanity/desk';
 
-// Liste der Dokumenttypen, die wir ausblenden möchten
-const hiddenDocTypes = ['account', 'session', 'verificationToken']
+export const structure = (S: StructureBuilder) =>
+    S.list()
+        .title('Inhalte')
+        .items([
+            // Golfclubs
+            S.listItem()
+                .title('Golfclubs')
+                .child(
+                    S.documentList()
+                        .title('Golfclubs')
+                        .filter('_type == "golfclub"')
+                ),
 
-// https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure: StructureResolver = (S) =>
-  S.list()
-    .title('Content')
-    .items([
-      // Filter die Dokumenttypen und zeige nur die an, die nicht in hiddenDocTypes sind
-      ...S.documentTypeListItems().filter(
-        (listItem) => !hiddenDocTypes.includes(listItem.getId() as string)
-      )
-    ])
+            // Kooperationen
+            S.listItem()
+                .title('Kooperationen')
+                .child(
+                    S.documentList()
+                        .title('Kooperationen')
+                        .filter('_type == "kooperation"')
+                ),
+
+            // Benutzer
+            S.listItem()
+                .title('Benutzer')
+                .child(
+                    S.documentList()
+                        .title('Benutzer')
+                        .filter('_type == "user"')
+                ),
+
+            // Administratoren
+            S.listItem()
+                .title('Administratoren')
+                .child(
+                    S.documentList()
+                        .title('Administratoren')
+                        .filter('_type == "administrator"')
+                ),
+
+            // Vertragsmodelle
+            S.listItem()
+                .title('Vertragsmodelle')
+                .child(
+                    S.documentList()
+                        .title('Vertragsmodelle')
+                        .filter('_type == "vertragsmodell"')
+                ),
+
+            // Features
+            S.listItem()
+                .title('Features')
+                .child(
+                    S.documentList()
+                        .title('Features')
+                        .filter('_type == "feature"')
+                ),
+
+            // Länder
+            S.listItem()
+                .title('Länder')
+                .child(
+                    S.documentList()
+                        .title('Länder')
+                        .filter('_type == "land"')
+                ),
+
+            // Standard-Liste für alle anderen Dokumente
+            S.divider(),
+            ...S.documentTypeListItems().filter(
+                listItem => !['golfclub', 'kooperation', 'user', 'administrator', 'vertragsmodell', 'feature', 'land'].includes(listItem.getId() || '')
+            )
+        ])

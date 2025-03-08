@@ -2,7 +2,7 @@
 
 import { visionTool } from '@sanity/vision';
 import { defineConfig, DocumentActionComponent, DocumentActionsContext } from 'sanity';
-import { structureTool } from 'sanity/structure';
+import { deskTool } from 'sanity/desk';
 import { apiVersion, dataset, projectId } from '@/sanity/env';
 import { schema } from '@/sanity/schemaTypes';
 import { structure } from '@/sanity/structure';
@@ -14,7 +14,7 @@ export default defineConfig({
     dataset,
     schema,
     plugins: [
-        structureTool({ structure }),
+        deskTool({ structure }),
         visionTool({ defaultApiVersion: apiVersion }),
     ],
     document: {
@@ -26,7 +26,7 @@ export default defineConfig({
 
             // Berechtigungen für 'like' Dokumente
             if (context.schemaType === 'like') {
-                const createAction: DocumentActionComponent = (props) => ({
+                const createAction: DocumentActionComponent = (props: any) => ({
                     name: 'create',
                     title: 'Create',
                     label: 'Erstellen', // Hinzugefügt
