@@ -27,19 +27,10 @@ const schema: SchemaTypeDefinition = {
         {
             name: 'image',
             title: 'Profilbild',
-            type: 'object',
-            fields: [
-                {
-                    name: 'asset',
-                    title: 'Sanity Bild',
-                    type: 'image'
-                },
-                {
-                    name: 'url',
-                    title: 'Bild-URL (optional)',
-                    type: 'url'
-                }
-            ]
+            type: 'image',
+            options: {
+                hotspot: true
+            }
         },
         {
             name: 'role',
@@ -69,6 +60,53 @@ const schema: SchemaTypeDefinition = {
             title: 'Aktiv',
             type: 'boolean',
             initialValue: true
+        },
+        {
+            name: 'isTwoFactorEnabled',
+            title: 'Zwei-Faktor-Authentifizierung aktiviert',
+            type: 'boolean',
+            initialValue: false
+        },
+        {
+            name: 'handicapIndex',
+            title: 'Handicap Index',
+            type: 'number'
+        },
+        {
+            name: 'handicapHistory',
+            title: 'Handicap Verlauf',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    name: 'handicapEntry',
+                    fields: [
+                        {
+                            name: 'date',
+                            title: 'Datum',
+                            type: 'date',
+                            validation: (Rule: ValidationRule) => Rule.required()
+                        },
+                        {
+                            name: 'handicapIndex',
+                            title: 'Handicap Index',
+                            type: 'number',
+                            validation: (Rule: ValidationRule) => Rule.required()
+                        },
+                        {
+                            name: 'reason',
+                            title: 'Grund',
+                            type: 'string'
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            name: 'heimatclub',
+            title: 'Heimatclub',
+            type: 'reference',
+            to: [{ type: 'golfclub' }]
         }
     ]
 }

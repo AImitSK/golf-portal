@@ -36,11 +36,28 @@ export default function ProfileForm() {
     // Initialisiere Formular mit Profildaten
     useEffect(() => {
         if (profileData) {
+            console.log("Profildaten erhalten:", profileData);
+
+            // Extrahiere den Bildpfad korrekt
+            let imageValue = null;
+            if (profileData.image) {
+                // Wenn image ein String ist (URL)
+                if (typeof profileData.image === 'string') {
+                    imageValue = profileData.image;
+                }
+                // Wenn image ein Objekt ist
+                else if (typeof profileData.image === 'object') {
+                    // Prüfe verschiedene mögliche Pfade zur URL
+                    imageValue = profileData.image.asset?.url ||
+                        profileData.image.url || null;
+                }
+            }
+
             setFormData({
                 name: profileData.name || '',
                 email: profileData.email || '',
                 heimatclub: profileData.heimatclub?._id || '',
-                image: profileData.image || null
+                image: imageValue
             });
         }
     }, [profileData]);
@@ -71,12 +88,14 @@ export default function ProfileForm() {
                 body: formDataToSend
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                setError(data.error || 'Fehler beim Aktualisieren des Profils');
+                const errorData = await response.json();
+                setError(errorData.error || 'Fehler beim Aktualisieren des Profils');
                 return;
             }
+
+            const data = await response.json();
+            console.log("Profil aktualisiert:", data);
 
             await update();
             setSuccess('Profil erfolgreich aktualisiert');
@@ -101,36 +120,55 @@ export default function ProfileForm() {
         }
     };
 
-    const renderProfileImage = () => {
-        if (!formData.image) {
-            return (
-                <div className="size-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">Kein Bild</span>
-                </div>
-            );
-        }
+    // Sichere Bildquelle für die Vorschau
+    const getSafeImageSrc = () => {
+        console.log("Current form image:", formData.image);
+
+        if (!formData.image) return null;
 
         if (formData.image instanceof File) {
-            return (
-                <Image
-                    src={URL.createObjectURL(formData.image)}
-                    alt="Profilbild"
-                    className="size-full object-cover"
-                    width={80}
-                    height={80}
-                />
-            );
+            return URL.createObjectURL(formData.image);
         }
 
-        return (
-            <Image
-                src={formData.image}
-                alt="Profilbild"
-                className="size-full object-cover"
-                width={80}
-                height={80}
-            />
-        );
+        // Sicherheitscheck für String-URLs
+        if (typeof formData.image === 'string') {
+            return formData.image || null;
+        }
+
+        // Bei komplexen Objekten
+        try {
+            if (typeof formData.image === 'object') {
+                const imgObj = formData.image as any;
+                console.log("Profile image object:", imgObj);
+
+                // Prüfe verschiedene mögliche Pfade zur URL
+                if (imgObj.asset && typeof imgObj.asset === 'object') {
+                    console.log("Asset found:", imgObj.asset);
+                    // Prüfen, ob es ein _ref gibt (Sanity-Referenz)
+                    if (imgObj.asset._ref) {
+                        console.log("Using Sanity reference:", imgObj.asset._ref);
+                        // Sanity-Bild-ID in URL umwandeln
+                        return `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/${imgObj.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
+                    }
+
+                    // Direkte URL im asset
+                    if (imgObj.asset.url) {
+                        console.log("Using asset URL:", imgObj.asset.url);
+                        return imgObj.asset.url;
+                    }
+                }
+
+                // Direkte URL im Bild-Objekt
+                if (imgObj.url) {
+                    console.log("Using direct URL:", imgObj.url);
+                    return imgObj.url;
+                }
+            }
+        } catch (e) {
+            console.error("Fehler beim Extrahieren des Bildpfads:", e);
+        }
+
+        return null;
     };
 
     return (
@@ -154,7 +192,19 @@ export default function ProfileForm() {
                 </label>
                 <div className="flex items-center gap-4">
                     <div className="size-20 rounded-full overflow-hidden bg-gray-100">
-                        {renderProfileImage()}
+                        {getSafeImageSrc() ? (
+                            <Image
+                                src={getSafeImageSrc() as string}
+                                alt="Profilbild"
+                                className="size-full object-cover"
+                                width={80}
+                                height={80}
+                            />
+                        ) : (
+                            <div className="flex items-center justify-center h-full bg-gray-200 text-gray-600">
+                                {formData.name ? formData.name.charAt(0).toUpperCase() : "U"}
+                            </div>
+                        )}
                     </div>
                     <Input
                         type="file"

@@ -39,6 +39,60 @@ export default function NavigationWithHamburger() {
 
     const isAdmin = session?.user?.role === 'admin';
 
+    // Korrekte Extraktion der Bild-URL
+    const getAvatarSrc = () => {
+        // Debugging ausgeben
+        console.log("Session image:", session?.user?.image);
+
+        if (!session?.user?.image) return null;
+
+        // Wenn das Bild ein String ist (URL), prüfe, ob es nicht leer ist
+        if (typeof session.user.image === 'string') {
+            return session.user.image.trim() === '' ? null : session.user.image;
+        }
+
+        // Wenn es ein Objekt ist, versuche die URL zu extrahieren
+        try {
+            if (typeof session.user.image === 'object' && session.user.image !== null) {
+                const imgObj = session.user.image as any;
+                console.log("Image object:", imgObj);
+
+                // Prüfe verschiedene mögliche Pfade zur URL
+                if (imgObj.asset && typeof imgObj.asset === 'object') {
+                    console.log("Asset found:", imgObj.asset);
+                    // Prüfen, ob es ein _ref gibt (Sanity-Referenz)
+                    if (imgObj.asset._ref) {
+                        console.log("Using Sanity reference:", imgObj.asset._ref);
+                        // Sanity-Bild-ID in URL umwandeln
+                        return `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/${imgObj.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png').replace('-webp', '.webp')}`;
+                    }
+
+                    // Direkte URL im asset
+                    if (imgObj.asset.url) {
+                        console.log("Using asset URL:", imgObj.asset.url);
+                        return imgObj.asset.url;
+                    }
+                }
+
+                // Direkte URL im Bild-Objekt
+                if (imgObj.url) {
+                    console.log("Using direct URL:", imgObj.url);
+                    return imgObj.url;
+                }
+            }
+        } catch (e) {
+            console.error("Fehler beim Extrahieren des Bildpfads:", e);
+        }
+
+        return null;
+    };
+
+    // Bestimme die Initialen für den Avatar-Fallback
+    const getInitials = () => {
+        if (!session?.user?.name) return "";
+        return session.user.name.charAt(0).toUpperCase();
+    };
+
     return (
         <nav
             className={`sticky top-0 z-20 w-full bg-dark-green bg-opacity-90 backdrop-blur-md transition-shadow ${
@@ -71,9 +125,9 @@ export default function NavigationWithHamburger() {
                                 <Menu.Button>
                                     <span className="h-8 w-8 cursor-pointer inline-grid shrink-0 align-middle [--avatar-radius:50%] overflow-hidden rounded-full">
                                         <Avatar
-                                            src={session.user.image || undefined}
-                                            initials={session.user.name?.[0]}
-                                            alt={session.user.name || ''}
+                                            src={getAvatarSrc()}
+                                            initials={getInitials()}
+                                            alt={session.user.name || 'User'}
                                             className="size-full [&>img]:object-cover [&>img]:w-full [&>img]:h-full"
                                         />
                                     </span>

@@ -146,6 +146,12 @@ const administratorSchema = {
       title: 'Password Reset Ablaufdatum',
       type: 'datetime',
       hidden: true
+    },
+    {
+      name: 'isTwoFactorEnabled',
+      title: 'Zwei-Faktor-Authentifizierung aktiviert',
+      type: 'boolean',
+      initialValue: false
     }
   ],
   preview: {
